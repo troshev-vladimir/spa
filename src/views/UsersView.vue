@@ -1,24 +1,22 @@
 <template>
-  <section>
-    <TableFilter v-model:filter="filterValue" />
-    <q-table
-      title="Cписок пользователей"
-      :rows="rows"
-      :columns="columns"
-      row-key="name"
-    >
-      <template v-slot:body="row">
-        <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
-          <template v-for="col in row.cols" :key="col.name">
-            <td v-if="col.name === 'status'">
-              <q-toggle v-model="row.row.status"></q-toggle>
-            </td>
-            <td v-else>{{ col.value }}</td>
-          </template>
-        </q-tr>
-      </template>
-    </q-table>
-  </section>
+  <TableFilter v-model:filter="filterValue" />
+  <q-table
+    title="Cписок пользователей"
+    :rows="rows"
+    :columns="columns"
+    row-key="name"
+  >
+    <template v-slot:body="row">
+      <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
+        <template v-for="col in row.cols" :key="col.name">
+          <td v-if="col.name === 'status'">
+            <q-toggle v-model="row.row.status"></q-toggle>
+          </td>
+          <td v-else>{{ col.value }}</td>
+        </template>
+      </q-tr>
+    </template>
+  </q-table>
 </template>
 
 <script setup>

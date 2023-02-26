@@ -1,6 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
-  <div class="row q-mb-lg q-col-gutter-lg">
+  <form class="row q-mb-lg q-col-gutter-lg">
     <div class="col-6 q-mb-md">
       <q-input outlined label="Имя пользователя" v-model="userName" dense />
     </div>
@@ -13,7 +13,7 @@
         dense
       />
     </div>
-  </div>
+  </form>
 </template>
 
 <script setup>

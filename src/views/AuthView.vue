@@ -50,6 +50,7 @@
           dense
         />
         <q-input
+          ref="newUserPhoneInput"
           outlined
           label="Телефон"
           type="tel"
@@ -74,7 +75,12 @@
             push
             label="Зарегистрироваться"
             @click="regHandler"
-            :disable="!newUserName || !newUserPassword || !newUserPhone"
+            :disable="
+              !newUserName ||
+              !newUserPassword ||
+              !newUserPhone ||
+              newUserPhoneInput.hasError
+            "
           />
         </q-card-actions>
       </q-card>
@@ -96,6 +102,8 @@ const newUserPassword = ref("");
 const newUserPhone = ref("");
 
 const registration = ref(false);
+
+const newUserPhoneInput = ref(null);
 
 function regHandler() {
   store.commit("users/registerUser", {

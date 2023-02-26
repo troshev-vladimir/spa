@@ -11,7 +11,7 @@
       <router-view></router-view>
     </q-page>
   </q-page-container>
-  <q-footer class="q-pa-md">q-footer</q-footer>
+  <q-footer class="q-pa-md"></q-footer>
 </template>
 
 <script setup>

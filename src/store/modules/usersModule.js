@@ -11,14 +11,6 @@ const moduleB = {
         balance: 33,
         status: true,
       },
-      {
-        id: 1,
-        name: "vova",
-        password: "test",
-        phone: "+7 (221) 22 23 321",
-        balance: 122,
-        status: true,
-      },
     ],
   }),
   mutations: {
