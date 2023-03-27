@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import store from "../store/index.js";
+// import store from "../store/index.js";
 
 const routes = [
   {
@@ -18,6 +18,32 @@ const routes = [
       layout: "DefaultLayout",
     },
   },
+  {
+    path: "/crm",
+    name: "crm",
+    component: () => import("../views/ReportsPage.vue"),
+    meta: {
+      layout: "DefaultLayout",
+    },
+    children: [
+      {
+        path: "debt",
+        name: "report-debt",
+        component: () => import("../components/ReportsTables/DebtTable.vue"),
+      },
+      {
+        path: "summary",
+        name: "report-summary",
+        component: () => import("../components/ReportsTables/SummaryTable.vue"),
+      },
+      {
+        path: "calendar",
+        name: "report-calendar",
+        component: () =>
+          import("../components/ReportsTables/CalendarTable.vue"),
+      },
+    ],
+  },
 ];
 
 const router = createRouter({
@@ -25,12 +51,12 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  if (to.name !== "auth" && !store.state.user.isAuth) {
-    next({
-      path: "/auth",
-    });
-  } else next();
-});
+// router.beforeEach((to, from, next) => {
+//   if (to.name !== "auth" && !store.state.user.isAuth) {
+//     next({
+//       path: "/auth",
+//     });
+//   } else next();
+// });
 
 export default router;
