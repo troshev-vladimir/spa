@@ -1,4 +1,6 @@
 const { defineConfig } = require("@vue/cli-service");
+const WebpackAssetsManifest = require("webpack-assets-manifest");
+
 module.exports = defineConfig({
   transpileDependencies: ["quasar"],
 
@@ -7,5 +9,12 @@ module.exports = defineConfig({
       importStrategy: "kebab",
       rtlSupport: false,
     },
+  },
+  configureWebpack: (config) => {
+    config.plugins = config.plugins.concat(
+      new WebpackAssetsManifest({
+        output: "asset-manifest.json",
+      })
+    );
   },
 });
