@@ -36,7 +36,7 @@
       <q-card class="q-pa-lg q-col-gutter-y-md">
         <q-input
           outlined
-          label="Имя"
+          label="Email"
           v-model="newUserName"
           dense
           :rules="[(val) => !!val || 'Поле обязательно']"
@@ -49,7 +49,7 @@
           v-model="newUserPassword"
           dense
         />
-        <q-input
+        <!-- <q-input
           ref="newUserPhoneInput"
           outlined
           label="Телефон"
@@ -61,7 +61,7 @@
           ]"
           v-model="newUserPhone"
           dense
-        />
+        /> -->
 
         <q-card-actions>
           <q-btn
@@ -75,12 +75,7 @@
             push
             label="Зарегистрироваться"
             @click="regHandler"
-            :disable="
-              !newUserName ||
-              !newUserPassword ||
-              !newUserPhone ||
-              newUserPhoneInput.hasError
-            "
+            :disable="!newUserName || !newUserPassword"
           />
         </q-card-actions>
       </q-card>
@@ -90,34 +85,13 @@
 
 <script setup>
 import { ref, watch } from "vue";
-import { useRouter } from "vue-router";
-import { useStore } from "vuex";
-import { useQuasar } from "quasar";
-const store = useStore();
-const router = useRouter();
-const $q = useQuasar();
+import useNewUser from "./composables/useNewUser";
+import useUserAuth from "./composables/useUserAuth";
 
-const newUserName = ref("");
-const newUserPassword = ref("");
-const newUserPhone = ref("");
+const { regHandler, newUserName, newUserPassword } = useNewUser();
+const { authHandler, userName, userPassword } = useUserAuth();
 
 const registration = ref(false);
-
-const newUserPhoneInput = ref(null);
-
-function regHandler() {
-  store.commit("users/registerUser", {
-    name: newUserName,
-    password: newUserPassword,
-    phone: newUserPhone,
-  });
-
-  store.commit("user/authorize");
-  router.push({ path: "/" });
-}
-
-const userName = ref("");
-const userPassword = ref("");
 const buttonDisable = ref(true);
 
 watch([userName, userPassword], ([name, password]) => {
@@ -127,33 +101,4 @@ watch([userName, userPassword], ([name, password]) => {
     buttonDisable.value = true;
   }
 });
-
-function authHandler() {
-  const user = store.state.users.usersData.find(
-    (el) => el.name === userName.value
-  );
-
-  if (user && user.password === userPassword.value && user.status) {
-    store.commit("user/authorize");
-    router.push({ path: "/" });
-    $q.notify({
-      type: "positive",
-      message: "Вы успешно залогированы",
-    });
-  } else {
-    userPassword.value = "";
-    userName.value = "";
-    if (!user.status) {
-      $q.notify({
-        type: "negative",
-        message: "Пользователь выключен",
-      });
-    } else {
-      $q.notify({
-        type: "negative",
-        message: "Нет такого пользователя",
-      });
-    }
-  }
-}
 </script>
