@@ -23,7 +23,7 @@ const routes = [
     name: "crm",
     component: () => import("../views/ReportsPage.vue"),
     meta: {
-      layout: "DefaultLayout",
+      layout: "EmptyLayout",
     },
     children: [
       {
@@ -32,7 +32,7 @@ const routes = [
         component: () => import("../components/ReportsTables/DebtTable.vue"),
       },
       {
-        path: "summary",
+        path: "",
         name: "report-summary",
         component: () => import("../components/ReportsTables/SummaryTable.vue"),
       },

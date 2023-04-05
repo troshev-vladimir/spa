@@ -3,7 +3,7 @@ const WebpackAssetsManifest = require("webpack-assets-manifest");
 
 module.exports = defineConfig({
   transpileDependencies: ["quasar"],
-
+  outputDir: "./dist/spa/",
   pluginOptions: {
     quasar: {
       importStrategy: "kebab",

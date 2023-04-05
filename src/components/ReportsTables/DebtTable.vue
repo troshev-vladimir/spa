@@ -1,32 +1,59 @@
 <template>
   <q-table
     title="Задолжености"
-    :rows="rows"
+    :rows="data"
     :columns="columns"
     row-key="name"
-  />
+    align="center"
+    separator="vertical"
+  >
+    <template #header-cell="{ col }">
+      <q-th class="resizable">
+        {{ col.label }}
+      </q-th>
+    </template>
+    <template #body-cell="{ value }">
+      <q-td class="cell">
+        {{ value }}
+      </q-td>
+    </template>
+  </q-table>
 </template>
 
 <script setup>
 const columns = [
-  { name: "calories", label: "Calories", field: "calories", sortable: true },
-  { name: "fat", label: "Fat (g)", field: "fat", sortable: true },
-  { name: "carbs", label: "Carbs (g)", field: "carbs" },
-  { name: "protein", label: "Protein (g)", field: "protein" },
-  { name: "sodium", label: "Sodium (mg)", field: "sodium" },
   {
-    name: "calcium",
-    label: "Calcium (%)",
-    field: "calcium",
-    sortable: true,
-    sort: (a, b) => parseInt(a, 10) - parseInt(b, 10),
+    align: "center",
+    name: "name",
+    label: "Имя пользователя",
+    field: "name",
   },
   {
-    name: "iron",
-    label: "Iron (%)",
-    field: "iron",
+    align: "center",
+    name: "debt",
+    label: "Долг",
     sortable: true,
-    sort: (a, b) => parseInt(a, 10) - parseInt(b, 10),
+    field: "debt",
+    // sort: (a, b) => ,
+  },
+  {
+    align: "center",
+    name: "reason",
+    field: "reason",
+    label: "Наименование",
+  },
+];
+const data = [
+  {
+    name: "Николай Николаич",
+    debt: "123 343p",
+    reason: "По причине ...",
+  },
+  {
+    name: "Василий Пупкин",
+    debt: "1 343p",
+    reason:
+      "По причине ыфвфывфыв ыфв фыв фыв фывфыв фывфы ыфв фввфывыфв вывы фв фвф ",
   },
 ];
 </script>
@@ -35,5 +62,14 @@ const columns = [
 .buttons {
   column-gap: 20px;
   margin-bottom: 20px;
+}
+.cell {
+  min-width: 20px;
+  white-space: wrap;
+}
+.resizable {
+  resize: horizontal;
+  overflow: auto;
+  background-color: #a9beff;
 }
 </style>

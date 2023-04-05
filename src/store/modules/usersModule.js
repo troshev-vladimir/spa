@@ -1,17 +1,10 @@
+import axiosInstanse from "@/api";
+
 const moduleB = {
   namespaced: true,
 
   state: () => ({
-    usersData: [
-      {
-        id: 0,
-        name: "test",
-        password: "test", // тут пароль только для имитации авторизации
-        phone: "+7 (231) 22 23 321",
-        balance: 33,
-        status: true,
-      },
-    ],
+    usersData: [],
   }),
   mutations: {
     registerUser(state, user) {
@@ -19,8 +12,17 @@ const moduleB = {
       const id = users[users.length - 1].id + 1;
       state.usersData.push({ ...user, id, balance: 0, status: true });
     },
+    setUsers(state, arr) {
+      console.log(arr);
+      state.usersData = arr;
+    },
   },
-  actions: {},
+  actions: {
+    async fetchAllUsers({ commit }) {
+      const result = await axiosInstanse.get("/v1/users/");
+      commit("setUsers", result.data);
+    },
+  },
 };
 
 export default moduleB;
