@@ -1,5 +1,4 @@
-import axiosInstanse from "@/api";
-
+import userService from "@/api/users";
 const moduleB = {
   namespaced: true,
 
@@ -13,7 +12,7 @@ const moduleB = {
   },
   actions: {
     async fetchAllUsers({ commit }) {
-      const result = await axiosInstanse.get("/v1/users/");
+      const result = await userService.getAll();
       commit("setUsers", result.data);
     },
   },

@@ -8,18 +8,34 @@ class AuthService {
     const response = await this.axios.post("/v1/login/", data);
 
     const token = response.data.authorisation.token;
-    this.axios.defaults.headers.common["Authorization"] = "Beerer " + token;
     localStorage.setItem("accessToken", token);
-    return response;
+
+    return response.data;
   }
 
   async registration(data) {
     const response = await this.axios.post("/v1/register/", data);
 
     const token = response.data.authorisation.token;
-    this.axios.defaults.headers.common["Authorization"] = "Beerer " + token;
     localStorage.setItem("accessToken", token);
-    return response;
+
+    return response.data;
+  }
+
+  async logout() {
+    const response = await this.axios.post("/v1/logout/");
+    localStorage.removeItem("accessToken");
+
+    return response.data;
+  }
+
+  async refresh() {
+    const response = await this.axios.post("/v1/refresh/");
+    const token = response.data.authorisation.token;
+
+    localStorage.setItem("accessToken", token);
+
+    return response.data;
   }
 }
 

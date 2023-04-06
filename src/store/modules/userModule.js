@@ -1,26 +1,41 @@
-import router from "@/router";
+import userService from "@/api/users";
 
 const moduleB = {
   namespaced: true,
   state: () => ({
-    isAuth: false,
+    user: {},
   }),
   mutations: {
-    authorize(state) {
-      state.isAuth = true;
+    setUser(state, user) {
+      state.user = user;
     },
-    unauthorize(state) {
-      state.isAuth = false;
+    clearUser(state) {
+      state.user = {};
     },
   },
   actions: {
-    exit(context) {
-      context.commit("unauthorize");
-      router.push({
-        name: "auth",
-      });
+    async getCurrentUser({ commit }) {
+      const token = localStorage.getItem("accessToken");
+      const pyload = parseJwt(token);
+      const user = await userService.getOne(pyload.sub);
+      commit("setUser", user);
     },
   },
 };
+function parseJwt(token) {
+  var base64Url = token.split(".")[1];
+  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var jsonPayload = decodeURIComponent(
+    window
+      .atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+
+  return JSON.parse(jsonPayload);
+}
 
 export default moduleB;

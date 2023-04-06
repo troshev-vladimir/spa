@@ -1,12 +1,3 @@
-import AxiosInstance from "../index";
-class UserService {
-  constructor() {
-    this.axios = AxiosInstance;
-  }
+import userService from "./userService";
 
-  getAll() {
-    return this.axios("/v1/users");
-  }
-}
-
-export default new UserService();
+export default userService;

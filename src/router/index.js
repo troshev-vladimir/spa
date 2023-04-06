@@ -13,7 +13,7 @@ const routes = [
   {
     path: "/",
     name: "users",
-    component: () => import("../views/UsersView.vue"),
+    component: () => import("../views/UsersView.js/UsersView.vue"),
     meta: {
       layout: "DefaultLayout",
     },
