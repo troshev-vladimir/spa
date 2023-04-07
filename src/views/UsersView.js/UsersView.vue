@@ -1,8 +1,23 @@
 <template>
+  <q-form class="row q-mb-lg q-gutter-md">
+    <q-input dense v-model="userLogin" label="Login" class="col-3" />
+    <q-select
+      v-model="userRole"
+      :options="allRoles"
+      label="Выберите роль"
+      option-value="id"
+      option-label="name"
+      dense
+      class="col-3"
+    />
+    <q-btn dense size="sm" @click="sendFilters">Отправить запрос</q-btn>
+  </q-form>
   <q-table
+    :rows-per-page-options="[1, 3, 10, 15]"
     title="Cписок пользователей"
     :rows="store.state.users.usersData"
     :columns="columns"
+    v-model:pagination="pagination"
     row-key="name"
   >
     <template v-slot:body="row">
@@ -71,13 +86,19 @@
 <script setup>
 import { useStore } from "vuex";
 import useEditUser from "./composables/useEditUser";
+import useFilters from "./composables/useFilters";
 // import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
+import rolesService from "@/api/roles";
 import userService from "@/api/users";
 const store = useStore();
 const $q = useQuasar();
 
+const allRoles = ref("");
+const pagination = ref({
+  rowsPerPage: 10,
+});
 const {
   editHandler,
   editModalStatus,
@@ -86,12 +107,14 @@ const {
   roleModal,
   addRole,
   removeRole,
-  allRoles,
   submitForm,
-} = useEditUser();
+} = useEditUser(allRoles);
 
-onMounted(() => {
+const { userLogin, userRole, sendFilters } = useFilters(pagination);
+
+onMounted(async () => {
   store.dispatch("users/fetchAllUsers");
+  allRoles.value = await rolesService.getAll();
 });
 
 async function deleteHandler(id) {

@@ -21,26 +21,35 @@ const routes = [
   {
     path: "/crm",
     name: "crm",
-    component: () => import("../views/ReportsPage.vue"),
+    component: () => import("../views/CrmView/"),
     meta: {
-      layout: "EmptyLayout",
+      layout: "DefaultLayout",
     },
     children: [
       {
-        path: "debt",
-        name: "report-debt",
-        component: () => import("../components/ReportsTables/DebtTable.vue"),
-      },
-      {
-        path: "",
-        name: "report-summary",
-        component: () => import("../components/ReportsTables/SummaryTable.vue"),
-      },
-      {
-        path: "calendar",
-        name: "report-calendar",
-        component: () =>
-          import("../components/ReportsTables/CalendarTable.vue"),
+        path: "reports",
+        name: "reports",
+        component: () => import("../views/ReportsView/"),
+        children: [
+          {
+            path: "debt",
+            name: "report-debt",
+            component: () =>
+              import("../components/ReportsTables/DebtTable.vue"),
+          },
+          {
+            path: "",
+            name: "report-summary",
+            component: () =>
+              import("../components/ReportsTables/SummaryTable.vue"),
+          },
+          {
+            path: "calendar",
+            name: "report-calendar",
+            component: () =>
+              import("../components/ReportsTables/CalendarTable.vue"),
+          },
+        ],
       },
     ],
   },

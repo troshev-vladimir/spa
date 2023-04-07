@@ -17,6 +17,19 @@
           @click="enterHandler"
         />
       </div>
+      <div class="col-grow row">
+        <q-select
+          v-model="roleModal"
+          filled
+          :options="{}"
+          label="Выберите Отдел"
+          option-value="id"
+          option-label="name"
+          dense
+          class="offset-6 col-6"
+        />
+      </div>
+
       <div class="user column">
         <span>{{ store.state.user.user.login }}</span>
         <div class="row">

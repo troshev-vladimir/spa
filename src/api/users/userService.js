@@ -5,8 +5,10 @@ class UserService {
   }
 
   async getAll() {
-    const response = await this.axios("/v1/users");
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlSearchParams.entries());
 
+    const response = await this.axios("/v1/users", { params });
     return response.data;
   }
 

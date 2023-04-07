@@ -34,7 +34,6 @@ class AuthService {
     const token = response.data.authorisation.token;
 
     localStorage.setItem("accessToken", token);
-
     return response.data;
   }
 }

@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { useRouter } from "vue-router";
 const instance = axios.create({
   baseURL: "http://127.0.0.1:8000/api/",
   headers: {
@@ -16,8 +16,9 @@ instance.interceptors.request.use(
     return config;
   },
   function (error) {
-    // Сделайте что-нибудь с ошибкой запроса
-    return Promise.reject(error);
+    const router = useRouter();
+    console.log("error", error);
+    router.push("auth");
   }
 );
 

@@ -2,12 +2,11 @@ import { ref } from "vue";
 import rolesService from "@/api/roles";
 import usersService from "@/api/users";
 
-export default function () {
+export default function (allRoles) {
   let userId = null;
   const editModalStatus = ref(false);
   const editUserLogin = ref("");
   const editUserRoles = ref("");
-  const allRoles = ref("");
   const roleModal = ref("");
 
   async function editHandler(user) {
@@ -15,7 +14,6 @@ export default function () {
     const oldUser = await usersService.getOne(user.id);
     editUserLogin.value = oldUser.login;
     editUserRoles.value = oldUser.roles;
-    allRoles.value = await rolesService.getAll();
     userId = user.id;
   }
 

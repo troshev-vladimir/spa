@@ -13,7 +13,7 @@ const moduleB = {
   actions: {
     async fetchAllUsers({ commit }) {
       const result = await userService.getAll();
-      commit("setUsers", result.data);
+      commit("setUsers", result);
     },
   },
 };
