@@ -19,14 +19,16 @@
       </div>
       <div class="col-grow row">
         <q-select
-          v-model="roleModal"
+          v-model="selectedDepartment"
           filled
-          :options="{}"
-          label="Выберите Отдел"
+          :options="allDepartments"
+          label="Отдел"
           option-value="id"
           option-label="name"
           dense
-          class="offset-6 col-6"
+          class="offset-8 col-3"
+          bg-color="blue-2"
+          :loading="departmentLoading"
         />
       </div>
 
@@ -49,16 +51,22 @@
 </template>
 
 <script setup>
+import useDepartments from "./composables/useDepartments.js";
 import authService from "@/api/auth";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+// import { onMounted } from "vue";
 const router = useRouter();
 const store = useStore();
-
+const { selectedDepartment, allDepartments, departmentLoading } =
+  useDepartments();
 async function exitHandler() {
   await authService.logout();
   router.push("auth");
 }
+// onMounted(() => {
+//   store.dispatch("user/getCurrentUser");
+// });
 
 async function enterHandler() {
   router.push("auth");

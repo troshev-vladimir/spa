@@ -19,6 +19,7 @@
     :columns="columns"
     v-model:pagination="pagination"
     row-key="name"
+    :loading="usersLoading"
   >
     <template v-slot:body="row">
       <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
@@ -87,18 +88,18 @@
 import { useStore } from "vuex";
 import useEditUser from "./composables/useEditUser";
 import useFilters from "./composables/useFilters";
+import useFetchUsers from "./composables/useFetchUsers";
 // import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
-import { onMounted, ref } from "vue";
-import rolesService from "@/api/roles";
+import { ref } from "vue";
 import userService from "@/api/users";
 const store = useStore();
 const $q = useQuasar();
 
-const allRoles = ref("");
 const pagination = ref({
   rowsPerPage: 10,
 });
+const { allRoles, usersLoading } = useFetchUsers();
 const {
   editHandler,
   editModalStatus,
@@ -111,11 +112,6 @@ const {
 } = useEditUser(allRoles);
 
 const { userLogin, userRole, sendFilters } = useFilters(pagination);
-
-onMounted(async () => {
-  store.dispatch("users/fetchAllUsers");
-  allRoles.value = await rolesService.getAll();
-});
 
 async function deleteHandler(id) {
   try {

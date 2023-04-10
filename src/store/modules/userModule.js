@@ -17,12 +17,18 @@ const moduleB = {
     async getCurrentUser({ commit }) {
       const token = localStorage.getItem("accessToken");
       const pyload = parseJwt(token);
-      const user = await userService.getOne(pyload.sub);
-      commit("setUser", user);
+
+      try {
+        const user = await userService.getOne(pyload?.sub);
+        commit("setUser", user);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };
 function parseJwt(token) {
+  if (!token) return;
   var base64Url = token.split(".")[1];
   var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
   var jsonPayload = decodeURIComponent(

@@ -5,26 +5,38 @@ import usersService from "@/api/users";
 export default function (allRoles) {
   let userId = null;
   const editModalStatus = ref(false);
+  const editUserLoading = ref(false);
   const editUserLogin = ref("");
   const editUserRoles = ref("");
   const roleModal = ref("");
 
+  async function getUser() {
+    editUserLoading.value = true;
+
+    try {
+      const oldUser = await usersService.getOne(userId);
+      editUserLogin.value = oldUser.login;
+      editUserRoles.value = oldUser.roles;
+    } catch (error) {
+      console.log(error);
+    }
+    editUserLoading.value = false;
+  }
+
   async function editHandler(user) {
     editModalStatus.value = true;
-    const oldUser = await usersService.getOne(user.id);
-    editUserLogin.value = oldUser.login;
-    editUserRoles.value = oldUser.roles;
     userId = user.id;
+    getUser();
   }
 
   async function addRole() {
     await rolesService.attachRole(roleModal.value.id, userId);
-    editModalStatus.value = false;
+    await getUser();
   }
 
   async function removeRole() {
     await rolesService.detachRole(roleModal.value.id, userId);
-    editModalStatus.value = false;
+    await getUser();
   }
 
   async function submitForm() {
@@ -49,5 +61,6 @@ export default function (allRoles) {
     removeRole,
     allRoles,
     submitForm,
+    editUserLoading,
   };
 }

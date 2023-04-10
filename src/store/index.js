@@ -3,9 +3,15 @@ import userModule from "./modules/userModule.js";
 import usersModule from "./modules/usersModule.js";
 
 export default createStore({
-  state: {},
+  state: {
+    department: null,
+  },
   getters: {},
-  mutations: {},
+  mutations: {
+    setDepartment(state, value) {
+      state.department = value;
+    },
+  },
   actions: {},
   modules: {
     user: userModule,

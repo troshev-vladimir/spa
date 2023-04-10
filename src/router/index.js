@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-// import store from "../store/index.js";
+import store from "../store/index.js";
 
 const routes = [
   {
@@ -60,12 +60,13 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//   if (to.name !== "auth" && !store.state.user.isAuth) {
-//     next({
-//       path: "/auth",
-//     });
-//   } else next();
-// });
+router.beforeEach((to, from, next) => {
+  // console.log(store.state.user);
+  if (to.name !== "auth" && !store.state.user) {
+    next({
+      path: "/auth",
+    });
+  } else next();
+});
 
 export default router;

@@ -12,8 +12,12 @@ const moduleB = {
   },
   actions: {
     async fetchAllUsers({ commit }) {
-      const result = await userService.getAll();
-      commit("setUsers", result);
+      try {
+        const result = await userService.getAll();
+        commit("setUsers", result);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

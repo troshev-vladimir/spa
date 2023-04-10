@@ -32,9 +32,7 @@ class AuthService {
   async refresh() {
     const response = await this.axios.post("/v1/refresh/");
     const token = response.data.authorisation.token;
-
     localStorage.setItem("accessToken", token);
-    return response.data;
   }
 }
 
