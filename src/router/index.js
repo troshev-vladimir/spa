@@ -13,7 +13,7 @@ const routes = [
   {
     path: "/",
     name: "users",
-    component: () => import("../views/UsersView.js/UsersView.vue"),
+    component: () => import("../views/UsersView/UsersView.vue"),
     meta: {
       layout: "DefaultLayout",
     },
@@ -50,6 +50,11 @@ const routes = [
               import("../components/ReportsTables/CalendarTable.vue"),
           },
         ],
+      },
+      {
+        path: "",
+        name: "clients",
+        component: () => import("../views/ClientsView"),
       },
     ],
   },

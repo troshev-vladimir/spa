@@ -1,5 +1,5 @@
 import { onMounted, ref } from "vue";
-// import rolesService from "@/api/roles";
+import rolesService from "@/api/roles";
 import { useStore } from "vuex";
 
 export default function useFetchUsers() {
@@ -14,7 +14,7 @@ export default function useFetchUsers() {
     });
 
     try {
-      // allRoles.value = await rolesService.getAll();
+      allRoles.value = await rolesService.getAll();
     } catch (error) {
       console.log(error);
     }

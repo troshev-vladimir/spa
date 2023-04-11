@@ -5,8 +5,8 @@ class departmentsService {
   }
 
   async getAll() {
-    const response = await this.axios.get("/v1/departments/");
-    return response.data.data;
+    const { data } = await this.axios.get("/v1/departments/");
+    return data.data;
   }
 }
 

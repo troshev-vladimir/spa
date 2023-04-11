@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useRouter } from "vue-router";
-
 const instance = axios.create({
   baseURL: "http://127.0.0.1:8000/api/",
   headers: {
@@ -22,19 +21,24 @@ instance.interceptors.request.use(
     router.push("auth");
   }
 );
-
-let originalRequest = null;
+let refreshTokenRequest = null;
 
 instance.interceptors.response.use(
   (res) => {
     return res;
   },
   async (err) => {
+    let originalRequest = null;
+
     originalRequest = err.config;
     console.log(err);
 
-    const { data } = await instance.post("/v1/refresh/");
+    if (refreshTokenRequest === null) {
+      refreshTokenRequest = instance.post("/v1/refresh/");
+    }
+    const { data } = await refreshTokenRequest;
     localStorage.setItem("accessToken", data.authorisation.token);
+    refreshTokenRequest = null;
     return instance(originalRequest);
   }
 );

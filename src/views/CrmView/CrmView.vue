@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row wrap buttons">
-      <q-btn label="клиенты" @click="router.push({ name: 'users' })" />
+      <q-btn label="клиенты" @click="router.push({ name: 'clients' })" />
       <q-btn label="События" @click="router.push({ name: 'users' })" />
       <q-btn label="Продажи" @click="router.push({ name: 'users' })" />
       <q-btn label="Постпления" @click="router.push({ name: 'users' })" />

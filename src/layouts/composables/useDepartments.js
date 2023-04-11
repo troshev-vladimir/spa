@@ -1,5 +1,5 @@
 import { onMounted, ref, watch } from "vue";
-// import departmentsService from "@/api/departments";
+import departmentsService from "@/api/departments";
 import { useStore } from "vuex";
 export default function () {
   const selectedDepartment = ref(null);
@@ -14,7 +14,7 @@ export default function () {
   onMounted(async () => {
     departmentLoading.value = true;
     try {
-      // allDepartments.value = await departmentsService.getAll();
+      allDepartments.value = await departmentsService.getAll();
     } catch (error) {
       console.log(error);
     }

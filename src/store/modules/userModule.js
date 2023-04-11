@@ -4,6 +4,7 @@ const moduleB = {
   namespaced: true,
   state: () => ({
     user: {},
+    refreshRequest: false,
   }),
   mutations: {
     setUser(state, user) {
@@ -11,6 +12,9 @@ const moduleB = {
     },
     clearUser(state) {
       state.user = {};
+    },
+    setRefreshRequest(state, value) {
+      state.user = value;
     },
   },
   actions: {

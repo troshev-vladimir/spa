@@ -17,7 +17,7 @@
       @click="router.push({ name: 'report-calendar' })"
     />
   </div>
-  <div class="q-pa-md"><router-view /></div>
+  <router-view />
 </template>
 
 <script setup>

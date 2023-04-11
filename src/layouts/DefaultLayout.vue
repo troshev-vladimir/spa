@@ -22,7 +22,7 @@
           v-model="selectedDepartment"
           filled
           :options="allDepartments"
-          label="Отдел"
+          label="Департамент"
           option-value="id"
           option-label="name"
           dense
@@ -47,6 +47,33 @@
       <router-view></router-view>
     </q-page>
   </q-page-container>
+  <q-drawer
+    v-model="drawer"
+    show-if-above
+    :mini="miniState"
+    @mouseover="miniState = false"
+    @mouseout="miniState = true"
+    :width="200"
+    :breakpoint="500"
+    bordered
+    :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
+  >
+    <q-scroll-area class="fit" :horizontal-thumb-style="{ opacity: 0 }">
+      <q-list padding>
+        <q-item clickable v-ripple @click="router.push({ name: 'crm' })">
+          <q-item-section avatar> CRM </q-item-section>
+
+          <q-item-section> CRM система </q-item-section>
+        </q-item>
+
+        <q-item clickable v-ripple @click="router.push({ name: 'users' })">
+          <q-item-section avatar> Users</q-item-section>
+
+          <q-item-section> Пользователи </q-item-section>
+        </q-item>
+      </q-list>
+    </q-scroll-area>
+  </q-drawer>
   <q-footer class="q-pa-md"></q-footer>
 </template>
 
@@ -55,18 +82,20 @@ import useDepartments from "./composables/useDepartments.js";
 import authService from "@/api/auth";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-// import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 const router = useRouter();
 const store = useStore();
+const drawer = ref(false);
+const miniState = ref(true);
 const { selectedDepartment, allDepartments, departmentLoading } =
   useDepartments();
 async function exitHandler() {
   await authService.logout();
   router.push("auth");
 }
-// onMounted(() => {
-//   store.dispatch("user/getCurrentUser");
-// });
+onMounted(() => {
+  store.dispatch("user/getCurrentUser");
+});
 
 async function enterHandler() {
   router.push("auth");
