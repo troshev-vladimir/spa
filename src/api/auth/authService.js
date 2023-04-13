@@ -5,7 +5,9 @@ class AuthService {
   }
 
   async login(data) {
-    const response = await this.axios.post("/v1/login/", data);
+    const response = await this.axios.post("/v1/login/", data, {
+      skipAuth: true,
+    });
 
     const token = response.data.authorisation.token;
     localStorage.setItem("accessToken", token);
@@ -30,7 +32,13 @@ class AuthService {
   }
 
   async refresh() {
-    const response = await this.axios.post("/v1/refresh/");
+    const response = await this.axios.post(
+      "/v1/refresh/",
+      {},
+      {
+        skipAuth: true,
+      }
+    );
     const token = response.data.authorisation.token;
     localStorage.setItem("accessToken", token);
   }
