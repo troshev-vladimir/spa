@@ -21,7 +21,7 @@
         <q-select
           v-model="selectedDepartment"
           filled
-          :options="allDepartments"
+          :options="store.state.user.user.departments"
           label="Департамент"
           option-value="id"
           option-label="name"
@@ -87,8 +87,7 @@ const router = useRouter();
 const store = useStore();
 const drawer = ref(false);
 const miniState = ref(true);
-const { selectedDepartment, allDepartments, departmentLoading } =
-  useDepartments();
+const { selectedDepartment, departmentLoading } = useDepartments();
 async function exitHandler() {
   await authService.logout();
   router.push("auth");
