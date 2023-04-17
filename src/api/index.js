@@ -32,11 +32,12 @@ instance.interceptors.response.use(
     return res;
   },
   async (err) => {
+    if (err.response.status !== 401) return;
+
     let originalRequest = null;
 
     originalRequest = err.config;
     console.log(err);
-
     if (refreshTokenRequest === null) {
       refreshTokenRequest = instance.post("/v1/refresh/");
     }

@@ -20,7 +20,7 @@ class ClientService {
       `/v1/clients/department/${departmentID}`,
       { params }
     );
-    return response.data;
+    return response.data[0];
   }
 
   async getOne(id) {
@@ -36,6 +36,17 @@ class ClientService {
 
   async update(id, body) {
     const response = await this.axios.put("/v1/clients/" + id, body);
+
+    return response.data;
+  }
+
+  async create(body) {
+    let response;
+    try {
+      response = await this.axios.post("/v1/clients/", body);
+    } catch (error) {
+      return response.message;
+    }
 
     return response.data;
   }
