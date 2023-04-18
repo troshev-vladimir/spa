@@ -90,14 +90,14 @@ const miniState = ref(true);
 const { selectedDepartment, departmentLoading } = useDepartments();
 async function exitHandler() {
   await authService.logout();
-  router.push("auth");
+  router.push({ name: "auth" });
 }
 onMounted(() => {
   store.dispatch("user/getCurrentUser");
 });
 
 async function enterHandler() {
-  router.push("auth");
+  router.push({ name: "auth" });
 }
 </script>
 

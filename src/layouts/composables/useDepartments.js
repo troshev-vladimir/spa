@@ -3,7 +3,7 @@ import departmentsService from "@/api/departments";
 import { useStore } from "vuex";
 export default function () {
   const selectedDepartment = ref(null);
-  const allDepartments = ref(0);
+  const allDepartments = ref(null);
   const store = useStore();
   const departmentLoading = ref(false);
 

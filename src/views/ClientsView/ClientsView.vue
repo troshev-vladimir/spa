@@ -8,6 +8,8 @@
       </div>
     </div>
 
+    <ClietFilter></ClietFilter>
+
     <q-table
       :loading="loadingDepartment"
       :rows-per-page-options="[1, 3, 10, 15]"
@@ -40,37 +42,61 @@
 
           <q-btn flat round dense v-close-popup>&times;</q-btn>
         </q-toolbar>
-
+        <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
         <q-form autofocus style="min-width: 400px">
-          <q-input filled v-model="userData.name" label="Имя" class="q-mb-md" />
+          <q-input
+            filled
+            v-model="userData.name"
+            label="Имя"
+            class="q-mb-md"
+            dense
+          />
           <q-input
             filled
             v-model="userData.email"
             label="Email"
             class="q-mb-md"
+            dense
           />
           <q-input
             filled
             v-model="userData.phone"
             label="Телефон"
             class="q-mb-md"
+            dense
           />
           <q-input
             filled
             v-model="userData.phone_add"
             label="Дополнительный телефон"
             class="q-mb-md"
+            dense
           />
           <q-input
             filled
             v-model="userData.site"
             label="Сайт"
             class="q-mb-md"
+            dense
           />
           <q-input
             filled
             v-model="userData.vk"
             label="Вконтакте"
+            class="q-mb-md"
+            dense
+          />
+
+          <q-select
+            v-model="userData.division_id"
+            :options="store.state.department?.divisions"
+            label="Отдел"
+            map-options
+            emit-value
+            option-value="id"
+            option-label="name"
+            dense
+            filled
             class="q-mb-md"
           />
 
@@ -81,6 +107,7 @@
             color="primary"
             flat
             class="q-ml-sm"
+            dense
           />
         </q-form>
       </q-card>
@@ -91,13 +118,13 @@
 <script setup>
 import { ref } from "vue";
 import { useStore } from "vuex";
-import useFetchClients from "./composables/useFetchClients";
-import useEditClients from "./composables/useEditClients";
-import useAddClients from "./composables/useAddClients";
+import { useClients } from "./composables/useClients";
 import clientService from "@/api/clients";
+import ClietFilter from "@/components/Clients/ClientsFilter.vue";
 
+const loading = ref(false);
 const store = useStore();
-const modalConfig = ref({});
+const modalConfig = ref({ status: false, action: null, name: "" });
 const userData = ref({
   id: null,
   name: "",
@@ -107,19 +134,32 @@ const userData = ref({
   site: "",
   vk: "",
   birth_day: "",
-  division: "",
+  division_id: "",
 });
 
-const { loadingDepartment } = useFetchClients();
-const { editHandler } = useEditClients(modalConfig, userData);
-const { addHandler } = useAddClients(modalConfig, userData);
+const {
+  editHandler,
+  addHandler,
+  deleteHandler,
+  loadingDepartment,
+  loadDepartmentClient,
+} = useClients(modalConfig, userData);
 
 async function submitForm() {
-  if (modalConfig.value.action === "add") {
-    const responce = await clientService.create(userData.value);
-    console.log("responce", responce);
-  } else if (modalConfig.value.action === "edit") {
-    clientService.update(userData.value.id, userData.value);
+  loading.value = true;
+  try {
+    if (modalConfig.value.action === "add") {
+      userData.value.userId = store.state.user.user.id;
+      await clientService.create(userData.value);
+    } else if (modalConfig.value.action === "edit") {
+      await clientService.update(userData.value.id, userData.value);
+    }
+  } catch (error) {
+    console.log(error);
+  } finally {
+    modalConfig.value.status = false;
+    loading.value = false;
+    loadDepartmentClient();
   }
 }
 
