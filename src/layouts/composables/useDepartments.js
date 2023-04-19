@@ -1,6 +1,7 @@
 import { onMounted, ref, watch } from "vue";
 import departmentsService from "@/api/departments";
 import { useStore } from "vuex";
+
 export default function () {
   const selectedDepartment = ref(null);
   const allDepartments = ref(null);

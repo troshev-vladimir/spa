@@ -7,8 +7,12 @@
         </q-btn>
       </div>
     </div>
-
-    <ClietFilter></ClietFilter>
+    <div class="row items-start">
+      <div class="col"><ClientFilter></ClientFilter></div>
+      <div class="col">
+        <q-btn size="sm" @click="fetchAllClients">Отправить запрос</q-btn>
+      </div>
+    </div>
 
     <q-table
       :loading="loadingDepartment"
@@ -100,6 +104,8 @@
             class="q-mb-md"
           />
 
+          <VueDadata v-model="query" :token="token"></VueDadata>
+
           <q-btn label="Submit" color="primary" @click="submitForm" />
           <q-btn
             label="Reset"
@@ -120,7 +126,9 @@ import { ref } from "vue";
 import { useStore } from "vuex";
 import { useClients } from "./composables/useClients";
 import clientService from "@/api/clients";
-import ClietFilter from "@/components/Clients/ClientsFilter.vue";
+import ClientFilter from "@/components/Clients/ClientsFilter.vue";
+import { VueDadata } from "vue-dadata";
+import "vue-dadata/dist/style.css";
 
 const loading = ref(false);
 const store = useStore();
@@ -136,13 +144,14 @@ const userData = ref({
   birth_day: "",
   division_id: "",
 });
-
+const query = ref("");
+const token = "3015b65404c060dcc9aacd5732122a53d87d1294";
 const {
   editHandler,
   addHandler,
   deleteHandler,
   loadingDepartment,
-  loadDepartmentClient,
+  fetchAllClients,
 } = useClients(modalConfig, userData);
 
 async function submitForm() {
@@ -159,7 +168,7 @@ async function submitForm() {
   } finally {
     modalConfig.value.status = false;
     loading.value = false;
-    loadDepartmentClient();
+    fetchAllClients();
   }
 }
 
@@ -214,10 +223,3 @@ const pagination = ref({
   rowsPerPage: 10,
 });
 </script>
-
-<style scoped lang="scss">
-.buttons {
-  column-gap: 20px;
-  margin-bottom: 20px;
-}
-</style>
