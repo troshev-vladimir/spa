@@ -104,7 +104,10 @@
             class="q-mb-md"
           />
 
-          <VueDadata v-model="query" :token="token"></VueDadata>
+          <DadataSuggestions
+            class="q-mb-md"
+            @select="contactSelected"
+          ></DadataSuggestions>
 
           <q-btn label="Submit" color="primary" @click="submitForm" />
           <q-btn
@@ -122,13 +125,12 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import { useStore } from "vuex";
 import { useClients } from "./composables/useClients";
 import clientService from "@/api/clients";
 import ClientFilter from "@/components/Clients/ClientsFilter.vue";
-import { VueDadata } from "vue-dadata";
-import "vue-dadata/dist/style.css";
+import DadataSuggestions from "./DadataSuggestions.vue";
+import { ref } from "vue";
 
 const loading = ref(false);
 const store = useStore();
@@ -144,8 +146,7 @@ const userData = ref({
   birth_day: "",
   division_id: "",
 });
-const query = ref("");
-const token = "3015b65404c060dcc9aacd5732122a53d87d1294";
+
 const {
   editHandler,
   addHandler,
@@ -153,6 +154,10 @@ const {
   loadingDepartment,
   fetchAllClients,
 } = useClients(modalConfig, userData);
+
+function contactSelected(value) {
+  console.log(value);
+}
 
 async function submitForm() {
   loading.value = true;

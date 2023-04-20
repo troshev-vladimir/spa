@@ -21,8 +21,8 @@ instance.interceptors.request.use(
   },
   function (error) {
     const router = useRouter();
-    console.log("error", error);
     router.push("auth");
+    return Promise.reject(error);
   }
 );
 let refreshTokenRequest = null;
@@ -32,7 +32,7 @@ instance.interceptors.response.use(
     return res;
   },
   async (err) => {
-    if (err.response.status !== 401) return;
+    if (err.response.status !== 401) return Promise.reject(err);
 
     let originalRequest = null;
 

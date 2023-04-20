@@ -14,17 +14,6 @@ class ClientService {
     return data.data;
   }
 
-  // async getAllByDepartment(departmentID) {
-  //   const urlSearchParams = new URLSearchParams(window.location.search);
-  //   const params = Object.fromEntries(urlSearchParams.entries());
-
-  //   const response = await this.axios(
-  //     `/v1/clients/department/${departmentID}`,
-  //     { params }
-  //   );
-  //   return response.data[0];
-  // }
-
   async getOne(id) {
     const response = await this.axios("/v1/clients/" + id);
     return response.data;
