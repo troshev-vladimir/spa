@@ -10,7 +10,7 @@
     <div class="row items-start">
       <div class="col"><ClientFilter></ClientFilter></div>
       <div class="col">
-        <q-btn size="sm" @click="fetchAllClients">Отправить запрос</q-btn>
+        <q-btn size="md" @click="fetchAllClients">Найти</q-btn>
       </div>
     </div>
 
@@ -22,7 +22,10 @@
       :columns="columns"
       v-model:pagination="pagination"
       row-key="name"
+      binary-state-sort
+      @request="onRequest"
     >
+      <!--   -->
       <template v-slot:body="row">
         <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
           <template v-for="col in row.cols" :key="col.name">
@@ -59,20 +62,27 @@
             filled
             v-model="userData.email"
             label="Email"
-            class="q-mb-md"
+            :rules="[
+              (val) => !!val || 'Поле обязательно',
+              (val, rules) => rules.email(val) || 'Введите корректный Email',
+            ]"
             dense
           />
           <q-input
             filled
             v-model="userData.phone"
             label="Телефон"
-            class="q-mb-md"
+            unmasked-value
+            :rules="[(val) => !!val || 'Поле обязательно']"
+            mask="+7 (###) ### ##-##"
             dense
           />
           <q-input
             filled
             v-model="userData.phone_add"
+            unmasked-value
             label="Дополнительный телефон"
+            mask="+7 (###) ### ##-##"
             class="q-mb-md"
             dense
           />
@@ -131,9 +141,14 @@ import clientService from "@/api/clients";
 import ClientFilter from "@/components/Clients/ClientsFilter.vue";
 import DadataSuggestions from "./DadataSuggestions.vue";
 import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import _ from "lodash";
+import { renamePaginationParams } from "@/features/helpers";
 
 const loading = ref(false);
 const store = useStore();
+const router = useRouter();
+const route = useRoute();
 const modalConfig = ref({ status: false, action: null, name: "" });
 const userData = ref({
   id: null,
@@ -225,6 +240,33 @@ const columns = [
   },
 ];
 const pagination = ref({
-  rowsPerPage: 10,
+  sortBy: "desc",
+  descending: false,
+  page: 1,
 });
+
+async function onRequest(props) {
+  const { page, rowsPerPage, sortBy, descending } = props.pagination;
+  const filter = props.filter;
+
+  loading.value = true;
+
+  const query = Object.assign(
+    {},
+    route.query,
+    _.pickBy(newPagination, _.identity)
+  );
+
+  const returnedData = await store.dispatch("clients/fetchAllClients");
+  pagination.value.page = returnedData.meta.current_page;
+  pagination.value.rowsPerPage = returnedData.meta.per_page;
+  pagination.value.rowsNumber = returnedData.meta.total;
+
+  router.push({
+    path: router.currentRoute.value.fullPath,
+    query: renamePaginationParams(query),
+  });
+
+  console.log(returnedData);
+}
 </script>

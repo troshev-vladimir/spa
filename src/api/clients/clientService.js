@@ -11,7 +11,7 @@ class ClientService {
     const { data } = await this.axios("/v1/clients", {
       params,
     });
-    return data.data;
+    return data;
   }
 
   async getOne(id) {
