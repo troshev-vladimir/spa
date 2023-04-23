@@ -12,12 +12,13 @@
 
     <q-table
       :loading="loadingDepartment"
-      :rows-per-page-options="[1, 3, 10, 15]"
       title="Cписок Клиентов"
       :rows="store.state.clients.clientsData"
       :columns="columns"
       v-model:pagination="pagination"
+      :rows-per-page-options="[0, 2, 5]"
       row-key="name"
+      @request="handleRequest"
     >
       <template v-slot:body="row">
         <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
@@ -121,9 +122,12 @@ import { useStore } from "vuex";
 import { useClients } from "./composables/useClients";
 import clientService from "@/api/clients";
 import ClietFilter from "@/components/Clients/ClientsFilter.vue";
+import { useRoute, useRouter } from "vue-router";
 
 const loading = ref(false);
 const store = useStore();
+const route = useRoute();
+const router = useRouter();
 const modalConfig = ref({ status: false, action: null, name: "" });
 const userData = ref({
   id: null,
@@ -211,8 +215,30 @@ const columns = [
   },
 ];
 const pagination = ref({
-  rowsPerPage: 10,
+  rowsPerPage: 0,
+  rowsNumber: 0,
+  page: 1,
 });
+
+function handleRequest(props) {
+  console.log(props);
+  const query = {
+    page: props.pagination.page,
+    per_page: props.pagination.per_page,
+  };
+  router.push({
+    path: route.path,
+    query,
+  });
+
+  loadDepartmentClient();
+
+  const clients = store.state.clients.meta;
+
+  pagination.value.page = clients.meta.current_page;
+  pagination.value.rowsPerPage = clients.meta.per_page;
+  pagination.value.rowsNumber = clients.meta.total;
+}
 </script>
 
 <style scoped lang="scss">
