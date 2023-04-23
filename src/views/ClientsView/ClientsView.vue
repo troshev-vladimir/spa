@@ -22,8 +22,8 @@
       v-model:pagination="pagination"
       :rows-per-page-options="[0, 2, 5]"
       row-key="name"
-      binary-state-sort
       @request="onRequest"
+      ref="tableRef"
     >
       <!--   -->
       <template v-slot:body="row">
@@ -142,9 +142,9 @@ import ClientFilter from "@/components/Clients/ClientsFilter.vue";
 import DadataSuggestions from "./DadataSuggestions.vue";
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import _ from "lodash";
-import { renamePaginationParams } from "@/features/helpers";
+// import _ from "lodash";
 
+const tableRef = ref(null);
 const loading = ref(false);
 const store = useStore();
 const router = useRouter();
@@ -168,7 +168,7 @@ const {
   deleteHandler,
   loadingDepartment,
   fetchAllClients,
-} = useClients(modalConfig, userData);
+} = useClients(modalConfig, userData, tableRef);
 
 function contactSelected(value) {
   console.log(value);
@@ -243,30 +243,34 @@ const pagination = ref({
   sortBy: "desc",
   descending: false,
   page: 1,
+  rowsPerPage: 3,
+  rowsNumber: 0,
 });
 
 async function onRequest(props) {
-  const { page, rowsPerPage, sortBy, descending } = props.pagination;
-  const filter = props.filter;
+  const { page, rowsPerPage } = props.pagination;
+  //sortBy, descending
+  // const filter = props.filter;
 
-  loading.value = true;
-
-  const query = Object.assign(
-    {},
-    route.query,
-    _.pickBy(newPagination, _.identity)
-  );
-
-  const returnedData = await store.dispatch("clients/fetchAllClients");
-  pagination.value.page = returnedData.meta.current_page;
-  pagination.value.rowsPerPage = returnedData.meta.per_page;
-  pagination.value.rowsNumber = returnedData.meta.total;
+  const query = Object.assign({}, route.query, {
+    page,
+    per_page: rowsPerPage,
+  });
 
   router.push({
     path: router.currentRoute.value.fullPath,
-    query: renamePaginationParams(query),
+    query,
   });
 
-  console.log(returnedData);
+  loading.value = true;
+
+  console.log(rowsPerPage, route.query);
+
+  const returnedData = await store.dispatch("clients/fetchAllClients");
+  pagination.value.rowsPerPage = returnedData.meta.per_page;
+  pagination.value.page = returnedData.meta.current_page;
+  pagination.value.rowsNumber = returnedData.meta.total;
+
+  loading.value = false;
 }
 </script>

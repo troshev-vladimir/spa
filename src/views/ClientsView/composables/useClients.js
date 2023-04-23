@@ -2,15 +2,13 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import clientService from "@/api/clients";
 
-export function useClients(modalConfig, userData) {
+export function useClients(modalConfig, userData, tableRef) {
   const store = useStore();
   const department = computed(() => store.state.department);
   const loadingDepartment = ref(false);
 
   watch(department, async () => {
-    loadingDepartment.value = true;
-    await store.dispatch("clients/fetchAllClients");
-    loadingDepartment.value = false;
+    tableRef.value.requestServerInteraction();
   });
 
   onMounted(async () => {

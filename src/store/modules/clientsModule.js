@@ -4,7 +4,6 @@ const moduleB = {
 
   state: () => ({
     clientsData: [],
-    clientsPagination: null,
   }),
   mutations: {
     setClients(state, arr) {
@@ -19,8 +18,6 @@ const moduleB = {
       try {
         const result = await clientsService.getAll(rootState.department.id);
         commit("setClients", result.data);
-        commit("setClientsPagination", result.meta);
-
         return result;
       } catch (error) {
         console.log(error);
