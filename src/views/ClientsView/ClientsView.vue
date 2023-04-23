@@ -7,8 +7,12 @@
         </q-btn>
       </div>
     </div>
-
-    <ClietFilter></ClietFilter>
+    <div class="row items-start">
+      <div class="col"><ClientFilter></ClientFilter></div>
+      <div class="col">
+        <q-btn size="md" @click="fetchAllClients">Найти</q-btn>
+      </div>
+    </div>
 
     <q-table
       :loading="loadingDepartment"
@@ -18,8 +22,10 @@
       v-model:pagination="pagination"
       :rows-per-page-options="[0, 2, 5]"
       row-key="name"
-      @request="handleRequest"
+      binary-state-sort
+      @request="onRequest"
     >
+      <!--   -->
       <template v-slot:body="row">
         <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
           <template v-for="col in row.cols" :key="col.name">
@@ -56,20 +62,27 @@
             filled
             v-model="userData.email"
             label="Email"
-            class="q-mb-md"
+            :rules="[
+              (val) => !!val || 'Поле обязательно',
+              (val, rules) => rules.email(val) || 'Введите корректный Email',
+            ]"
             dense
           />
           <q-input
             filled
             v-model="userData.phone"
             label="Телефон"
-            class="q-mb-md"
+            unmasked-value
+            :rules="[(val) => !!val || 'Поле обязательно']"
+            mask="+7 (###) ### ##-##"
             dense
           />
           <q-input
             filled
             v-model="userData.phone_add"
+            unmasked-value
             label="Дополнительный телефон"
+            mask="+7 (###) ### ##-##"
             class="q-mb-md"
             dense
           />
@@ -101,6 +114,11 @@
             class="q-mb-md"
           />
 
+          <DadataSuggestions
+            class="q-mb-md"
+            @select="contactSelected"
+          ></DadataSuggestions>
+
           <q-btn label="Submit" color="primary" @click="submitForm" />
           <q-btn
             label="Reset"
@@ -117,17 +135,20 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import { useStore } from "vuex";
 import { useClients } from "./composables/useClients";
 import clientService from "@/api/clients";
-import ClietFilter from "@/components/Clients/ClientsFilter.vue";
-import { useRoute, useRouter } from "vue-router";
+import ClientFilter from "@/components/Clients/ClientsFilter.vue";
+import DadataSuggestions from "./DadataSuggestions.vue";
+import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import _ from "lodash";
+import { renamePaginationParams } from "@/features/helpers";
 
 const loading = ref(false);
 const store = useStore();
-const route = useRoute();
 const router = useRouter();
+const route = useRoute();
 const modalConfig = ref({ status: false, action: null, name: "" });
 const userData = ref({
   id: null,
@@ -146,8 +167,12 @@ const {
   addHandler,
   deleteHandler,
   loadingDepartment,
-  loadDepartmentClient,
+  fetchAllClients,
 } = useClients(modalConfig, userData);
+
+function contactSelected(value) {
+  console.log(value);
+}
 
 async function submitForm() {
   loading.value = true;
@@ -163,7 +188,7 @@ async function submitForm() {
   } finally {
     modalConfig.value.status = false;
     loading.value = false;
-    loadDepartmentClient();
+    fetchAllClients();
   }
 }
 
@@ -215,35 +240,33 @@ const columns = [
   },
 ];
 const pagination = ref({
-  rowsPerPage: 0,
-  rowsNumber: 0,
+  sortBy: "desc",
+  descending: false,
   page: 1,
 });
 
-function handleRequest(props) {
-  console.log(props);
-  const query = {
-    page: props.pagination.page,
-    per_page: props.pagination.per_page,
-  };
+async function onRequest(props) {
+  const { page, rowsPerPage, sortBy, descending } = props.pagination;
+  const filter = props.filter;
+
+  loading.value = true;
+
+  const query = Object.assign(
+    {},
+    route.query,
+    _.pickBy(newPagination, _.identity)
+  );
+
+  const returnedData = await store.dispatch("clients/fetchAllClients");
+  pagination.value.page = returnedData.meta.current_page;
+  pagination.value.rowsPerPage = returnedData.meta.per_page;
+  pagination.value.rowsNumber = returnedData.meta.total;
+
   router.push({
-    path: route.path,
-    query,
+    path: router.currentRoute.value.fullPath,
+    query: renamePaginationParams(query),
   });
 
-  loadDepartmentClient();
-
-  const clients = store.state.clients.meta;
-
-  pagination.value.page = clients.meta.current_page;
-  pagination.value.rowsPerPage = clients.meta.per_page;
-  pagination.value.rowsNumber = clients.meta.total;
+  console.log(returnedData);
 }
 </script>
-
-<style scoped lang="scss">
-.buttons {
-  column-gap: 20px;
-  margin-bottom: 20px;
-}
-</style>

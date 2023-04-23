@@ -5,21 +5,21 @@ class AuthService {
   }
 
   async login(data) {
-    const response = await this.axios.post("/v1/login/", data, {
-      skipAuth: true,
-    });
-
-    const token = response.data.authorisation.token;
-    localStorage.setItem("accessToken", token);
-
-    return response.data;
+    try {
+      const res = await this.axios.post("/v1/login/", data, {
+        skipAuth: true,
+      });
+      storeTokenInLS(res);
+      return res.data;
+    } catch (error) {
+      throw error.response.data;
+    }
   }
 
   async registration(data) {
     const response = await this.axios.post("/v1/register/", data);
 
-    const token = response.data.authorisation.token;
-    localStorage.setItem("accessToken", token);
+    storeTokenInLS(response);
 
     return response.data;
   }
@@ -39,9 +39,14 @@ class AuthService {
         skipAuth: true,
       }
     );
-    const token = response.data.authorisation.token;
-    localStorage.setItem("accessToken", token);
+
+    storeTokenInLS(response);
   }
+}
+
+function storeTokenInLS(response) {
+  const token = response.data.authorisation.token;
+  localStorage.setItem("accessToken", token);
 }
 
 export default new AuthService();

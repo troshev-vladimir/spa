@@ -4,27 +4,24 @@ const moduleB = {
 
   state: () => ({
     clientsData: [],
+    clientsPagination: null,
   }),
   mutations: {
     setClients(state, arr) {
       state.clientsData = arr;
     },
+    setClientsPagination(state, arr) {
+      state.clientsPagination = arr;
+    },
   },
   actions: {
-    async fetchAllClients({ commit }) {
+    async fetchAllClients({ commit, rootState }) {
       try {
-        const result = await clientsService.getAll();
-        commit("setClients", result);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async fetchAllClientsByDepartment({ commit, rootState }) {
-      try {
-        const result = await clientsService.getAllByDepartment(
-          rootState.department.id
-        );
-        commit("setClients", result);
+        const result = await clientsService.getAll(rootState.department.id);
+        commit("setClients", result.data);
+        commit("setClientsPagination", result.meta);
+
+        return result;
       } catch (error) {
         console.log(error);
       }

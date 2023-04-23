@@ -9,19 +9,19 @@ export function useClients(modalConfig, userData) {
 
   watch(department, async () => {
     loadingDepartment.value = true;
-    await store.dispatch("clients/fetchAllClientsByDepartment");
+    await store.dispatch("clients/fetchAllClients");
     loadingDepartment.value = false;
   });
 
   onMounted(async () => {
     if (store.state.department) {
-      loadDepartmentClient();
+      fetchAllClients();
     }
   });
 
-  async function loadDepartmentClient() {
+  async function fetchAllClients() {
     loadingDepartment.value = true;
-    await store.dispatch("clients/fetchAllClientsByDepartment");
+    await store.dispatch("clients/fetchAllClients");
     loadingDepartment.value = false;
   }
 
@@ -38,12 +38,13 @@ export function useClients(modalConfig, userData) {
     modalConfig.value.action = "edit";
     modalConfig.value.name = "Pедактировать пользователя";
     const norefUser = Object.assign({}, user);
+    norefUser.division_id = user.division.id;
     userData.value = norefUser;
   }
 
   function deleteHandler(userId) {
     clientService.delete(userId);
-    loadDepartmentClient();
+    fetchAllClients();
   }
 
   return {
@@ -52,6 +53,6 @@ export function useClients(modalConfig, userData) {
     deleteHandler,
     department,
     loadingDepartment,
-    loadDepartmentClient,
+    fetchAllClients,
   };
 }

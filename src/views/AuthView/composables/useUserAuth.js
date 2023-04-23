@@ -22,10 +22,9 @@ export default function () {
       });
       store.commit("user/setUser", user);
     } catch (error) {
-      console.log(error);
       $q.notify({
-        type: "positive",
-        message: "Что-то не так ",
+        type: "negative",
+        message: error.message,
       });
       return;
     }

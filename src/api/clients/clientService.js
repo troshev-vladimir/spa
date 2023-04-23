@@ -4,23 +4,14 @@ class ClientService {
     this.axios = AxiosInstance;
   }
 
-  async getAll() {
+  async getAll(departmentId = 1) {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
-
-    const response = await this.axios("/v1/clients", { params });
-    return response.data;
-  }
-
-  async getAllByDepartment(departmentID) {
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    const params = Object.fromEntries(urlSearchParams.entries());
-
-    const response = await this.axios(
-      `/v1/clients/department/${departmentID}`,
-      { params }
-    );
-    return response.data[0];
+    params["department_id"] = departmentId;
+    const { data } = await this.axios("/v1/clients", {
+      params,
+    });
+    return data;
   }
 
   async getOne(id) {
