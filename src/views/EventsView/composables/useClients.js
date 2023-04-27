@@ -1,5 +1,6 @@
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { useStore } from "vuex";
+import clientService from "@/api/clients";
 
 export function useClients() {
   const store = useStore();
@@ -7,12 +8,17 @@ export function useClients() {
   const query = ref(null);
   const selected = ref(null);
 
-  function onFilter(val, update) {
+  async function onFilter(val, update) {
     query.value = val;
+    const result = await clientService.getAll(store.state.department.id, {
+      page: 1,
+      perPage: 20,
+      name: val,
+    });
+
+    clients.value = result.data;
     update();
   }
-
-  watch(query, () => {});
 
   return {
     onFilter,

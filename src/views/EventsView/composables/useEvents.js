@@ -2,8 +2,10 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import eventService from "@/api/events";
 import moment from "moment";
+import { useRoute } from "vue-router";
 
 export function useEvents(modalConfig, eventData, tableRef) {
+  const route = useRoute();
   const store = useStore();
   const department = computed(() => store.state.department);
   const loadingDepartment = ref(false);
@@ -15,13 +17,13 @@ export function useEvents(modalConfig, eventData, tableRef) {
   onMounted(async () => {
     if (store.state.department) {
       fetchAllEvents();
-      await store.dispatch("events/fetchTypes");
+      store.dispatch("events/fetchTypes");
     }
   });
 
   async function fetchAllEvents() {
     loadingDepartment.value = true;
-    await store.dispatch("events/fetchAllEvents");
+    await store.dispatch("events/fetchAllEvents", route.query);
     loadingDepartment.value = false;
   }
 

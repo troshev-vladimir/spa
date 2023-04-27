@@ -141,14 +141,12 @@ import clientService from "@/api/clients";
 import ClientFilter from "@/components/Clients/ClientsFilter.vue";
 import DadataSuggestions from "./DadataSuggestions.vue";
 import { ref } from "vue";
-import { useRouter, useRoute } from "vue-router";
 // import _ from "lodash";
+import usePagination from "../EventsView/composables/usePagination";
 
 const tableRef = ref(null);
 const loading = ref(false);
 const store = useStore();
-const router = useRouter();
-const route = useRoute();
 const modalConfig = ref({ status: false, action: null, name: "" });
 const userData = ref({
   id: null,
@@ -169,6 +167,9 @@ const {
   loadingDepartment,
   fetchAllClients,
 } = useClients(modalConfig, userData, tableRef);
+const { onRequest, pagination } = usePagination(
+  store.dispatch.bind(this, "clients/fetchAllClients")
+);
 
 function contactSelected(value) {
   console.log(value);
@@ -240,38 +241,4 @@ const columns = [
     sortable: true,
   },
 ];
-const pagination = ref({
-  sortBy: "desc",
-  descending: false,
-  page: 1,
-  rowsPerPage: 3,
-  rowsNumber: 0,
-});
-
-async function onRequest(props) {
-  const { page, rowsPerPage } = props.pagination;
-  //sortBy, descending
-  // const filter = props.filter;
-
-  const query = Object.assign({}, route.query, {
-    page,
-    per_page: rowsPerPage,
-  });
-
-  router.push({
-    path: router.currentRoute.value.fullPath,
-    query,
-  });
-
-  loading.value = true;
-
-  console.log(rowsPerPage, route.query);
-
-  const returnedData = await store.dispatch("clients/fetchAllClients");
-  pagination.value.rowsPerPage = returnedData.meta.per_page;
-  pagination.value.page = returnedData.meta.current_page;
-  pagination.value.rowsNumber = returnedData.meta.total;
-
-  loading.value = false;
-}
 </script>

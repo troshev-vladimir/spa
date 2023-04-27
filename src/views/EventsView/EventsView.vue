@@ -19,11 +19,11 @@
       title="Cписок Событий"
       :rows="store.state.events.eventsData"
       :columns="columns"
-      v-model:pagination="pagination"
       :rows-per-page-options="[0, 2, 5]"
       row-key="name"
-      @request="onRequest"
       ref="tableRef"
+      v-model:pagination="pagination"
+      @request="onRequest"
     >
       <template v-slot:body="row">
         <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
@@ -134,17 +134,16 @@
 import { useStore } from "vuex";
 import { useEvents } from "./composables/useEvents";
 import { useClients } from "./composables/useClients";
+import usePagination from "./composables/usePagination";
 import eventService from "@/api/events";
 import ClientFilter from "@/components/Clients/ClientsFilter.vue";
 import { ref } from "vue";
-import { useRouter, useRoute } from "vue-router";
 // import _ from "lodash";
 
 const tableRef = ref(null);
 const loading = ref(false);
 const store = useStore();
-const router = useRouter();
-const route = useRoute();
+
 const modalConfig = ref({ status: false, action: null, name: "" });
 const eventData = ref({
   id: null,
@@ -155,6 +154,8 @@ const eventData = ref({
   fulfilled_date: null,
 });
 
+const { clients, onFilter } = useClients();
+
 const {
   editHandler,
   addHandler,
@@ -164,8 +165,9 @@ const {
   accomplishHandler,
 } = useEvents(modalConfig, eventData, tableRef);
 
-const { clients } = useClients();
-
+const { onRequest, pagination } = usePagination(
+  store.dispatch.bind(this, "events/fetchAllEvents")
+);
 async function submitForm() {
   loading.value = true;
   try {
@@ -247,38 +249,4 @@ const columns = [
     format: (val) => `${val}`,
   },
 ];
-const pagination = ref({
-  sortBy: "desc",
-  descending: false,
-  page: 1,
-  rowsPerPage: 3,
-  rowsNumber: 0,
-});
-
-async function onRequest(props) {
-  const { page, rowsPerPage } = props.pagination;
-  //sortBy, descending
-  // const filter = props.filter;
-
-  const query = Object.assign({}, route.query, {
-    page,
-    per_page: rowsPerPage,
-  });
-
-  router.push({
-    path: router.currentRoute.value.fullPath,
-    query,
-  });
-
-  loading.value = true;
-
-  console.log(rowsPerPage, route.query);
-
-  const returnedData = await store.dispatch("events/fetchAllEvents");
-  pagination.value.rowsPerPage = returnedData.meta.per_page;
-  pagination.value.page = returnedData.meta.current_page;
-  pagination.value.rowsNumber = returnedData.meta.total;
-
-  loading.value = false;
-}
 </script>

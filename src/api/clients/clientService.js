@@ -4,13 +4,21 @@ class ClientService {
     this.axios = AxiosInstance;
   }
 
-  async getAll(departmentId = 1) {
+  async getAll(departmentId = 1, query) {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
     params["department_id"] = departmentId;
+
+    if (query) {
+      params["page"] = query.page;
+      params["per_page"] = query.perPage;
+      params["name"] = query.name;
+    }
+
     const { data } = await this.axios("/v1/clients", {
       params,
     });
+
     return data;
   }
 

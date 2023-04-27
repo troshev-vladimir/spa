@@ -58,6 +58,24 @@
             class="q-mb-md"
           />
           <q-select
+            v-model="saleData.client_id"
+            :options="clients"
+            @filter="onFilter"
+            label="Клиент"
+            aria-placeholder="sdf"
+            map-options
+            emit-value
+            option-value="id"
+            option-label="name"
+            dense
+            filled
+            use-input
+            input-debounce="1000"
+            class="q-mb-xs"
+            clearable
+            options-dense
+          />
+          <q-select
             v-model="saleData.type"
             :options="store.state.sales.salesTypes"
             label="Тип"
@@ -180,6 +198,9 @@ import ClientFilter from "@/components/Clients/ClientsFilter.vue";
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import ItemsRedactor from "@/components/ItemsRedactor";
+import { useClients } from "../EventsView/composables/useClients";
+
+const { clients, onFilter } = useClients();
 // import _ from "lodash";
 // import axios from "@/api";
 const tableRef = ref(null);

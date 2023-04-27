@@ -1,4 +1,5 @@
 import eventsService from "@/api/events";
+
 const events = {
   namespaced: true,
 
@@ -16,9 +17,9 @@ const events = {
     },
   },
   actions: {
-    async fetchAllEvents({ commit }) {
+    async fetchAllEvents({ commit }, payload) {
       try {
-        const result = await eventsService.getAll();
+        const result = await eventsService.getAll(payload);
         commit("setEvents", result.data);
         return result;
       } catch (error) {
