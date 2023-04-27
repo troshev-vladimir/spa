@@ -2,7 +2,7 @@ import { onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import salesService from "@/api/sales";
 
-export function useSales(modalConfig, saleData) {
+export function useSales(modalConfig, saleData, saleItems) {
   const store = useStore();
   const loadingDepartment = ref(false);
 
@@ -26,6 +26,7 @@ export function useSales(modalConfig, saleData) {
     modalConfig.value.name = "Создать продажу";
 
     saleData.value = {};
+    saleItems.value = [];
   }
 
   function editHandler(sale) {
@@ -35,6 +36,7 @@ export function useSales(modalConfig, saleData) {
     const norefSale = Object.assign({}, sale);
     // norefSale.division_id = sale.division.id;
     saleData.value = norefSale;
+    saleItems.value = JSON.parse(saleData.value.saleItems);
   }
 
   function deleteHandler(userId) {

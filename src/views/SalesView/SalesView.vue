@@ -60,7 +60,7 @@
           <q-select
             v-model="saleData.type"
             :options="store.state.sales.salesTypes"
-            label="Отдел"
+            label="Тип"
             map-options
             emit-value
             option-value="id"
@@ -70,7 +70,7 @@
             class="q-mb-md"
           />
           <q-select
-            v-model="saleData.smi_id"
+            v-model="saleData.smi"
             :options="store.state.sales.salesSmi"
             label="СМИ"
             map-options
@@ -181,7 +181,7 @@ import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import ItemsRedactor from "@/components/ItemsRedactor";
 // import _ from "lodash";
-
+// import axios from "@/api";
 const tableRef = ref(null);
 const loading = ref(false);
 const store = useStore();
@@ -198,15 +198,16 @@ const saleData = ref({
   saleItems: "",
   client: "",
   type: null,
-  smi_id: "",
+  smi: "",
 });
-const saleItems = ref([{ title: "", summ: 0 }]);
+const saleItems = ref([{ title: "", summ: 0, amount: 1 }]);
 
 const AdCompany = ref({});
 
 const { editHandler, addHandler, deleteHandler, fetchAllSales } = useSales(
   modalConfig,
-  saleData
+  saleData,
+  saleItems
 );
 
 async function submitForm() {
@@ -214,14 +215,26 @@ async function submitForm() {
   try {
     if (modalConfig.value.action === "add") {
       saleData.value.userId = store.state.user.user.id;
+      // saleData.value.clientId = saleData.value.client.id;
+      saleData.value.type = saleData.value.type.id;
+      // saleData.value.smi = saleData.value.smi.id;
+      saleData.value.user = saleData.value.user.id;
+      saleData.value.client = saleData.value.client.id;
       saleData.value.start = AdCompany.value.from;
       saleData.value.end = AdCompany.value.to;
       saleData.value.id_1c = 1;
+      saleData.value.saleItems = saleItems.value;
       await salesService.create(saleData.value);
     } else if (modalConfig.value.action === "edit") {
+      // saleData.value.clientId = saleData.value.client.id;
+      saleData.value.type = saleData.value.type.id;
+      // saleData.value.smi = saleData.value.smi.id;
+      saleData.value.user = saleData.value.user.id;
+      saleData.value.client = saleData.value.client.id;
       saleData.value.start = AdCompany.value.from;
       saleData.value.end = AdCompany.value.to;
       saleData.value.id_1c = 1;
+      saleData.value.saleItems = saleItems.value;
       await salesService.update(saleData.value.id, saleData.value);
     }
   } catch (error) {

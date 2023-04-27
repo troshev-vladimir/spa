@@ -4,6 +4,7 @@ import usersModule from "./modules/usersModule.js";
 import clientsModule from "./modules/clientsModule.js";
 import eventsModule from "./modules/eventsModule.js";
 import salesModule from "./modules/salesModule.js";
+import incomesModule from "./modules/incomesModule.js";
 
 export default createStore({
   state: {
@@ -22,5 +23,6 @@ export default createStore({
     clients: clientsModule,
     events: eventsModule,
     sales: salesModule,
+    incomes: incomesModule,
   },
 });

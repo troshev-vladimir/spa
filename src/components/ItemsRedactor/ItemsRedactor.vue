@@ -1,15 +1,32 @@
 <template>
-  <ul>
-    <li v-for="(item, id) in items" :key="id" class="q-mb-md">
+  <ul class="items-redactor">
+    <li
+      v-for="(item, id) in items"
+      :key="id"
+      class="q-mb-md row q-col-gutter-xs"
+    >
       <q-input
         filled
         v-model="item.title"
         dense
-        class="q-mb-md"
+        class="q-mb-md col-12"
         label="Услуга"
       />
-      <q-input filled v-model="item.summ" dense class="q-mb-md" label="Цена" />
-      <q-btn @click="deleteItem(id)">Удалить</q-btn>
+      <q-input
+        filled
+        v-model="item.summ"
+        dense
+        class="q-mb-md col-6"
+        label="Цена"
+      />
+      <q-input
+        filled
+        v-model="item.summ"
+        dense
+        class="q-mb-md col-6"
+        label="Цена"
+      />
+      <q-btn class="offset-9 col-3" @click="deleteItem(id)">Удалить</q-btn>
     </li>
   </ul>
   <q-btn @click="addItem">Добавить</q-btn>
@@ -39,3 +56,9 @@ const deleteItem = (id) => {
   emit("update:items", items);
 };
 </script>
+
+<style lang="scss">
+.items-redactor {
+  padding: 0;
+}
+</style>
