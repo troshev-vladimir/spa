@@ -27,6 +27,21 @@ const routes = [
     },
     children: [
       {
+        path: "",
+        name: "clients",
+        component: () => import("../views/ClientsView"),
+      },
+      {
+        path: "events",
+        name: "events",
+        component: () => import("../views/EventsView"),
+      },
+      {
+        path: "sales",
+        name: "sales",
+        component: () => import("../views/SalesView"),
+      },
+      {
         path: "reports",
         name: "reports",
         component: () => import("../views/ReportsView/"),
@@ -50,11 +65,6 @@ const routes = [
               import("../components/ReportsTables/CalendarTable.vue"),
           },
         ],
-      },
-      {
-        path: "",
-        name: "clients",
-        component: () => import("../views/ClientsView"),
       },
     ],
   },

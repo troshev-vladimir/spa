@@ -2,6 +2,8 @@ import { createStore } from "vuex";
 import userModule from "./modules/userModule.js";
 import usersModule from "./modules/usersModule.js";
 import clientsModule from "./modules/clientsModule.js";
+import eventsModule from "./modules/eventsModule.js";
+import salesModule from "./modules/salesModule.js";
 
 export default createStore({
   state: {
@@ -18,5 +20,7 @@ export default createStore({
     user: userModule,
     users: usersModule,
     clients: clientsModule,
+    events: eventsModule,
+    sales: salesModule,
   },
 });

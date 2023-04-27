@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-12">
         <q-btn class="q-mb-md" @click.stop="addHandler()">
-          Добавить клиента
+          Добавить Событие
         </q-btn>
       </div>
     </div>
@@ -16,8 +16,8 @@
 
     <q-table
       :loading="loadingDepartment"
-      title="Cписок Клиентов"
-      :rows="store.state.clients.clientsData"
+      title="Cписок Событий"
+      :rows="store.state.events.eventsData"
       :columns="columns"
       v-model:pagination="pagination"
       :rows-per-page-options="[0, 2, 5]"
@@ -25,15 +25,17 @@
       @request="onRequest"
       ref="tableRef"
     >
-      <!--   -->
       <template v-slot:body="row">
         <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
           <template v-for="col in row.cols" :key="col.name">
             <td v-if="col.name === 'actions'">
+              <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
+              <q-btn @click.stop="">В архив</q-btn>
+              <q-btn @click.stop="accomplishHandler(row.row)">Завершить</q-btn>
+
               <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)">
                 Удалить
               </q-btn>
-              <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
             </td>
             <td v-else-if="col.name === 'roles'">{{ col.value }}</td>
             <td v-else>{{ col.value }}</td>
@@ -53,71 +55,65 @@
         <q-form autofocus style="min-width: 400px">
           <q-input
             filled
-            v-model="userData.name"
-            label="Имя"
-            class="q-mb-md"
-            dense
-          />
-          <q-input
-            filled
-            v-model="userData.email"
-            label="Email"
-            :rules="[
-              (val) => !!val || 'Поле обязательно',
-              (val, rules) => rules.email(val) || 'Введите корректный Email',
-            ]"
-            dense
-          />
-          <q-input
-            filled
-            v-model="userData.phone"
-            label="Телефон"
-            unmasked-value
-            :rules="[(val) => !!val || 'Поле обязательно']"
-            mask="+7 (###) ### ##-##"
-            dense
-          />
-          <q-input
-            filled
-            v-model="userData.phone_add"
-            unmasked-value
-            label="Дополнительный телефон"
-            mask="+7 (###) ### ##-##"
-            class="q-mb-md"
-            dense
-          />
-          <q-input
-            filled
-            v-model="userData.site"
-            label="Сайт"
-            class="q-mb-md"
-            dense
-          />
-          <q-input
-            filled
-            v-model="userData.vk"
-            label="Вконтакте"
+            v-model="eventData.title"
+            label="Событие"
             class="q-mb-md"
             dense
           />
 
           <q-select
-            v-model="userData.division_id"
-            :options="store.state.department?.divisions"
-            label="Отдел"
+            v-model="eventData.type_id"
+            :options="store.state.events?.eventTypes"
+            label="Тип"
+            map-options
+            emit-value
+            option-value="id"
+            option-label="title"
+            dense
+            filled
+            class="q-mb-md"
+          />
+
+          <q-select
+            v-model="eventData.client_id"
+            :options="clients"
+            @filter="onFilter"
+            label="Клиент"
+            aria-placeholder="sdf"
             map-options
             emit-value
             option-value="id"
             option-label="name"
             dense
             filled
-            class="q-mb-md"
+            use-input
+            input-debounce="0"
+            class="q-mb-xs"
+            clearable
+            options-dense
           />
 
-          <DadataSuggestions
-            class="q-mb-md"
-            @select="contactSelected"
-          ></DadataSuggestions>
+          <q-input filled dense v-model="eventData.appointment_date">
+            <template v-slot:append>
+              <q-icon name="edit" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date
+                    v-model="eventData.appointment_date"
+                    today-btn
+                    mask="YYYY-MM-DD"
+                  >
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
 
           <q-btn label="Submit" color="primary" @click="submitForm" />
           <q-btn
@@ -136,10 +132,10 @@
 
 <script setup>
 import { useStore } from "vuex";
+import { useEvents } from "./composables/useEvents";
 import { useClients } from "./composables/useClients";
-import clientService from "@/api/clients";
+import eventService from "@/api/events";
 import ClientFilter from "@/components/Clients/ClientsFilter.vue";
-import DadataSuggestions from "./DadataSuggestions.vue";
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 // import _ from "lodash";
@@ -150,16 +146,13 @@ const store = useStore();
 const router = useRouter();
 const route = useRoute();
 const modalConfig = ref({ status: false, action: null, name: "" });
-const userData = ref({
+const eventData = ref({
   id: null,
-  name: "",
-  email: "",
-  phone: "",
-  phone_add: "",
-  site: "",
-  vk: "",
-  birth_day: "",
-  division_id: "",
+  title: "",
+  type: "",
+  client_id: null,
+  date: "",
+  fulfilled_date: null,
 });
 
 const {
@@ -167,28 +160,27 @@ const {
   addHandler,
   deleteHandler,
   loadingDepartment,
-  fetchAllClients,
-} = useClients(modalConfig, userData, tableRef);
+  fetchAllEvents,
+  accomplishHandler,
+} = useEvents(modalConfig, eventData, tableRef);
 
-function contactSelected(value) {
-  console.log(value);
-}
+const { clients } = useClients();
 
 async function submitForm() {
   loading.value = true;
   try {
     if (modalConfig.value.action === "add") {
-      userData.value.userId = store.state.user.user.id;
-      await clientService.create(userData.value);
+      eventData.value.userId = store.state.user.user.id;
+      await eventService.create(eventData.value);
     } else if (modalConfig.value.action === "edit") {
-      await clientService.update(userData.value.id, userData.value);
+      await eventService.update(eventData.value.id, eventData.value);
     }
   } catch (error) {
     console.log(error);
   } finally {
     modalConfig.value.status = false;
     loading.value = false;
-    fetchAllClients();
+    fetchAllEvents();
   }
 }
 
@@ -200,32 +192,48 @@ const columns = [
     align: "left",
     field: "id",
     format: (val) => `${val}`,
-    sortable: true,
   },
   {
-    name: "name",
+    name: "title",
     required: true,
-    label: "Имя",
+    label: "Событие",
     align: "left",
-    field: "name",
+    field: "title",
     format: (val) => `${val}`,
     sortable: true,
   },
   {
-    name: "email",
+    name: "type",
     required: true,
-    label: "email",
+    label: "Тип",
     align: "left",
-    field: "email",
+    field: "type",
+    format: (type) => `${type.title}`,
+  },
+  {
+    name: "client",
+    required: true,
+    label: "Клиент",
+    align: "left",
+    field: "client",
+    format: (client) => `${client.name}`,
+    sortable: true,
+  },
+  {
+    name: "appointment_date",
+    required: true,
+    label: "Дата",
+    align: "left",
+    field: "appointment_date",
     format: (val) => `${val}`,
     sortable: true,
   },
   {
-    name: "phone",
+    name: "fulfilled_date",
     required: true,
-    label: "Телефон ",
+    label: "fulfilled_date",
     align: "left",
-    field: "phone",
+    field: "fulfilled_date",
     format: (val) => `${val}`,
     sortable: true,
   },
@@ -237,7 +245,6 @@ const columns = [
     align: "left",
     field: "name",
     format: (val) => `${val}`,
-    sortable: true,
   },
 ];
 const pagination = ref({
@@ -267,7 +274,7 @@ async function onRequest(props) {
 
   console.log(rowsPerPage, route.query);
 
-  const returnedData = await store.dispatch("clients/fetchAllClients");
+  const returnedData = await store.dispatch("events/fetchAllEvents");
   pagination.value.rowsPerPage = returnedData.meta.per_page;
   pagination.value.page = returnedData.meta.current_page;
   pagination.value.rowsNumber = returnedData.meta.total;
