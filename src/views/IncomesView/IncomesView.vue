@@ -27,7 +27,7 @@
       flat
       bordered
       :loading="loadingDepartment"
-      title="Cписок Продаж"
+      title="Cписок Поступлений"
       :rows="store.state.incomes.incomesData.DATA"
       :columns="columns"
       v-model:pagination="pagination"
@@ -100,7 +100,6 @@ watch(filters, (filter) => {
     from: filter.date.from,
     to: filter.date.to,
     page: 1,
-    per_page: pagination.value.rowsPerPage,
   });
 
   router.replace({
@@ -208,7 +207,12 @@ async function onRequest(props) {
   });
 
   loadingDepartment.value = true;
-  fetchAllIncomes();
+  pagination.value.rowsPerPage = rowsPerPage;
+
+  const response = await store.dispatch("incomes/fetchAllIncomes", filters);
+  pagination.value.page = Number(response.PAGE);
+  pagination.value.rowsNumber = response.ALLROWS;
+
   loadingDepartment.value = false;
 }
 </script>
