@@ -196,9 +196,9 @@ import { useSales } from "./composables/useSales";
 import salesService from "@/api/sales";
 import ClientFilter from "@/components/Clients/ClientsFilter.vue";
 import { ref } from "vue";
-import { useRouter, useRoute } from "vue-router";
 import ItemsRedactor from "@/components/ItemsRedactor";
 import { useClients } from "../EventsView/composables/useClients";
+import usePagination from "../EventsView/composables/usePagination";
 
 const { clients, onFilter } = useClients();
 // import _ from "lodash";
@@ -206,8 +206,6 @@ const { clients, onFilter } = useClients();
 const tableRef = ref(null);
 const loading = ref(false);
 const store = useStore();
-const router = useRouter();
-const route = useRoute();
 const modalConfig = ref({ status: false, action: null, name: "" });
 const saleData = ref({
   id: null,
@@ -225,12 +223,17 @@ const saleItems = ref([{ title: "", summ: 0, amount: 1 }]);
 
 const AdCompany = ref({});
 
-const { editHandler, addHandler, deleteHandler, fetchAllSales } = useSales(
-  modalConfig,
-  saleData,
-  saleItems
+const {
+  editHandler,
+  addHandler,
+  deleteHandler,
+  fetchAllSales,
+  loadingDepartment,
+} = useSales(modalConfig, saleData, saleItems, tableRef);
+const { onRequest, pagination } = usePagination(
+  store.dispatch.bind(this, "sales/fetchAllSales"),
+  loadingDepartment
 );
-
 async function submitForm() {
   loading.value = true;
   try {
@@ -340,38 +343,4 @@ const columns = [
     format: (val) => `${val}`,
   },
 ];
-const pagination = ref({
-  sortBy: "desc",
-  descending: false,
-  page: 1,
-  rowsPerPage: 3,
-  rowsNumber: 0,
-});
-
-async function onRequest(props) {
-  const { page, rowsPerPage } = props.pagination;
-  //sortBy, descending
-  // const filter = props.filter;
-
-  const query = Object.assign({}, route.query, {
-    page,
-    per_page: rowsPerPage,
-  });
-
-  router.push({
-    path: router.currentRoute.value.fullPath,
-    query,
-  });
-
-  loading.value = true;
-
-  console.log(rowsPerPage, route.query);
-
-  const returnedData = await store.dispatch("clients/fetchAllSales");
-  pagination.value.rowsPerPage = returnedData.meta.per_page;
-  pagination.value.page = returnedData.meta.current_page;
-  pagination.value.rowsNumber = returnedData.meta.total;
-
-  loading.value = false;
-}
 </script>

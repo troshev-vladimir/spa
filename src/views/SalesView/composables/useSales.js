@@ -1,10 +1,11 @@
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 import { useStore } from "vuex";
 import salesService from "@/api/sales";
 
-export function useSales(modalConfig, saleData, saleItems) {
+export function useSales(modalConfig, saleData, saleItems, tableRef) {
   const store = useStore();
   const loadingDepartment = ref(false);
+  const department = computed(() => store.state.department);
 
   onMounted(async () => {
     if (store.state.department) {
@@ -12,6 +13,10 @@ export function useSales(modalConfig, saleData, saleItems) {
       await store.dispatch("sales/fetchAllTypes");
       await store.dispatch("sales/fetchAllSmi");
     }
+  });
+
+  watch(department, async () => {
+    tableRef.value.requestServerInteraction();
   });
 
   async function fetchAllSales() {

@@ -18,18 +18,19 @@
           </template>
         </q-input>
         <div class="col">
-          <q-btn size="md" @click="applyFilters">Найти</q-btn>
+          <q-btn size="md" @click="fetchAllIncomes">Найти</q-btn>
         </div>
       </q-form>
     </div>
 
     <q-table
+      flat
+      bordered
       :loading="loadingDepartment"
       title="Cписок Продаж"
       :rows="store.state.incomes.incomesData.DATA"
       :columns="columns"
       v-model:pagination="pagination"
-      :rows-per-page-options="[0, 2, 5]"
       row-key="name"
       @request="onRequest"
       ref="tableRef"
@@ -54,22 +55,58 @@
 
 <script setup>
 import { useStore } from "vuex";
-import { useIncomes } from "./composables/useIncomes";
-import { reactive, ref, computed } from "vue";
+import { reactive, ref, computed, watch, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 // import _ from "lodash";
 // import axios from "@/api";
 const tableRef = ref(null);
-const loading = ref(false);
 const store = useStore();
 const router = useRouter();
 const route = useRoute();
+
 const filters = reactive({
   inn: "",
   date: {
     from: null,
     to: null,
   },
+});
+
+onMounted(() => {
+  store.commit("incomes/setIncomes", []);
+  const query = Object.assign(
+    {},
+    {
+      page: 1,
+      per_page: pagination.value.rowsPerPage,
+    },
+    route.query
+  );
+  router.replace({
+    path: router.currentRoute.value.fullPath,
+    query,
+  });
+});
+
+const loadingDepartment = ref(false);
+
+filters.date.from = route.query.from;
+filters.date.to = route.query.to;
+filters.inn = route.query.inn;
+
+watch(filters, (filter) => {
+  const query = Object.assign({}, route.query, {
+    inn: filter.inn,
+    from: filter.date.from,
+    to: filter.date.to,
+    page: 1,
+    per_page: pagination.value.rowsPerPage,
+  });
+
+  router.replace({
+    path: router.currentRoute.value.fullPath,
+    query,
+  });
 });
 
 const dateInput = computed(() => {
@@ -81,10 +118,13 @@ const dateInput = computed(() => {
     return filters.date;
   }
 });
-const { loadingDepartment } = useIncomes(filters);
-async function applyFilters() {
-  await store.dispatch("incomes/fetchAllIncomes", filters);
+
+async function fetchAllIncomes() {
+  const response = await store.dispatch("incomes/fetchAllIncomes", filters);
+  pagination.value.page = Number(response.PAGE);
+  pagination.value.rowsNumber = response.ALLROWS;
 }
+
 const columns = [
   {
     name: "ID",
@@ -144,37 +184,31 @@ const columns = [
     sortable: true,
   },
 ];
+
 const pagination = ref({
   sortBy: "desc",
   descending: false,
   page: 1,
-  rowsPerPage: 3,
+  rowsPerPage: 5,
   rowsNumber: 0,
+  rowsPerPageOptions: [2, 5, 10],
 });
 
 async function onRequest(props) {
   const { page, rowsPerPage } = props.pagination;
-  //sortBy, descending
-  // const filter = props.filter;
 
   const query = Object.assign({}, route.query, {
     page,
     per_page: rowsPerPage,
   });
 
-  router.push({
+  router.replace({
     path: router.currentRoute.value.fullPath,
     query,
   });
 
-  loading.value = true;
-
-  console.log(rowsPerPage, route.query);
-
-  const returnedData = store.state.incomes.incomesData;
-  pagination.value.page = returnedData.PAGE;
-  pagination.value.rowsNumber = returnedData.ALLROWS;
-
-  loading.value = false;
+  loadingDepartment.value = true;
+  fetchAllIncomes();
+  loadingDepartment.value = false;
 }
 </script>

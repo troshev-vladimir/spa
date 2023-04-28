@@ -1,7 +1,7 @@
 import { onMounted, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
-export default function usePagination(fetchFunc) {
+export default function usePagination(fetchFunc, loadingDepartment) {
   const router = useRouter();
   const route = useRoute();
 
@@ -40,16 +40,14 @@ export default function usePagination(fetchFunc) {
       query,
     });
 
-    // loading.value = true;
-
-    console.log(fetchFunc);
+    loadingDepartment.value = true;
 
     const returnedData = await fetchFunc();
     pagination.value.rowsPerPage = returnedData.meta.per_page;
     pagination.value.page = returnedData.meta.current_page;
     pagination.value.rowsNumber = returnedData.meta.total;
 
-    // loading.value = false;
+    loadingDepartment.value = false;
   }
 
   return { onRequest, pagination };
