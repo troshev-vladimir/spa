@@ -25,7 +25,6 @@
       @request="onRequest"
       ref="tableRef"
     >
-      <!--   -->
       <template v-slot:body="row">
         <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
           <template v-for="col in row.cols" :key="col.name">
@@ -168,7 +167,8 @@ const {
   fetchAllClients,
 } = useClients(modalConfig, userData, tableRef);
 const { onRequest, pagination } = usePagination(
-  store.dispatch.bind(this, "clients/fetchAllClients")
+  store.dispatch.bind(this, "clients/fetchAllClients"),
+  loading
 );
 
 function contactSelected(value) {

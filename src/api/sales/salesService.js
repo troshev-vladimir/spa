@@ -4,9 +4,10 @@ class SalesService {
     this.axios = AxiosInstance;
   }
 
-  async getAll() {
+  async getAll(departmentId = 1) {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
+    params["department_id"] = departmentId;
     const { data } = await this.axios("/v1/sales", {
       params,
     });
@@ -35,6 +36,7 @@ class SalesService {
   }
 
   async update(id, body) {
+    console.log(body);
     const response = await this.axios.put("/v1/sales/" + id, body);
 
     return response.data;

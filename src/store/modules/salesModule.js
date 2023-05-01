@@ -21,16 +21,17 @@ const sales = {
     },
   },
   actions: {
-    async fetchAllSales({ commit }) {
+    async fetchAllSales({ commit, rootState }) {
       try {
-        const result = await salesService.getAll();
+        const result = await salesService.getAll(rootState.department.id);
         commit("setSales", result.data);
         return result;
       } catch (error) {
         console.log(error);
       }
     },
-    async fetchAllTypes({ commit }) {
+    async fetchAllTypes({ commit, state }) {
+      if (state.salesTypes.length) return;
       try {
         const result = await salesService.getTypes();
         commit("setSalesTypes", result);
@@ -40,7 +41,9 @@ const sales = {
       }
     },
 
-    async fetchAllSmi({ commit }) {
+    async fetchAllSmi({ commit, state }) {
+      if (state.salesSmi.length) return;
+
       try {
         const result = await salesService.getSmi();
         commit("setSmi", result);

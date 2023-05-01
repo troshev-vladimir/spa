@@ -23,7 +23,9 @@ export function useEvents(modalConfig, eventData, tableRef) {
 
   async function fetchAllEvents() {
     loadingDepartment.value = true;
-    await store.dispatch("events/fetchAllEvents", route.query);
+    await store.dispatch("events/fetchAllEvents", {
+      ...route.query,
+    });
     loadingDepartment.value = false;
   }
 
@@ -33,20 +35,30 @@ export function useEvents(modalConfig, eventData, tableRef) {
     eventService.update(event.id, accompleshedEvent);
   }
 
-  function addHandler() {
+  function getAttendantData() {
+    store.dispatch("events/fetchTypes");
+  }
+
+  async function addHandler() {
+    loadingDepartment.value = true;
+    await getAttendantData();
     modalConfig.value.status = true;
     modalConfig.value.action = "add";
     modalConfig.value.name = "Создать событие";
     eventData.value = {};
+    loadingDepartment.value = false;
   }
 
-  function editHandler(user) {
+  async function editHandler(user) {
+    loadingDepartment.value = true;
+    await getAttendantData();
     modalConfig.value.status = true;
     modalConfig.value.action = "edit";
     modalConfig.value.name = "Pедактировать событие";
     const norefEvent = Object.assign({}, user);
     // norefUser.division_id = user.division.id;
     eventData.value = norefEvent;
+    loadingDepartment.value = false;
   }
 
   function deleteHandler(userId) {

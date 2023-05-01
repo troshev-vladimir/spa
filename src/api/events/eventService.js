@@ -1,17 +1,18 @@
 import AxiosInstance from "../index";
-
 class EventService {
   constructor() {
     this.axios = AxiosInstance;
   }
 
-  async getAll(query) {
+  async getAll(departmentId = 1, query) {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
-    console.log(query);
+    params["department_id"] = departmentId;
+
     if (query) {
       Object.assign(params, query);
     }
+
     const { data } = await this.axios("/v1/events", {
       params,
     });

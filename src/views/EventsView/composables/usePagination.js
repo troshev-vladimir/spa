@@ -9,14 +9,16 @@ export default function usePagination(fetchFunc, loadingDepartment) {
     sortBy: "desc",
     descending: false,
     page: 1,
-    rowsPerPage: 3,
+    rowsPerPage: 10,
     rowsNumber: 0,
   });
 
   onMounted(() => {
     const query = Object.assign({}, route.query, {
-      page: pagination.value.page,
-      per_page: pagination.value.rowsPerPage,
+      page: route.query.page ? route.query.page : pagination.value.page,
+      per_page: route.query.per_page
+        ? route.query.per_page
+        : pagination.value.rowsPerPage,
     });
 
     router.replace({

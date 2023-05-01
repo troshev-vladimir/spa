@@ -7,12 +7,7 @@
         </q-btn>
       </div>
     </div>
-    <div class="row items-start">
-      <div class="col"><ClientFilter></ClientFilter></div>
-      <div class="col">
-        <q-btn size="md" @click="fetchAllSales">Найти</q-btn>
-      </div>
-    </div>
+    <div class="row items-start"></div>
 
     <q-table
       :loading="loadingDepartment"
@@ -52,13 +47,13 @@
         <q-form autofocus style="min-width: 400px">
           <q-input
             filled
-            v-model="saleData.description"
-            label="description"
+            v-model="saleData.title"
+            label="Название"
             dense
             class="q-mb-md"
           />
           <q-select
-            v-model="saleData.client_id"
+            v-model="saleData.client"
             :options="clients"
             @filter="onFilter"
             label="Клиент"
@@ -71,12 +66,13 @@
             filled
             use-input
             input-debounce="1000"
-            class="q-mb-xs"
+            class="q-mb-md"
             clearable
             options-dense
           />
+
           <q-select
-            v-model="saleData.type"
+            v-model="saleData.type_id"
             :options="store.state.sales.salesTypes"
             label="Тип"
             map-options
@@ -88,7 +84,7 @@
             class="q-mb-md"
           />
           <q-select
-            v-model="saleData.smi"
+            v-model="saleData.smi_id"
             :options="store.state.sales.salesSmi"
             label="СМИ"
             map-options
@@ -100,75 +96,36 @@
             class="q-mb-md"
           />
           <div class="q-pa-md q-mb-md">
-            <p>Продали такие штуки:</p>
+            <p>Услуги</p>
             <ItemsRedactor
               v-model:items="saleItems"
-              :item="{ title: '', summ: 0 }"
+              :item="{ title: '', summ: null }"
             />
           </div>
-          <q-input
-            filled
-            dense
+          <DatePicker
             v-model="saleData.payedDate"
-            class="q-mb-md"
-            label="payedDate"
-          >
-            <template v-slot:append>
-              <q-icon name="edit" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date
-                    v-model="saleData.payedDate"
-                    today-btn
-                    mask="YYYY-MM-DD"
-                  >
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
-          <q-input
             filled
             dense
-            v-model="saleData.placementDate"
             class="q-mb-md"
-            label="placementDate"
-          >
-            <template v-slot:append>
-              <q-icon name="edit" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date
-                    v-model="saleData.placementDate"
-                    today-btn
-                    mask="YYYY-MM-DD"
-                  >
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+            label="Дата оплаты"
+          />
+          <DatePicker
+            v-model="saleData.placementDate"
+            filled
+            dense
+            class="q-mb-md"
+            label="Дата размеещения"
+          />
+
           <div class="q-mb-md">
             <p>Даты рекламной компании:</p>
             <div>
-              <q-badge v-if="AdCompany.from" class="q-mr-xs">{{
-                AdCompany.from
+              <q-badge v-if="adCompany.from" class="q-mr-xs">{{
+                adCompany.from
               }}</q-badge>
-              <q-badge v-if="AdCompany.to">{{ AdCompany.to }}</q-badge>
+              <q-badge v-if="adCompany.to">{{ adCompany.to }}</q-badge>
             </div>
-            <q-date v-model="AdCompany" range mask="YYYY-MM-DD">
+            <q-date v-model="adCompany" range mask="YYYY-MM-DD">
               <div class="row items-center justify-end">
                 <q-btn v-close-popup label="Close" color="primary" flat />
               </div>
@@ -176,14 +133,6 @@
           </div>
 
           <q-btn label="Submit" color="primary" @click="submitForm" />
-          <q-btn
-            label="Reset"
-            type="reset"
-            color="primary"
-            flat
-            class="q-ml-sm"
-            dense
-          />
         </q-form>
       </q-card>
     </q-dialog>
@@ -194,34 +143,32 @@
 import { useStore } from "vuex";
 import { useSales } from "./composables/useSales";
 import salesService from "@/api/sales";
-import ClientFilter from "@/components/Clients/ClientsFilter.vue";
 import { ref } from "vue";
 import ItemsRedactor from "@/components/ItemsRedactor";
 import { useClients } from "../EventsView/composables/useClients";
 import usePagination from "../EventsView/composables/usePagination";
 
 const { clients, onFilter } = useClients();
-// import _ from "lodash";
-// import axios from "@/api";
 const tableRef = ref(null);
 const loading = ref(false);
 const store = useStore();
 const modalConfig = ref({ status: false, action: null, name: "" });
 const saleData = ref({
   id: null,
-  placementDate: "",
-  payedDate: "",
+  placement_date: "",
+  payed_date: "",
   start: "",
   end: "",
+  id_1c: null,
   user: "",
-  saleItems: "",
-  client: "",
-  type: null,
-  smi: "",
+  sale_items: "",
+  client_id: "",
+  type_id: null,
+  smi_id: "",
+  title: "",
+  summa: "",
+  locked: "",
 });
-const saleItems = ref([{ title: "", summ: 0, amount: 1 }]);
-
-const AdCompany = ref({});
 
 const {
   editHandler,
@@ -229,37 +176,34 @@ const {
   deleteHandler,
   fetchAllSales,
   loadingDepartment,
-} = useSales(modalConfig, saleData, saleItems, tableRef);
+  saleItems,
+  adCompany,
+} = useSales(modalConfig, tableRef, saleData);
 const { onRequest, pagination } = usePagination(
   store.dispatch.bind(this, "sales/fetchAllSales"),
   loadingDepartment
 );
+
 async function submitForm() {
   loading.value = true;
   try {
     if (modalConfig.value.action === "add") {
-      saleData.value.userId = store.state.user.user.id;
-      // saleData.value.clientId = saleData.value.client.id;
-      saleData.value.type = saleData.value.type.id;
-      // saleData.value.smi = saleData.value.smi.id;
-      saleData.value.user = saleData.value.user.id;
-      saleData.value.client = saleData.value.client.id;
-      saleData.value.start = AdCompany.value.from;
-      saleData.value.end = AdCompany.value.to;
-      saleData.value.id_1c = 1;
-      saleData.value.saleItems = saleItems.value;
-      await salesService.create(saleData.value);
+      const { client, ...payload } = saleData.value;
+      payload.start = adCompany.value.from;
+      payload.end = adCompany.value.to;
+      payload.client_id = client;
+      payload.user_id = store.state.user.user.id;
+      payload.id_1c = 1; // TODO откуда взять 1c id
+      payload.saleItems = saleItems.value;
+      await salesService.create(payload);
     } else if (modalConfig.value.action === "edit") {
-      // saleData.value.clientId = saleData.value.client.id;
-      saleData.value.type = saleData.value.type.id;
-      // saleData.value.smi = saleData.value.smi.id;
-      saleData.value.user = saleData.value.user.id;
-      saleData.value.client = saleData.value.client.id;
-      saleData.value.start = AdCompany.value.from;
-      saleData.value.end = AdCompany.value.to;
-      saleData.value.id_1c = 1;
-      saleData.value.saleItems = saleItems.value;
-      await salesService.update(saleData.value.id, saleData.value);
+      const { client, id, user, ...payload } = saleData.value;
+      payload.start = adCompany.value.from;
+      payload.end = adCompany.value.to;
+      payload.client_id = client.id;
+      payload.user_id = user.id;
+      payload.saleItems = saleItems.value;
+      await salesService.update(id, payload);
     }
   } catch (error) {
     console.log(error);

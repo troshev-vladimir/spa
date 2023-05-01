@@ -8,9 +8,15 @@ import router from "./router";
 import axios from "axios";
 import VueAxios from "vue-axios";
 
-createApp(App)
-  .use(router)
-  .use(Quasar, quasarUserOptions)
-  .use(store)
-  .use(VueAxios, axios)
-  .mount("#app");
+import DatePicker from "@/components/UiKit/DatePicker";
+
+const app = createApp(App);
+
+app.component("DatePicker", DatePicker);
+
+app.use(router);
+app.use(Quasar, quasarUserOptions);
+app.use(store);
+app.use(DatePicker);
+app.use(VueAxios, axios);
+app.mount("#app");

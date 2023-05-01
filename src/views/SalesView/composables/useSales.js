@@ -2,16 +2,16 @@ import { onMounted, ref, watch, computed } from "vue";
 import { useStore } from "vuex";
 import salesService from "@/api/sales";
 
-export function useSales(modalConfig, saleData, saleItems, tableRef) {
+export function useSales(modalConfig, tableRef, saleData) {
   const store = useStore();
   const loadingDepartment = ref(false);
   const department = computed(() => store.state.department);
+  const saleItems = ref([{ title: "", summ: 0, amount: 1 }]);
+  const adCompany = ref({ from: null, to: null });
 
   onMounted(async () => {
     if (store.state.department) {
       fetchAllSales();
-      await store.dispatch("sales/fetchAllTypes");
-      await store.dispatch("sales/fetchAllSmi");
     }
   });
 
@@ -25,22 +25,32 @@ export function useSales(modalConfig, saleData, saleItems, tableRef) {
     loadingDepartment.value = false;
   }
 
+  function getAttendantData() {
+    store.dispatch("sales/fetchAllTypes");
+    store.dispatch("sales/fetchAllSmi");
+  }
+
   function addHandler() {
+    getAttendantData();
     modalConfig.value.status = true;
     modalConfig.value.action = "add";
     modalConfig.value.name = "Создать продажу";
-
+    adCompany.value = { from: null, to: null };
     saleData.value = {};
     saleItems.value = [];
   }
 
   function editHandler(sale) {
+    getAttendantData();
     modalConfig.value.status = true;
     modalConfig.value.action = "edit";
     modalConfig.value.name = "Pедактировать продажу";
     const norefSale = Object.assign({}, sale);
-    // norefSale.division_id = sale.division.id;
-    saleData.value = norefSale;
+    const { type, smi, ...payloadSale } = norefSale;
+    saleData.value = payloadSale;
+    saleData.value.type_id = type.id;
+    saleData.value.smi_id = smi.id;
+    adCompany.value = { from: saleData.value.start, to: saleData.value.end };
     saleItems.value = JSON.parse(saleData.value.saleItems);
   }
 
@@ -55,5 +65,7 @@ export function useSales(modalConfig, saleData, saleItems, tableRef) {
     deleteHandler,
     loadingDepartment,
     fetchAllSales,
+    saleItems,
+    adCompany,
   };
 }

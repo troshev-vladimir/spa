@@ -14,18 +14,19 @@
       />
       <q-input
         filled
-        v-model="item.summ"
+        v-model.number="item.summ"
         dense
         class="q-mb-md col-6"
         label="Цена"
+        type="number"
       />
-      <q-input
+      <!-- <q-input
         filled
         v-model="item.summ"
         dense
         class="q-mb-md col-6"
         label="Цена"
-      />
+      /> -->
       <q-btn class="offset-9 col-3" @click="deleteItem(id)">Удалить</q-btn>
     </li>
   </ul>

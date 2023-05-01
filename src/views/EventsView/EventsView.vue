@@ -7,12 +7,11 @@
         </q-btn>
       </div>
     </div>
-    <div class="row items-start">
-      <div class="col"><ClientFilter></ClientFilter></div>
-      <div class="col">
+    <!-- <div class="col"><ClientFilter></ClientFilter></div> -->
+    <!-- <div class="col">
         <q-btn size="md" @click="fetchAllClients">Найти</q-btn>
-      </div>
-    </div>
+      </div> -->
+    <EventsFilter class="q-mb-md" />
 
     <q-table
       :loading="loadingDepartment"
@@ -75,7 +74,7 @@
           />
 
           <q-select
-            v-model="eventData.client_id"
+            v-model="eventData.client"
             :options="clients"
             @filter="onFilter"
             label="Клиент"
@@ -88,32 +87,12 @@
             filled
             use-input
             input-debounce="0"
-            class="q-mb-xs"
+            class="q-mb-md"
             clearable
             options-dense
           />
 
-          <q-input filled dense v-model="eventData.appointment_date">
-            <template v-slot:append>
-              <q-icon name="edit" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date
-                    v-model="eventData.appointment_date"
-                    today-btn
-                    mask="YYYY-MM-DD"
-                  >
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+          <DatePicker v-model="eventData.appointment_date" class="q-mb-md" />
 
           <q-btn label="Submit" color="primary" @click="submitForm" />
           <q-btn
@@ -132,11 +111,11 @@
 
 <script setup>
 import { useStore } from "vuex";
+import EventsFilter from "@/components/Events/EventsFilter";
 import { useEvents } from "./composables/useEvents";
 import { useClients } from "./composables/useClients";
 import usePagination from "./composables/usePagination";
 import eventService from "@/api/events";
-import ClientFilter from "@/components/Clients/ClientsFilter.vue";
 import { ref } from "vue";
 // import _ from "lodash";
 
@@ -166,7 +145,8 @@ const {
 } = useEvents(modalConfig, eventData, tableRef);
 
 const { onRequest, pagination } = usePagination(
-  store.dispatch.bind(this, "events/fetchAllEvents")
+  store.dispatch.bind(this, "events/fetchAllEvents"),
+  loading
 );
 async function submitForm() {
   loading.value = true;

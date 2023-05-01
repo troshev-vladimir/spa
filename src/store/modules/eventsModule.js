@@ -17,16 +17,20 @@ const events = {
     },
   },
   actions: {
-    async fetchAllEvents({ commit }, payload) {
+    async fetchAllEvents({ commit, rootState }, payload) {
       try {
-        const result = await eventsService.getAll(payload);
+        const result = await eventsService.getAll(
+          rootState.department.id,
+          payload
+        );
         commit("setEvents", result.data);
         return result;
       } catch (error) {
         console.log(error);
       }
     },
-    async fetchTypes({ commit }) {
+    async fetchTypes({ commit, state }) {
+      if (state.eventTypes.length) return;
       try {
         const result = await eventsService.getAllTypes();
         commit("setTypes", result);
