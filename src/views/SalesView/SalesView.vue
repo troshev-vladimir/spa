@@ -2,9 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <q-btn class="q-mb-md" @click.stop="addHandler()">
-          Добавить Продажу
-        </q-btn>
+        <q-btn class="q-mb-md" @click.stop="addHandler()"> Добавить Продажу </q-btn>
       </div>
     </div>
     <div class="row items-start"></div>
@@ -24,9 +22,7 @@
         <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
           <template v-for="col in row.cols" :key="col.name">
             <td v-if="col.name === 'actions'">
-              <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)">
-                Удалить
-              </q-btn>
+              <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
               <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
             </td>
             <td v-else-if="col.name === 'roles'">{{ col.value }}</td>
@@ -45,13 +41,7 @@
         </q-toolbar>
         <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
         <q-form autofocus style="min-width: 400px">
-          <q-input
-            filled
-            v-model="saleData.title"
-            label="Название"
-            dense
-            class="q-mb-md"
-          />
+          <q-input filled v-model="saleData.title" label="Название" dense class="q-mb-md" />
           <q-select
             v-model="saleData.client"
             :options="clients"
@@ -97,32 +87,15 @@
           />
           <div class="q-pa-md q-mb-md">
             <p>Услуги</p>
-            <ItemsRedactor
-              v-model:items="saleItems"
-              :item="{ title: '', summ: null }"
-            />
+            <ItemsRedactor v-model:items="saleItems" :item="{ title: '', summ: null }" />
           </div>
-          <DatePicker
-            v-model="saleData.payedDate"
-            filled
-            dense
-            class="q-mb-md"
-            label="Дата оплаты"
-          />
-          <DatePicker
-            v-model="saleData.placementDate"
-            filled
-            dense
-            class="q-mb-md"
-            label="Дата размеещения"
-          />
+          <DatePicker v-model="saleData.payedDate" filled dense class="q-mb-md" label="Дата оплаты" />
+          <DatePicker v-model="saleData.placementDate" filled dense class="q-mb-md" label="Дата размеещения" />
 
           <div class="q-mb-md">
             <p>Даты рекламной компании:</p>
             <div>
-              <q-badge v-if="adCompany.from" class="q-mr-xs">{{
-                adCompany.from
-              }}</q-badge>
+              <q-badge v-if="adCompany.from" class="q-mr-xs">{{ adCompany.from }}</q-badge>
               <q-badge v-if="adCompany.to">{{ adCompany.to }}</q-badge>
             </div>
             <q-date v-model="adCompany" range mask="YYYY-MM-DD">
@@ -170,19 +143,12 @@ const saleData = ref({
   locked: "",
 });
 
-const {
-  editHandler,
-  addHandler,
-  deleteHandler,
-  fetchAllSales,
-  loadingDepartment,
-  saleItems,
-  adCompany,
-} = useSales(modalConfig, tableRef, saleData);
-const { onRequest, pagination } = usePagination(
-  store.dispatch.bind(this, "sales/fetchAllSales"),
-  loadingDepartment
+const { editHandler, addHandler, deleteHandler, fetchAllSales, loadingDepartment, saleItems, adCompany } = useSales(
+  modalConfig,
+  tableRef,
+  saleData
 );
+const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "sales/fetchAllSales"), loadingDepartment);
 
 async function submitForm() {
   loading.value = true;

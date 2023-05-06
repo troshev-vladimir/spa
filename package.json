@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
+    "@vueuse/core": "^10.1.2",
     "axios": "^1.3.4",
     "core-js": "^3.8.3",
     "lodash": "^4.17.21",
@@ -16,11 +17,7 @@
     "quasar": "^2.0.0",
     "vue": "^3.2.13",
     "vue-axios": "^3.5.2",
-    "vue-dadata": "^3.0.0-beta.9",
-    "vue-dadata-3": "^2.0.5",
-    "vue-dadata-suggestions": "^0.6.3",
     "vue-router": "^4.0.3",
-    "vue-suggestions": "^1.4.0",
     "vuex": "^4.0.0"
   },
   "devDependencies": {

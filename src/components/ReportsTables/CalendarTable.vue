@@ -1,10 +1,5 @@
 <template>
-  <q-table
-    title="Календарь приходов"
-    :rows="rows"
-    :columns="columns"
-    row-key="name"
-  />
+  <q-table title="Календарь приходов" :rows="rows" :columns="columns" row-key="name" />
 </template>
 
 <script setup>

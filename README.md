@@ -29,10 +29,7 @@ yarn lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 TODO:
-Pagination
-    - Защитить пагинацию на максимальное количество
-    доделать фильтры фильтры
+Pagination - Защитить пагинацию на максимальное количество
+доделать фильтры фильтры
 
 - откуда взять 1c id в продажах ?
-
-

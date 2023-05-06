@@ -16,9 +16,7 @@ export default function usePagination(fetchFunc, loadingDepartment) {
   onMounted(() => {
     const query = Object.assign({}, route.query, {
       page: route.query.page ? route.query.page : pagination.value.page,
-      per_page: route.query.per_page
-        ? route.query.per_page
-        : pagination.value.rowsPerPage,
+      per_page: route.query.per_page ? route.query.per_page : pagination.value.rowsPerPage,
     });
 
     router.replace({

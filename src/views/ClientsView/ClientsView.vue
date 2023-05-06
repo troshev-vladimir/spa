@@ -2,9 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <q-btn class="q-mb-md" @click.stop="addHandler()">
-          Добавить клиента
-        </q-btn>
+        <q-btn class="q-mb-md" @click.stop="addHandler()"> Добавить клиента </q-btn>
       </div>
     </div>
     <div class="row items-start">
@@ -29,9 +27,7 @@
         <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
           <template v-for="col in row.cols" :key="col.name">
             <td v-if="col.name === 'actions'">
-              <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)">
-                Удалить
-              </q-btn>
+              <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
               <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
             </td>
             <td v-else-if="col.name === 'roles'">{{ col.value }}</td>
@@ -50,21 +46,12 @@
         </q-toolbar>
         <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
         <q-form autofocus style="min-width: 400px">
-          <q-input
-            filled
-            v-model="userData.name"
-            label="Имя"
-            class="q-mb-md"
-            dense
-          />
+          <q-input filled v-model="userData.name" label="Имя" class="q-mb-md" dense />
           <q-input
             filled
             v-model="userData.email"
             label="Email"
-            :rules="[
-              (val) => !!val || 'Поле обязательно',
-              (val, rules) => rules.email(val) || 'Введите корректный Email',
-            ]"
+            :rules="[(val) => !!val || 'Поле обязательно', (val, rules) => rules.email(val) || 'Введите корректный Email']"
             dense
           />
           <q-input
@@ -85,20 +72,8 @@
             class="q-mb-md"
             dense
           />
-          <q-input
-            filled
-            v-model="userData.site"
-            label="Сайт"
-            class="q-mb-md"
-            dense
-          />
-          <q-input
-            filled
-            v-model="userData.vk"
-            label="Вконтакте"
-            class="q-mb-md"
-            dense
-          />
+          <q-input filled v-model="userData.site" label="Сайт" class="q-mb-md" dense />
+          <q-input filled v-model="userData.vk" label="Вконтакте" class="q-mb-md" dense />
 
           <q-select
             v-model="userData.division_id"
@@ -113,20 +88,10 @@
             class="q-mb-md"
           />
 
-          <DadataSuggestions
-            class="q-mb-md"
-            @select="contactSelected"
-          ></DadataSuggestions>
+          <DadataSuggestions class="q-mb-md" @select="contactSelected"></DadataSuggestions>
 
           <q-btn label="Submit" color="primary" @click="submitForm" />
-          <q-btn
-            label="Reset"
-            type="reset"
-            color="primary"
-            flat
-            class="q-ml-sm"
-            dense
-          />
+          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" dense />
         </q-form>
       </q-card>
     </q-dialog>
@@ -159,17 +124,12 @@ const userData = ref({
   division_id: "",
 });
 
-const {
-  editHandler,
-  addHandler,
-  deleteHandler,
-  loadingDepartment,
-  fetchAllClients,
-} = useClients(modalConfig, userData, tableRef);
-const { onRequest, pagination } = usePagination(
-  store.dispatch.bind(this, "clients/fetchAllClients"),
-  loading
+const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllClients } = useClients(
+  modalConfig,
+  userData,
+  tableRef
 );
+const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "clients/fetchAllClients"), loading);
 
 function contactSelected(value) {
   console.log(value);

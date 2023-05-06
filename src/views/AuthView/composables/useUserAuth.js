@@ -28,11 +28,11 @@ export default function () {
       });
       return;
     }
-
-    router.push({ path: "/" });
+    const pathName = localStorage.getItem("lastPath") || "clients";
+    router.push({ name: pathName });
     $q.notify({
       type: "positive",
-      message: "Вы успешно залогированы",
+      message: "Вы успешно вошли",
     });
   }
 

@@ -11,7 +11,7 @@ const routes = [
     },
   },
   {
-    path: "/",
+    path: "/users",
     name: "users",
     component: () => import("../views/UsersView/UsersView.vue"),
     meta: {
@@ -28,6 +28,11 @@ const routes = [
     children: [
       {
         path: "",
+        name: "clients",
+        component: () => import("../views/ClientsView"),
+      },
+      {
+        path: "clients",
         name: "clients",
         component: () => import("../views/ClientsView"),
       },
@@ -54,20 +59,17 @@ const routes = [
           {
             path: "debt",
             name: "report-debt",
-            component: () =>
-              import("../components/ReportsTables/DebtTable.vue"),
+            component: () => import("../components/ReportsTables/DebtTable.vue"),
           },
           {
             path: "",
             name: "report-summary",
-            component: () =>
-              import("../components/ReportsTables/SummaryTable.vue"),
+            component: () => import("../components/ReportsTables/SummaryTable.vue"),
           },
           {
             path: "calendar",
             name: "report-calendar",
-            component: () =>
-              import("../components/ReportsTables/CalendarTable.vue"),
+            component: () => import("../components/ReportsTables/CalendarTable.vue"),
           },
         ],
       },
@@ -81,12 +83,17 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  // console.log(store.state.user);
   if (to.name !== "auth" && !store.state.user) {
     next({
       path: "/auth",
     });
-  } else next();
+  } else {
+    if (to.name !== "auth") {
+      localStorage.setItem("lastPath", to.name);
+    }
+
+    next();
+  }
 });
 
 export default router;

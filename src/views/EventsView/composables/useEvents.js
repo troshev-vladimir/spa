@@ -3,12 +3,14 @@ import { useStore } from "vuex";
 import eventService from "@/api/events";
 import moment from "moment";
 import { useRoute } from "vue-router";
+import { useQuasar } from "quasar";
 
 export function useEvents(modalConfig, eventData, tableRef) {
   const route = useRoute();
   const store = useStore();
   const department = computed(() => store.state.department);
   const loadingDepartment = ref(false);
+  const $q = useQuasar();
 
   watch(department, async () => {
     tableRef.value.requestServerInteraction();
@@ -23,9 +25,17 @@ export function useEvents(modalConfig, eventData, tableRef) {
 
   async function fetchAllEvents() {
     loadingDepartment.value = true;
-    await store.dispatch("events/fetchAllEvents", {
-      ...route.query,
-    });
+    try {
+      await store.dispatch("events/fetchAllEvents", {
+        ...route.query,
+      });
+    } catch (error) {
+      $q.notify({
+        type: "positive",
+        message: error,
+      });
+    }
+
     loadingDepartment.value = false;
   }
 

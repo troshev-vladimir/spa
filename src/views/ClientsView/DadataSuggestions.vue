@@ -20,13 +20,7 @@
     />
 
     <div v-if="selected">
-      <q-input
-        label="Адрес"
-        outlined
-        :modelValue="selected?.data?.address?.value || null"
-        readonly
-        dense
-      />
+      <q-input label="Адрес" outlined :modelValue="selected?.data?.address?.value || null" readonly dense />
     </div>
   </div>
 </template>
@@ -37,8 +31,7 @@ import { ref, watch } from "vue";
 const emit = defineEmits(["select"]);
 
 const query = ref(null);
-const url =
-  "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/party";
+const url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/party";
 const token = "3015b65404c060dcc9aacd5732122a53d87d1294";
 const companySuggestions = ref([]);
 

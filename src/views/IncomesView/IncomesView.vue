@@ -6,13 +6,8 @@
         <q-input filled dense v-model="dateInput" class="col-3">
           <template v-slot:append>
             <q-icon name="edit" class="cursor-pointer">
-              <q-popup-proxy
-                cover
-                transition-show="scale"
-                transition-hide="scale"
-              >
-                <q-date v-model="filters.date" mask="DD.MM.YYYY" range>
-                </q-date>
+              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <q-date v-model="filters.date" mask="DD.MM.YYYY" range> </q-date>
               </q-popup-proxy>
             </q-icon>
           </template>
@@ -39,9 +34,7 @@
         <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
           <template v-for="col in row.cols" :key="col.name">
             <td v-if="col.name === 'actions'">
-              <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)">
-                Удалить
-              </q-btn>
+              <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
               <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
             </td>
             <td v-else-if="col.name === 'roles'">{{ col.value }}</td>
@@ -110,9 +103,7 @@ watch(filters, (filter) => {
 
 const dateInput = computed(() => {
   if (typeof filters.date === "object") {
-    return filters.date.from
-      ? `${filters.date.from} - ${filters.date.to}`
-      : "Не выбрано";
+    return filters.date.from ? `${filters.date.from} - ${filters.date.to}` : "Не выбрано";
   } else {
     return filters.date;
   }

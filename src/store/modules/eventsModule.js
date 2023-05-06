@@ -19,14 +19,12 @@ const events = {
   actions: {
     async fetchAllEvents({ commit, rootState }, payload) {
       try {
-        const result = await eventsService.getAll(
-          rootState.department.id,
-          payload
-        );
+        const result = await eventsService.getAll(rootState.department.id, payload);
         commit("setEvents", result.data);
         return result;
       } catch (error) {
         console.log(error);
+        throw error.response.data;
       }
     },
     async fetchTypes({ commit, state }) {

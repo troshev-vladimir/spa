@@ -2,9 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <q-btn class="q-mb-md" @click.stop="addHandler()">
-          Добавить Событие
-        </q-btn>
+        <q-btn class="q-mb-md" @click.stop="addHandler()"> Добавить Событие </q-btn>
       </div>
     </div>
     <!-- <div class="col"><ClientFilter></ClientFilter></div> -->
@@ -32,9 +30,7 @@
               <q-btn @click.stop="">В архив</q-btn>
               <q-btn @click.stop="accomplishHandler(row.row)">Завершить</q-btn>
 
-              <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)">
-                Удалить
-              </q-btn>
+              <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
             </td>
             <td v-else-if="col.name === 'roles'">{{ col.value }}</td>
             <td v-else>{{ col.value }}</td>
@@ -52,13 +48,7 @@
         </q-toolbar>
         <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
         <q-form autofocus style="min-width: 400px">
-          <q-input
-            filled
-            v-model="eventData.title"
-            label="Событие"
-            class="q-mb-md"
-            dense
-          />
+          <q-input filled v-model="eventData.title" label="Событие" class="q-mb-md" dense />
 
           <q-select
             v-model="eventData.type_id"
@@ -95,14 +85,7 @@
           <DatePicker v-model="eventData.appointment_date" class="q-mb-md" />
 
           <q-btn label="Submit" color="primary" @click="submitForm" />
-          <q-btn
-            label="Reset"
-            type="reset"
-            color="primary"
-            flat
-            class="q-ml-sm"
-            dense
-          />
+          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" dense />
         </q-form>
       </q-card>
     </q-dialog>
@@ -117,7 +100,6 @@ import { useClients } from "./composables/useClients";
 import usePagination from "./composables/usePagination";
 import eventService from "@/api/events";
 import { ref } from "vue";
-// import _ from "lodash";
 
 const tableRef = ref(null);
 const loading = ref(false);
@@ -135,19 +117,13 @@ const eventData = ref({
 
 const { clients, onFilter } = useClients();
 
-const {
-  editHandler,
-  addHandler,
-  deleteHandler,
-  loadingDepartment,
-  fetchAllEvents,
-  accomplishHandler,
-} = useEvents(modalConfig, eventData, tableRef);
-
-const { onRequest, pagination } = usePagination(
-  store.dispatch.bind(this, "events/fetchAllEvents"),
-  loading
+const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllEvents, accomplishHandler } = useEvents(
+  modalConfig,
+  eventData,
+  tableRef
 );
+
+const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "events/fetchAllEvents"), loading);
 async function submitForm() {
   loading.value = true;
   try {

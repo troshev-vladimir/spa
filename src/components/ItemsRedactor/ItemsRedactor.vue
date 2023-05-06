@@ -1,25 +1,8 @@
 <template>
   <ul class="items-redactor">
-    <li
-      v-for="(item, id) in items"
-      :key="id"
-      class="q-mb-md row q-col-gutter-xs"
-    >
-      <q-input
-        filled
-        v-model="item.title"
-        dense
-        class="q-mb-md col-12"
-        label="Услуга"
-      />
-      <q-input
-        filled
-        v-model.number="item.summ"
-        dense
-        class="q-mb-md col-6"
-        label="Цена"
-        type="number"
-      />
+    <li v-for="(item, id) in items" :key="id" class="q-mb-md row q-col-gutter-xs">
+      <q-input filled v-model="item.title" dense class="q-mb-md col-12" label="Услуга" />
+      <q-input filled v-model.number="item.summ" dense class="q-mb-md col-6" label="Цена" type="number" />
       <!-- <q-input
         filled
         v-model="item.summ"

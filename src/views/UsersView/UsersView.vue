@@ -25,9 +25,7 @@
       <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
         <template v-for="col in row.cols" :key="col.name">
           <td v-if="col.name === 'actions'">
-            <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)">
-              Удалить
-            </q-btn>
+            <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
             <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
           </td>
           <td v-else-if="col.name === 'roles'">{{ col.value }}</td>
@@ -71,13 +69,7 @@
 
         <div>
           <q-btn label="Submit" color="primary" @click="submitForm" />
-          <q-btn
-            label="Reset"
-            type="reset"
-            color="primary"
-            flat
-            class="q-ml-sm"
-          />
+          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
         </div>
       </q-form>
     </q-card>
@@ -100,16 +92,8 @@ const pagination = ref({
   rowsPerPage: 10,
 });
 const { allRoles, usersLoading } = useFetchUsers();
-const {
-  editHandler,
-  editModalStatus,
-  editUserLogin,
-  editUserRoles,
-  roleModal,
-  addRole,
-  removeRole,
-  submitForm,
-} = useEditUser(allRoles);
+const { editHandler, editModalStatus, editUserLogin, editUserRoles, roleModal, addRole, removeRole, submitForm } =
+  useEditUser(allRoles);
 
 const { userLogin, userRole, sendFilters } = useFilters(pagination);
 

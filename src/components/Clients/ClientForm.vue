@@ -1,41 +1,11 @@
 <template>
   <q-form autofocus style="min-width: 400px">
     <q-input filled v-model="userData.name" label="Имя" class="q-mb-md" dense />
-    <q-input
-      filled
-      v-model="userData.email"
-      label="Email"
-      class="q-mb-md"
-      dense
-    />
-    <q-input
-      filled
-      v-model="userData.phone"
-      label="Телефон"
-      class="q-mb-md"
-      dense
-    />
-    <q-input
-      filled
-      v-model="userData.phone_add"
-      label="Дополнительный телефон"
-      class="q-mb-md"
-      dense
-    />
-    <q-input
-      filled
-      v-model="userData.site"
-      label="Сайт"
-      class="q-mb-md"
-      dense
-    />
-    <q-input
-      filled
-      v-model="userData.vk"
-      label="Вконтакте"
-      class="q-mb-md"
-      dense
-    />
+    <q-input filled v-model="userData.email" label="Email" class="q-mb-md" dense />
+    <q-input filled v-model="userData.phone" label="Телефон" class="q-mb-md" dense />
+    <q-input filled v-model="userData.phone_add" label="Дополнительный телефон" class="q-mb-md" dense />
+    <q-input filled v-model="userData.site" label="Сайт" class="q-mb-md" dense />
+    <q-input filled v-model="userData.vk" label="Вконтакте" class="q-mb-md" dense />
     <q-select
       v-model="userData.division_id"
       :options="selectedDepartmentDivisions"

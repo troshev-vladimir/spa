@@ -1,12 +1,5 @@
 <template>
-  <q-table
-    title="Задолжености"
-    :rows="data"
-    :columns="columns"
-    row-key="name"
-    align="center"
-    separator="vertical"
-  >
+  <q-table title="Задолжености" :rows="data" :columns="columns" row-key="name" align="center" separator="vertical">
     <template #header-cell="{ col }">
       <q-th class="resizable">
         {{ col.label }}
@@ -52,8 +45,7 @@ const data = [
   {
     name: "Василий Пупкин",
     debt: "1 343p",
-    reason:
-      "По причине ыфвфывфыв ыфв фыв фыв фывфыв фывфы ыфв фввфывыфв вывы фв фвф ",
+    reason: "По причине ыфвфывфыв ыфв фыв фыв фывфыв фывфы ыфв фввфывыфв вывы фв фвф ",
   },
 ];
 </script>

@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import authService from "@/api/auth";
 import { useQuasar } from "quasar";
@@ -7,15 +7,20 @@ export default function useNewUser() {
   const router = useRouter();
   const $q = useQuasar();
   const store = useStore();
-  const newUserName = ref("");
-  const newUserPassword = ref("");
+  const newUser = reactive({
+    email: "",
+    login: "",
+    password: "",
+    phone: "",
+  });
 
   async function regHandler() {
     try {
       const { user } = await authService.registration({
-        email: newUserName.value,
-        login: "test",
-        password: newUserPassword.value,
+        email: newUser.email,
+        login: newUser.login,
+        password: newUser.password,
+        phone: newUser.phone,
       });
       store.commit("user/setUser", user);
     } catch (error) {
@@ -27,16 +32,15 @@ export default function useNewUser() {
       return;
     }
 
-    router.push({ path: "/" });
+    router.push({ name: "crm" });
     $q.notify({
       type: "positive",
-      message: "Вы успешно залогированы",
+      message: "Вы успешно Зарегистрированы",
     });
   }
 
   return {
     regHandler,
-    newUserName,
-    newUserPassword,
+    newUser,
   };
 }

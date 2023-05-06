@@ -1,24 +1,18 @@
 <template>
-  <q-header class="q-pa-md">
-    <div class="row justify-between items-center">
-      <div class="actions">
-        <q-btn
-          v-if="store.state.user.user.id"
-          class="q-px-xl q-py-xs bg-indigo-13 q-mr-md"
-          push
-          label="Выйти"
-          @click="exitHandler"
-        />
-        <q-btn
-          v-else
-          class="q-px-xl q-py-xs bg-indigo-13 q-mr-md"
-          push
-          label="Войти"
-          @click="enterHandler"
-        />
+  <q-header class="q-pa-md bg-blue-grey-2" elevated>
+    <div class="row q-col-gutter-md">
+      <div class="col-auto grow-none items-center flex">
+        <a class="logo" href="https://www.salesgear.ru/">
+          <img src="/logo.png" class="logo" alt="logo" />
+        </a>
       </div>
-      <div class="col-grow row">
+      <div class="col-auto items-center flex">
+        <q-badge class="q-pa-sm bg-blue-3 text-grey-10">{{ now }}</q-badge>
+      </div>
+      <div class="col"></div>
+      <div class="col-3 items-center flex">
         <q-select
+          style="width: 100%"
           v-model="selectedDepartment"
           filled
           :options="store.state.user.user.departments"
@@ -26,19 +20,31 @@
           option-value="id"
           option-label="name"
           dense
-          class="offset-8 col-3"
-          bg-color="blue-2"
+          bg-color="blue-3"
           :loading="departmentLoading"
         />
       </div>
 
-      <div class="user column">
-        <span>{{ store.state.user.user.login }}</span>
-        <div class="row">
-          <span v-for="role in store.state.user.user.roles" :key="role">
-            {{ role.name }},
-          </span>
-        </div>
+      <div class="col-auto items-center flex">
+        <q-badge class="q-pa-sm bg-blue-3 text-grey-10">
+          <span class="q-mr-xs text-body1 text-bold">{{ store.state.user.user.login }}</span>
+          <q-badge class="q-pa-sm bg-blue-5">
+            <div class="row">
+              <span v-for="role in store.state.user.user.roles" :key="role"> {{ role.name }}, </span>
+            </div>
+          </q-badge>
+        </q-badge>
+      </div>
+
+      <div class="col-auto items-center flex">
+        <q-btn
+          v-if="store.state.user.user.id"
+          class="q-px-xl q-py-xs bg-indigo-13 q-mr-md"
+          push
+          label="Выйти"
+          @click="exitHandler"
+        />
+        <q-btn v-else class="q-px-xl q-py-xs bg-indigo-13 q-mr-md" push label="Войти" @click="enterHandler" />
       </div>
     </div>
   </q-header>
@@ -47,33 +53,6 @@
       <router-view></router-view>
     </q-page>
   </q-page-container>
-  <q-drawer
-    v-model="drawer"
-    show-if-above
-    :mini="miniState"
-    @mouseover="miniState = false"
-    @mouseout="miniState = true"
-    :width="200"
-    :breakpoint="500"
-    bordered
-    :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
-  >
-    <q-scroll-area class="fit" :horizontal-thumb-style="{ opacity: 0 }">
-      <q-list padding>
-        <q-item clickable v-ripple @click="router.push({ name: 'crm' })">
-          <q-item-section avatar> CRM </q-item-section>
-
-          <q-item-section> CRM система </q-item-section>
-        </q-item>
-
-        <q-item clickable v-ripple @click="router.push({ name: 'users' })">
-          <q-item-section avatar> Users</q-item-section>
-
-          <q-item-section> Пользователи </q-item-section>
-        </q-item>
-      </q-list>
-    </q-scroll-area>
-  </q-drawer>
   <q-footer class="q-pa-md"></q-footer>
 </template>
 
@@ -82,11 +61,12 @@ import useDepartments from "./composables/useDepartments.js";
 import authService from "@/api/auth";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
+import { useNow, useDateFormat } from "@vueuse/core";
+
 const router = useRouter();
 const store = useStore();
-const drawer = ref(false);
-const miniState = ref(true);
+const now = useDateFormat(useNow(), "YYYY.MM.DD HH:mm:ss");
 const { selectedDepartment, departmentLoading } = useDepartments();
 async function exitHandler() {
   await authService.logout();
@@ -101,4 +81,24 @@ async function enterHandler() {
 }
 </script>
 
-<style></style>
+<style lang="scss">
+.logo {
+  width: 40px;
+  height: 40px;
+  animation: rotate-logo 5s linear infinite;
+}
+
+@keyframes rotate-logo {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.now {
+  align-items: center;
+  display: flex;
+}
+</style>
