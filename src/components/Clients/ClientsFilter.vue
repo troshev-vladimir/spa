@@ -31,7 +31,7 @@ const filters = reactive({
 
 const divisions = computed(() => store.state.department?.divisions);
 watch(divisions, () => {
-  filters.division_id = divisions.value[0].id;
+  filters.division_id = divisions.value[0]?.id;
 });
 
 onMounted(() => {

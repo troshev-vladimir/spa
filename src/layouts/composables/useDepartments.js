@@ -10,17 +10,23 @@ export default function () {
 
   watch(selectedDepartment, (newValue) => {
     store.commit("setDepartment", newValue);
+    localStorage.setItem("lastDepartment", JSON.stringify(selectedDepartment.value));
   });
 
   onMounted(async () => {
     departmentLoading.value = true;
     try {
-      allDepartments.value = await departmentsService.getAll();
+      await store.dispatch("user/getCurrentUser");
+      allDepartments.value = await departmentsService.getByUser(store.state.user.user.id);
     } catch (error) {
       console.log(error);
     }
     departmentLoading.value = false;
-    selectedDepartment.value = allDepartments.value[0];
+
+    if (allDepartments.value.length) {
+      const lastDepartment = localStorage.getItem("lastDepartment");
+      selectedDepartment.value = JSON.parse(lastDepartment) || allDepartments.value[0];
+    }
   });
 
   return {

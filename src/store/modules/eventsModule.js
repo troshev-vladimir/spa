@@ -23,7 +23,6 @@ const events = {
         commit("setEvents", result.data);
         return result;
       } catch (error) {
-        console.log(error);
         throw error.response.data;
       }
     },

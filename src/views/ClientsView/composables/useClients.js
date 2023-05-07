@@ -1,25 +1,39 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import clientService from "@/api/clients";
+import { useQuasar } from "quasar";
 
 export function useClients(modalConfig, userData, tableRef) {
   const store = useStore();
   const department = computed(() => store.state.department);
   const loadingDepartment = ref(false);
+  const $q = useQuasar();
 
   watch(department, async () => {
     tableRef.value.requestServerInteraction();
   });
 
   onMounted(async () => {
-    if (store.state.department) {
+    if (store.user.user.departments.length) {
       fetchAllClients();
+    } else {
+      $q.notify({
+        type: "negative",
+        message: "Вам не назначен ни один Департамент",
+      });
     }
   });
 
   async function fetchAllClients() {
     loadingDepartment.value = true;
-    await store.dispatch("clients/fetchAllClients");
+    try {
+      await store.dispatch("clients/fetchAllClients");
+    } catch (error) {
+      $q.notify({
+        type: "negative",
+        message: error,
+      });
+    }
     loadingDepartment.value = false;
   }
 

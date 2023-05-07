@@ -10,7 +10,7 @@
         <q-badge class="q-pa-sm bg-blue-3 text-grey-10">{{ now }}</q-badge>
       </div>
       <div class="col"></div>
-      <div class="col-3 items-center flex">
+      <div class="col-3 items-center flex" v-if="store.state.user.user.departments?.length">
         <q-select
           style="width: 100%"
           v-model="selectedDepartment"
@@ -25,7 +25,7 @@
         />
       </div>
 
-      <div class="col-auto items-center flex">
+      <div class="col-auto items-center flex" v-if="store.state.user.user.login">
         <q-badge class="q-pa-sm bg-blue-3 text-grey-10">
           <span class="q-mr-xs text-body1 text-bold">{{ store.state.user.user.login }}</span>
           <q-badge class="q-pa-sm bg-blue-5">
@@ -61,7 +61,6 @@ import useDepartments from "./composables/useDepartments.js";
 import authService from "@/api/auth";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { onMounted } from "vue";
 import { useNow, useDateFormat } from "@vueuse/core";
 
 const router = useRouter();
@@ -72,9 +71,6 @@ async function exitHandler() {
   await authService.logout();
   router.push({ name: "auth" });
 }
-onMounted(() => {
-  store.dispatch("user/getCurrentUser");
-});
 
 async function enterHandler() {
   router.push({ name: "auth" });

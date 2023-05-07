@@ -20,6 +20,11 @@ export function useEvents(modalConfig, eventData, tableRef) {
     if (store.state.department) {
       fetchAllEvents();
       store.dispatch("events/fetchTypes");
+    } else {
+      $q.notify({
+        type: "negative",
+        message: "Вам не назначен ни один Департамент",
+      });
     }
   });
 
@@ -31,7 +36,7 @@ export function useEvents(modalConfig, eventData, tableRef) {
       });
     } catch (error) {
       $q.notify({
-        type: "positive",
+        type: "negative",
         message: error,
       });
     }

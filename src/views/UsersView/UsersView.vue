@@ -46,6 +46,13 @@
       <q-form autofocus>
         <q-input filled v-model="editUserLogin" label="Login" class="q-mb-md" />
 
+        <div>
+          <q-btn label="Submit" color="primary" @click="submitForm" />
+          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+        </div>
+      </q-form>
+
+      <div class="q-mt-md">
         <b>Роли пользователя</b>
         <div class="q-mb-md">
           <span v-for="role in editUserRoles" :key="role" class="q-mr-md">
@@ -63,15 +70,33 @@
             class="col-grow"
             dense
           />
-          <q-btn dense @click="removeRole">удалить</q-btn>
-          <q-btn dense @click="addRole">Добавить</q-btn>
+          <q-btn :disable="roleModal" dense @click="removeRole">удалить</q-btn>
+          <q-btn :disable="roleModal" dense @click="addRole">Добавить</q-btn>
         </div>
+      </div>
 
-        <div>
-          <q-btn label="Submit" color="primary" @click="submitForm" />
-          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+      <div class="q-mt-md">
+        <b>Департаменты пользователя</b>
+        <div class="q-mb-md">
+          <span v-for="department in editUserDepartments" :key="department.id" class="q-mr-md">
+            {{ department.name }}
+          </span>
+          <span v-if="!editUserDepartments.length"> Нет назначеных департаментов </span>
         </div>
-      </q-form>
+        <div class="row">
+          <q-select
+            v-model="departmentsModal"
+            :options="allDepartments"
+            label="Выберите Департамент"
+            option-value="id"
+            option-label="name"
+            class="col-grow"
+            dense
+          />
+          <q-btn :disable="departmentsModal" dense @click="detachDepartment">удалить</q-btn>
+          <q-btn :disable="departmentsModal" dense @click="attachDepartment">Добавить</q-btn>
+        </div>
+      </div>
     </q-card>
   </q-dialog>
 </template>
@@ -91,9 +116,23 @@ const $q = useQuasar();
 const pagination = ref({
   rowsPerPage: 10,
 });
-const { allRoles, usersLoading } = useFetchUsers();
-const { editHandler, editModalStatus, editUserLogin, editUserRoles, roleModal, addRole, removeRole, submitForm } =
-  useEditUser(allRoles);
+const { usersLoading } = useFetchUsers();
+const {
+  editHandler,
+  editModalStatus,
+  editUserLogin,
+  editUserRoles,
+  roleModal,
+  addRole,
+  allRoles,
+  removeRole,
+  submitForm,
+  allDepartments,
+  departmentsModal,
+  editUserDepartments,
+  attachDepartment,
+  detachDepartment,
+} = useEditUser();
 
 const { userLogin, userRole, sendFilters } = useFilters(pagination);
 

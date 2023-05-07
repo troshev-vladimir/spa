@@ -12,7 +12,6 @@ class EventService {
     if (query) {
       Object.assign(params, query);
     }
-
     const { data } = await this.axios("/v1/events", {
       params,
     });

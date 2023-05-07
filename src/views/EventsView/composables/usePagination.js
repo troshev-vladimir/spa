@@ -1,9 +1,11 @@
 import { onMounted, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { useQuasar } from "quasar";
 
 export default function usePagination(fetchFunc, loadingDepartment) {
   const router = useRouter();
   const route = useRoute();
+  const $q = useQuasar();
 
   const pagination = ref({
     sortBy: "desc",
@@ -42,10 +44,17 @@ export default function usePagination(fetchFunc, loadingDepartment) {
 
     loadingDepartment.value = true;
 
-    const returnedData = await fetchFunc();
-    pagination.value.rowsPerPage = returnedData.meta.per_page;
-    pagination.value.page = returnedData.meta.current_page;
-    pagination.value.rowsNumber = returnedData.meta.total;
+    try {
+      const returnedData = await fetchFunc();
+      pagination.value.rowsPerPage = returnedData.meta.per_page;
+      pagination.value.page = returnedData.meta.current_page;
+      pagination.value.rowsNumber = returnedData.meta.total;
+    } catch (error) {
+      $q.notify({
+        type: "positive",
+        message: error,
+      });
+    }
 
     loadingDepartment.value = false;
   }

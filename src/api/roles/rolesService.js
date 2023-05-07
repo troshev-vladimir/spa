@@ -10,17 +10,27 @@ class AuthService {
   }
 
   async attachRole(roleId, userId) {
-    const response = await this.axios.post("/v1/roles/" + roleId, {
-      userId: userId,
-    });
-    return response.data;
+    try {
+      const { data } = await this.axios.post("/v1/roles/" + roleId, {
+        userId: userId,
+      });
+      return data;
+    } catch (error) {
+      console.log(error);
+      throw error.response.data.message;
+    }
   }
 
   async detachRole(roleId, userId) {
-    const response = await this.axios.put("/v1/roles/" + roleId, {
-      userId: userId,
-    });
-    return response.data;
+    try {
+      const { data } = await this.axios.put("/v1/roles/" + roleId, {
+        userId: userId,
+      });
+      return data;
+    } catch (error) {
+      console.log(error);
+      throw error.response.data.message;
+    }
   }
 }
 
