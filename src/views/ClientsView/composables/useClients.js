@@ -3,7 +3,7 @@ import { useStore } from "vuex";
 import clientService from "@/api/clients";
 import { useQuasar } from "quasar";
 
-export function useClients(modalConfig, userData, tableRef) {
+export function useClients(modalConfig, tableRef) {
   const store = useStore();
   const department = computed(() => store.state.department);
   const loadingDepartment = ref(false);
@@ -14,13 +14,18 @@ export function useClients(modalConfig, userData, tableRef) {
   });
 
   onMounted(async () => {
-    if (store.user.user.departments.length) {
+    if (store.state.user.user.departments.length) {
+      //TODO: Надо дожидаться загрузки юзера
       fetchAllClients();
     } else {
       $q.notify({
         type: "negative",
         message: "Вам не назначен ни один Департамент",
       });
+    }
+
+    if (!store.state.clients.metadata.jobs.length) {
+      store.dispatch("clients/fetchMetadata");
     }
   });
 
@@ -42,7 +47,7 @@ export function useClients(modalConfig, userData, tableRef) {
     modalConfig.value.action = "add";
     modalConfig.value.name = "Создать клиента";
 
-    userData.value = {};
+    userData.value = initialState;
   }
 
   function editHandler(user) {
@@ -60,6 +65,7 @@ export function useClients(modalConfig, userData, tableRef) {
   }
 
   return {
+    userData,
     addHandler,
     editHandler,
     deleteHandler,
@@ -68,3 +74,34 @@ export function useClients(modalConfig, userData, tableRef) {
     fetchAllClients,
   };
 }
+
+const initialState = {
+  id: null,
+  email: null,
+  name: null,
+  phone: null,
+  phone_add: null,
+  site: null,
+  vk: null,
+  birth_day: null,
+  // 'created_at' =>$this->created_at->format('Y.m.d'),
+  department: null,
+  division: null,
+  creator: null,
+  comment: null,
+  address: null,
+  address_add: null,
+  user_id: null,
+  // activity_id: null,
+  //Это статусы Клиента
+  active: true,
+  federal: false,
+  top: false,
+  prioritet: false,
+
+  activity: null,
+  potencial: null,
+  contacts: [],
+};
+
+const userData = ref(initialState);

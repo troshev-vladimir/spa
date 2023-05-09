@@ -4,7 +4,7 @@
       v-model="selected"
       :options="companySuggestions"
       @filter="onFilter"
-      label="Контактное лицо"
+      label="Юридическое лицо"
       aria-placeholder="sdf"
       map-options
       emit-value
@@ -67,7 +67,7 @@ watch(query, () => {
 });
 </script>
 
-<style>
+<style scoped>
 .contact {
   padding: 6px;
   border-radius: 8px;

@@ -1,14 +1,11 @@
 <template>
   <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <q-btn class="q-mb-md" @click.stop="addHandler()"> Добавить клиента </q-btn>
-      </div>
-    </div>
     <div class="row items-start">
       <div class="col"><ClientFilter></ClientFilter></div>
       <div class="col">
-        <q-btn size="md" @click="fetchAllClients">Найти</q-btn>
+        <q-btn size="md" @click="fetchAllClients">
+          <q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" />
+        </q-btn>
       </div>
     </div>
 
@@ -24,11 +21,26 @@
       ref="tableRef"
     >
       <template v-slot:body="row">
-        <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
+        <q-tr class="cursor-pointer">
           <template v-for="col in row.cols" :key="col.name">
             <td v-if="col.name === 'actions'">
-              <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
-              <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
+              <q-btn-dropdown
+                color="primary"
+                dense
+                dropdown-icon="fa-solid fa-ellipsis-vertical"
+                no-icon-animation
+                flat
+                cover
+                menu-self="top left"
+                auto-close
+              >
+                <q-list>
+                  <q-item-section>
+                    <q-btn style="width: 100%" @click.stop="editHandler(row.row)">Редактировать</q-btn>
+                    <q-btn style="width: 100%" class="q-mr-md" @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
+                  </q-item-section>
+                </q-list>
+              </q-btn-dropdown>
             </td>
             <td v-else-if="col.name === 'roles'">{{ col.value }}</td>
             <td v-else>{{ col.value }}</td>
@@ -36,30 +48,40 @@
         </q-tr>
       </template>
     </q-table>
-
     <q-dialog v-model="modalConfig.status">
-      <q-card class="q-pa-md">
+      <q-card class="q-pa-md" style="min-width: 600px">
         <q-toolbar>
           <q-toolbar-title>{{ modalConfig.name }}</q-toolbar-title>
 
-          <q-btn flat round dense v-close-popup>&times;</q-btn>
+          <q-btn flat round dense v-close-popup><q-icon class="text-primary" size="1.5em" name="fas fa-xmark" /></q-btn>
         </q-toolbar>
         <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
         <q-form autofocus style="min-width: 400px">
           <q-input filled v-model="userData.name" label="Имя" class="q-mb-md" dense />
+          <div class="q-mb-md">
+            <q-checkbox v-model="userData.active" label="active" />
+            <q-checkbox v-model="userData.federal" label="federal" />
+            <q-checkbox v-model="userData.top" label="top" />
+            <q-checkbox v-model="userData.prioritet" label="prioritet" />
+          </div>
+          <q-input filled v-model="userData.address" label="Адресс" dense class="q-mb-md" />
+          <q-input filled v-model="userData.address_add" label="Дополнительный Адресс" dense class="q-mb-md" />
           <q-input
             filled
             v-model="userData.email"
             label="Email"
+            lazy-rules
             :rules="[(val) => !!val || 'Поле обязательно', (val, rules) => rules.email(val) || 'Введите корректный Email']"
             dense
           />
+
           <q-input
             filled
             v-model="userData.phone"
             label="Телефон"
             unmasked-value
-            :rules="[(val) => !!val || 'Поле обязательно']"
+            lazy-rules
+            :rules="[(val) => val.length === 10 || 'Введите корректный телефон']"
             mask="+7 (###) ### ##-##"
             dense
           />
@@ -67,13 +89,40 @@
             filled
             v-model="userData.phone_add"
             unmasked-value
+            lazy-rules
+            :rules="[(val) => val.length === 10 || 'Введите корректный телефон']"
             label="Дополнительный телефон"
             mask="+7 (###) ### ##-##"
-            class="q-mb-md"
             dense
           />
           <q-input filled v-model="userData.site" label="Сайт" class="q-mb-md" dense />
           <q-input filled v-model="userData.vk" label="Вконтакте" class="q-mb-md" dense />
+
+          <q-select
+            v-model="userData.potencial_id"
+            :options="store.state.clients.metadata.potentials"
+            label="Потенциал"
+            map-options
+            emit-value
+            option-value="id"
+            option-label="title"
+            dense
+            filled
+            class="q-mb-md"
+          />
+
+          <q-select
+            v-model="userData.activity_id"
+            :options="store.state.clients.metadata.activitys"
+            label="Деятельность"
+            map-options
+            emit-value
+            option-value="id"
+            option-label="title"
+            dense
+            filled
+            class="q-mb-md"
+          />
 
           <q-select
             v-model="userData.division_id"
@@ -88,6 +137,10 @@
             class="q-mb-md"
           />
 
+          <DatePicker label="Дата рождения" v-model="userData.birth_day" class="q-mb-md" />
+
+          <q-input v-model="userData.comment" label="Комментарий" type="textarea" class="q-mb-md" filled dense />
+          <ClientsContacts class="q-mb-md"></ClientsContacts>
           <DadataSuggestions class="q-mb-md" @select="contactSelected"></DadataSuggestions>
 
           <q-btn label="Submit" color="primary" @click="submitForm" />
@@ -95,6 +148,13 @@
         </q-form>
       </q-card>
     </q-dialog>
+    <div class="row">
+      <div class="col-12">
+        <q-btn class="q-mt-md" @click.stop="addHandler()">
+          <q-icon class="text-primary q-mr-md" size="1.3em" name="fas fa-plus" /> Добавить клиента
+        </q-btn>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -104,6 +164,7 @@ import { useClients } from "./composables/useClients";
 import clientService from "@/api/clients";
 import ClientFilter from "@/components/Clients/ClientsFilter.vue";
 import DadataSuggestions from "./DadataSuggestions.vue";
+import ClientsContacts from "./ClientsContacts.vue";
 import { ref } from "vue";
 // import _ from "lodash";
 import usePagination from "../EventsView/composables/usePagination";
@@ -112,23 +173,12 @@ const tableRef = ref(null);
 const loading = ref(false);
 const store = useStore();
 const modalConfig = ref({ status: false, action: null, name: "" });
-const userData = ref({
-  id: null,
-  name: "",
-  email: "",
-  phone: "",
-  phone_add: "",
-  site: "",
-  vk: "",
-  birth_day: "",
-  division_id: "",
-});
 
-const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllClients } = useClients(
+const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllClients, userData } = useClients(
   modalConfig,
-  userData,
   tableRef
 );
+
 const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "clients/fetchAllClients"), loading);
 
 function contactSelected(value) {
@@ -154,6 +204,13 @@ async function submitForm() {
 }
 
 const columns = [
+  {
+    name: "actions",
+    label: "",
+    align: "left",
+    format: (val) => `${val}`,
+    style: "width: 20px;",
+  },
   {
     name: "id",
     required: true,
@@ -187,16 +244,6 @@ const columns = [
     label: "Телефон ",
     align: "left",
     field: "phone",
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-
-  {
-    name: "actions",
-    required: true,
-    label: "Действия",
-    align: "left",
-    field: "name",
     format: (val) => `${val}`,
     sortable: true,
   },

@@ -49,6 +49,11 @@ class ClientService {
 
     return response.data;
   }
+
+  async getMetadata() {
+    const response = await this.axios("/v1/client-metadata");
+    return response.data;
+  }
 }
 
 export default new ClientService();

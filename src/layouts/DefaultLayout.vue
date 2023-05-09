@@ -7,7 +7,9 @@
         </a>
       </div>
       <div class="col-auto items-center flex">
-        <q-badge class="q-pa-sm bg-blue-3 text-grey-10">{{ now }}</q-badge>
+        <q-badge class="q-pa-sm bg-blue-3 text-grey-10">
+          <q-icon class="text-primary q-mr-sm" size="1.2em" name="fa-regular fa-clock" /> {{ now }}
+        </q-badge>
       </div>
       <div class="col"></div>
       <div class="col-3 items-center flex" v-if="store.state.user.user.departments?.length">

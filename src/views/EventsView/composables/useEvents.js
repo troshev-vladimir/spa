@@ -17,7 +17,7 @@ export function useEvents(modalConfig, eventData, tableRef) {
   });
 
   onMounted(async () => {
-    if (store.state.department) {
+    if (store.state.user.user.departments.length) {
       fetchAllEvents();
       store.dispatch("events/fetchTypes");
     } else {
