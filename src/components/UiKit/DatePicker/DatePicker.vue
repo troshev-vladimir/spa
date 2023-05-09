@@ -1,7 +1,7 @@
 <template>
   <q-input filled dense v-model="data" mask="####-##-##" :range="props.range">
     <template v-slot:append>
-      <q-icon name="edit" class="cursor-pointer">
+      <q-icon name="fa-solid fa-calendar-days" class="cursor-pointer" color="blue-7">
         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
           <q-date v-model="data" today-btn mask="YYYY-MM-DD">
             <div class="row items-center justify-end">

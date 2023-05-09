@@ -57,13 +57,13 @@ export function useEvents(tableRef) {
     store.dispatch("events/fetchTypes");
   }
 
-  async function addHandler() {
+  async function addHandler(client = {}) {
     loadingDepartment.value = true;
     await getAttendantData();
     modalConfig.value.status = true;
     modalConfig.value.action = "add";
     modalConfig.value.name = "Создать событие";
-    eventData.value = {};
+    eventData.value = { client: client };
     loadingDepartment.value = false;
   }
 
