@@ -38,57 +38,7 @@
         </q-tr>
       </template>
     </q-table>
-
-    <q-dialog v-model="modalConfig.status">
-      <q-card class="q-pa-md">
-        <q-toolbar>
-          <q-toolbar-title>{{ modalConfig.name }}</q-toolbar-title>
-
-          <q-btn flat round dense v-close-popup>&times;</q-btn>
-        </q-toolbar>
-        <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
-        <q-form autofocus style="min-width: 400px">
-          <q-input filled v-model="eventData.title" label="Событие" class="q-mb-md" dense />
-
-          <q-select
-            v-model="eventData.type_id"
-            :options="store.state.events?.eventTypes"
-            label="Тип"
-            map-options
-            emit-value
-            option-value="id"
-            option-label="title"
-            dense
-            filled
-            class="q-mb-md"
-          />
-
-          <q-select
-            v-model="eventData.client"
-            :options="clients"
-            @filter="onFilter"
-            label="Клиент"
-            aria-placeholder="sdf"
-            map-options
-            emit-value
-            option-value="id"
-            option-label="name"
-            dense
-            filled
-            use-input
-            input-debounce="0"
-            class="q-mb-md"
-            clearable
-            options-dense
-          />
-
-          <DatePicker v-model="eventData.appointment_date" class="q-mb-md" />
-
-          <q-btn label="Submit" color="primary" @click="submitForm" />
-          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" dense />
-        </q-form>
-      </q-card>
-    </q-dialog>
+    <EventsModal @sumbit="fetchAllEvents" />
   </div>
 </template>
 
@@ -96,51 +46,17 @@
 import { useStore } from "vuex";
 import EventsFilter from "@/components/Events/EventsFilter";
 import { useEvents } from "./composables/useEvents";
-import { useClients } from "./composables/useClients";
 import usePagination from "./composables/usePagination";
-import eventService from "@/api/events";
 import { ref } from "vue";
+import EventsModal from "./EventsModal.vue";
 
 const tableRef = ref(null);
 const loading = ref(false);
 const store = useStore();
 
-const modalConfig = ref({ status: false, action: null, name: "" });
-const eventData = ref({
-  id: null,
-  title: "",
-  type: "",
-  client_id: null,
-  date: "",
-  fulfilled_date: null,
-});
-
-const { clients, onFilter } = useClients();
-
-const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllEvents, accomplishHandler } = useEvents(
-  modalConfig,
-  eventData,
-  tableRef
-);
+const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllEvents, accomplishHandler } = useEvents(tableRef);
 
 const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "events/fetchAllEvents"), loading);
-async function submitForm() {
-  loading.value = true;
-  try {
-    if (modalConfig.value.action === "add") {
-      eventData.value.userId = store.state.user.user.id;
-      await eventService.create(eventData.value);
-    } else if (modalConfig.value.action === "edit") {
-      await eventService.update(eventData.value.id, eventData.value);
-    }
-  } catch (error) {
-    console.log(error);
-  } finally {
-    modalConfig.value.status = false;
-    loading.value = false;
-    fetchAllEvents();
-  }
-}
 
 const columns = [
   {

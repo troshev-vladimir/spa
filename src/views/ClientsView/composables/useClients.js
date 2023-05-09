@@ -2,8 +2,10 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import clientService from "@/api/clients";
 import { useQuasar } from "quasar";
-
+// import useEventsModal from "@/views/EventsView/composables/useEventsModal";
+import { useEvents } from "@/views/EventsView/composables/useEvents";
 export function useClients(modalConfig, tableRef) {
+  const { addHandler: eventsAddHendler } = useEvents();
   const store = useStore();
   const department = computed(() => store.state.department);
   const loadingDepartment = ref(false);
@@ -28,6 +30,15 @@ export function useClients(modalConfig, tableRef) {
       store.dispatch("clients/fetchMetadata");
     }
   });
+
+  function createEventForClient(client) {
+    console.log(client);
+    eventsAddHendler(client);
+  }
+
+  function createSaleForClient(client) {
+    console.log(client);
+  }
 
   async function fetchAllClients() {
     loadingDepartment.value = true;
@@ -72,6 +83,8 @@ export function useClients(modalConfig, tableRef) {
     department,
     loadingDepartment,
     fetchAllClients,
+    createEventForClient,
+    createSaleForClient,
   };
 }
 

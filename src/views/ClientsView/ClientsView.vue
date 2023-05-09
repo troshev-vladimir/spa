@@ -33,9 +33,12 @@
                 cover
                 menu-self="top left"
                 auto-close
+                @click.stop
               >
                 <q-list>
-                  <q-item-section>
+                  <q-item-section style="min-width: 200px">
+                    <q-btn style="width: 100%" @click.stop="createSaleForClient(row.row)">Создать продажу</q-btn>
+                    <q-btn style="width: 100%" @click.stop="createEventForClient(row.row)">Создать событие</q-btn>
                     <q-btn style="width: 100%" @click.stop="editHandler(row.row)">Редактировать</q-btn>
                     <q-btn style="width: 100%" class="q-mr-md" @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
                   </q-item-section>
@@ -148,6 +151,7 @@
         </q-form>
       </q-card>
     </q-dialog>
+    <EventsModal />
     <div class="row">
       <div class="col-12">
         <q-btn class="q-mt-md" @click.stop="addHandler()">
@@ -165,6 +169,8 @@ import clientService from "@/api/clients";
 import ClientFilter from "@/components/Clients/ClientsFilter.vue";
 import DadataSuggestions from "./DadataSuggestions.vue";
 import ClientsContacts from "./ClientsContacts.vue";
+import EventsModal from "@/views/EventsView/EventsModal.vue";
+
 import { ref } from "vue";
 // import _ from "lodash";
 import usePagination from "../EventsView/composables/usePagination";
@@ -174,7 +180,7 @@ const loading = ref(false);
 const store = useStore();
 const modalConfig = ref({ status: false, action: null, name: "" });
 
-const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllClients, userData } = useClients(
+const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllClients, userData, createEventForClient } = useClients(
   modalConfig,
   tableRef
 );

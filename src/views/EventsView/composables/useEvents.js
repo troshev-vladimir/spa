@@ -4,13 +4,15 @@ import eventService from "@/api/events";
 import moment from "moment";
 import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
+import useEventsModal from "./useEventsModal";
 
-export function useEvents(modalConfig, eventData, tableRef) {
+export function useEvents(tableRef) {
   const route = useRoute();
   const store = useStore();
   const department = computed(() => store.state.department);
   const loadingDepartment = ref(false);
   const $q = useQuasar();
+  const { modalConfig, eventData } = useEventsModal();
 
   watch(department, async () => {
     tableRef.value.requestServerInteraction();
@@ -18,6 +20,7 @@ export function useEvents(modalConfig, eventData, tableRef) {
 
   onMounted(async () => {
     if (store.state.user.user.departments.length) {
+      //TODO: Надо дожидаться загрузки юзера
       fetchAllEvents();
       store.dispatch("events/fetchTypes");
     } else {
