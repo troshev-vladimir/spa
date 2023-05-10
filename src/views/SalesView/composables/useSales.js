@@ -1,13 +1,13 @@
 import { onMounted, ref, watch, computed } from "vue";
 import { useStore } from "vuex";
 import salesService from "@/api/sales";
+import useSalesModal from "./useSalesModal";
 
-export function useSales(modalConfig, tableRef, saleData) {
+export function useSales(tableRef) {
   const store = useStore();
   const loadingDepartment = ref(false);
   const department = computed(() => store.state.department);
-  const saleItems = ref([{ title: "", summ: 0, amount: 1 }]);
-  const adCompany = ref({ from: null, to: null });
+  const { saleData, modalConfig, saleItems, adCompany } = useSalesModal();
 
   onMounted(async () => {
     if (store.state.department) {
@@ -30,13 +30,13 @@ export function useSales(modalConfig, tableRef, saleData) {
     store.dispatch("sales/fetchAllSmi");
   }
 
-  function addHandler() {
+  function addHandler(client = {}) {
     getAttendantData();
     modalConfig.value.status = true;
     modalConfig.value.action = "add";
     modalConfig.value.name = "Создать продажу";
     adCompany.value = { from: null, to: null };
-    saleData.value = {};
+    saleData.value = { client: client };
     saleItems.value = [];
   }
 

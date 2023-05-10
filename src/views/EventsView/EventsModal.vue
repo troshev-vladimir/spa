@@ -70,6 +70,9 @@ async function submitForm() {
   try {
     if (modalConfig.value.action === "add") {
       eventData.value.userId = store.state.user.user.id;
+      const newEvent = eventData.value;
+      newEvent.client_id = eventData.value.client.id;
+      delete newEvent.client;
       await eventService.create(eventData.value);
     } else if (modalConfig.value.action === "edit") {
       await eventService.update(eventData.value.id, eventData.value);

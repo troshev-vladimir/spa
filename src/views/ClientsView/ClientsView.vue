@@ -152,6 +152,7 @@
       </q-card>
     </q-dialog>
     <EventsModal />
+    <SalesModal />
     <div class="row">
       <div class="col-12">
         <q-btn class="q-mt-md" @click.stop="addHandler()">
@@ -170,6 +171,7 @@ import ClientFilter from "@/components/Clients/ClientsFilter.vue";
 import DadataSuggestions from "./DadataSuggestions.vue";
 import ClientsContacts from "./ClientsContacts.vue";
 import EventsModal from "@/views/EventsView/EventsModal.vue";
+import SalesModal from "@/views/SalesView/SalesModal.vue";
 
 import { ref } from "vue";
 // import _ from "lodash";
@@ -180,10 +182,16 @@ const loading = ref(false);
 const store = useStore();
 const modalConfig = ref({ status: false, action: null, name: "" });
 
-const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllClients, userData, createEventForClient } = useClients(
-  modalConfig,
-  tableRef
-);
+const {
+  editHandler,
+  addHandler,
+  deleteHandler,
+  loadingDepartment,
+  fetchAllClients,
+  userData,
+  createEventForClient,
+  createSaleForClient,
+} = useClients(modalConfig, tableRef);
 
 const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "clients/fetchAllClients"), loading);
 

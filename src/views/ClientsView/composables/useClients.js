@@ -4,8 +4,11 @@ import clientService from "@/api/clients";
 import { useQuasar } from "quasar";
 // import useEventsModal from "@/views/EventsView/composables/useEventsModal";
 import { useEvents } from "@/views/EventsView/composables/useEvents";
+import { useSales } from "@/views/SalesView/composables/useSales";
+
 export function useClients(modalConfig, tableRef) {
   const { addHandler: eventsAddHendler } = useEvents();
+  const { addHandler: salesAddHendler } = useSales();
   const store = useStore();
   const department = computed(() => store.state.department);
   const loadingDepartment = ref(false);
@@ -38,6 +41,7 @@ export function useClients(modalConfig, tableRef) {
 
   function createSaleForClient(client) {
     console.log(client);
+    salesAddHendler(client);
   }
 
   async function fetchAllClients() {
