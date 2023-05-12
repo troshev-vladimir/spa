@@ -1,10 +1,5 @@
 <template>
   <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <q-btn class="q-mb-md" @click.stop="addHandler()"> Добавить Событие </q-btn>
-      </div>
-    </div>
     <!-- <div class="col"><ClientFilter></ClientFilter></div> -->
     <!-- <div class="col">
         <q-btn size="md" @click="fetchAllClients">Найти</q-btn>
@@ -26,11 +21,26 @@
         <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
           <template v-for="col in row.cols" :key="col.name">
             <td v-if="col.name === 'actions'">
-              <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
-              <q-btn @click.stop="">В архив</q-btn>
-              <q-btn @click.stop="accomplishHandler(row.row)">Завершить</q-btn>
-
-              <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
+              <q-btn-dropdown
+                color="primary"
+                dense
+                dropdown-icon="fa-solid fa-ellipsis-vertical"
+                no-icon-animation
+                flat
+                cover
+                menu-self="top left"
+                auto-close
+                @click.stop
+              >
+                <q-list>
+                  <q-item-section style="min-width: 200px">
+                    <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
+                    <q-btn @click.stop="">В архив (in progress)</q-btn>
+                    <q-btn @click.stop="accomplishHandler(row.row)">Завершить</q-btn>
+                    <q-btn @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
+                  </q-item-section>
+                </q-list>
+              </q-btn-dropdown>
             </td>
             <td v-else-if="col.name === 'roles'">{{ col.value }}</td>
             <td v-else>{{ col.value }}</td>
@@ -38,6 +48,13 @@
         </q-tr>
       </template>
     </q-table>
+    <div class="row">
+      <div class="col-12">
+        <q-btn class="q-mt-md" @click.stop="addHandler()">
+          <q-icon class="text-primary q-mr-md" size="1.3em" name="fas fa-plus" /> Добавить Событие
+        </q-btn>
+      </div>
+    </div>
     <EventsModal @sumbit="fetchAllEvents" />
   </div>
 </template>
@@ -59,6 +76,14 @@ const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllEvent
 const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "events/fetchAllEvents"), loading);
 
 const columns = [
+  {
+    name: "actions",
+    required: true,
+    label: "",
+    align: "left",
+    field: "name",
+    format: (val) => `${val}`,
+  },
   {
     name: "id",
     required: true,
@@ -110,15 +135,6 @@ const columns = [
     field: "fulfilled_date",
     format: (val) => `${val}`,
     sortable: true,
-  },
-
-  {
-    name: "actions",
-    required: true,
-    label: "Действия",
-    align: "left",
-    field: "name",
-    format: (val) => `${val}`,
   },
 ];
 </script>

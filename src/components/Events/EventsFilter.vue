@@ -13,7 +13,10 @@
       />
 
       <DatePicker v-model="filters.date" range class="col-3" />
-      <div class="col-3"><q-btn>Найти</q-btn></div>
+
+      <div class="col-3">
+        <q-btn><q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" /></q-btn>
+      </div>
     </q-form>
   </div>
 </template>

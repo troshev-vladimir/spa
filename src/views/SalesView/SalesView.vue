@@ -1,10 +1,5 @@
 <template>
   <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <q-btn class="q-mb-md" @click.stop="addHandler()"> Добавить Продажу </q-btn>
-      </div>
-    </div>
     <div class="row items-start"></div>
 
     <q-table
@@ -31,6 +26,13 @@
         </q-tr>
       </template>
     </q-table>
+    <div class="row">
+      <div class="col-12">
+        <q-btn class="q-mt-md" @click.stop="addHandler()">
+          <q-icon class="text-primary q-mr-md" size="1.3em" name="fas fa-plus" /> Добавить Продажу
+        </q-btn>
+      </div>
+    </div>
     <SalesModal @sumbit="fetchAllSales"></SalesModal>
   </div>
 </template>

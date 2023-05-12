@@ -8,7 +8,8 @@
       </div>
       <div class="col-auto items-center flex">
         <q-badge class="q-pa-sm bg-blue-3 text-grey-10">
-          <q-icon class="text-primary q-mr-sm" size="1.2em" name="fa-regular fa-clock" /> {{ now }}
+          <div class="day">{{ day }}</div>
+          <q-icon class="text-primary q-mx-sm" size="1.2em" name="fa-regular fa-clock" /> {{ now }}
         </q-badge>
       </div>
       <div class="col"></div>
@@ -31,9 +32,10 @@
         <q-badge class="q-pa-sm bg-blue-3 text-grey-10">
           <span class="q-mr-xs text-body1 text-bold">{{ store.state.user.user.login }}</span>
           <q-badge class="q-pa-sm bg-blue-5">
-            <div class="row">
+            <!-- <div class="row">
               <span v-for="role in store.state.user.user.roles" :key="role"> {{ role.name }}, </span>
-            </div>
+            </div> -->
+            {{ store.state.user.user.roles[store.state.user.user.roles.length - 1].name }}
           </q-badge>
         </q-badge>
       </div>
@@ -68,6 +70,7 @@ import { useNow, useDateFormat } from "@vueuse/core";
 const router = useRouter();
 const store = useStore();
 const now = useDateFormat(useNow(), "YYYY.MM.DD HH:mm:ss");
+const day = useDateFormat(useNow(), "dddd");
 const { selectedDepartment, departmentLoading } = useDepartments();
 async function exitHandler() {
   await authService.logout();
@@ -98,5 +101,10 @@ async function enterHandler() {
 .now {
   align-items: center;
   display: flex;
+}
+
+.day {
+  text-transform: capitalize;
+  font-weight: 600;
 }
 </style>
