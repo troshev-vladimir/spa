@@ -8,7 +8,14 @@
       </q-toolbar>
       <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
       <q-form autofocus style="min-width: 400px">
-        <q-input filled v-model="eventData.title" label="Событие" class="q-mb-md" dense />
+        <q-input
+          filled
+          v-model="eventData.title"
+          label="Событие"
+          class="q-mb-md"
+          dense
+          :readonly="modalConfig.action === 'watch' || modalConfig.action === 'closeWithResult'"
+        />
 
         <q-select
           v-model="eventData.type_id"
@@ -21,6 +28,7 @@
           dense
           filled
           class="q-mb-md"
+          :readonly="modalConfig.action === 'watch' || modalConfig.action === 'closeWithResult'"
         />
 
         <q-select
@@ -40,9 +48,27 @@
           class="q-mb-md"
           clearable
           options-dense
+          :readonly="modalConfig.action === 'watch' || modalConfig.action === 'closeWithResult'"
         />
 
-        <DatePicker v-model="eventData.appointment_date" class="q-mb-md" />
+        <DatePicker
+          label="Дата"
+          v-model="eventData.appointment_date"
+          class="q-mb-md"
+          :readonly="modalConfig.action === 'watch' || modalConfig.action === 'closeWithResult'"
+        />
+
+        <q-input
+          v-if="modalConfig.action !== 'add'"
+          filled
+          v-model="eventData.comment"
+          label="Коммент"
+          class="q-mb-md"
+          type="textarea"
+          dense
+          :readonly="modalConfig.action === 'watch'"
+          :autofocus="modalConfig.action === 'closeWithResult'"
+        />
 
         <q-btn label="Submit" color="primary" @click="submitForm" />
         <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" dense />
@@ -57,6 +83,8 @@ import eventService from "@/api/events";
 import useEventsModal from "./composables/useEventsModal";
 import { ref } from "vue";
 import { useStore } from "vuex";
+import moment from "moment";
+
 const store = useStore();
 
 const { clients, onFilter } = useClients();
@@ -71,11 +99,18 @@ async function submitForm() {
     if (modalConfig.value.action === "add") {
       eventData.value.userId = store.state.user.user.id;
       const newEvent = eventData.value;
-      newEvent.client_id = eventData.value.client.id;
+      newEvent.client_id = eventData.value.client;
       delete newEvent.client;
       await eventService.create(eventData.value);
     } else if (modalConfig.value.action === "edit") {
       await eventService.update(eventData.value.id, eventData.value);
+    } else if (modalConfig.value.action === "closeWithResult") {
+      console.log("eventData", eventData);
+      eventData.value.fulfilled_date = moment().format("YYYY-MM-DD");
+      eventData.value.result = false;
+
+      await eventService.update(eventData.value.id, eventData.value);
+      await eventService.moveToArchive(eventData.value.id);
     }
   } catch (error) {
     console.log(error);

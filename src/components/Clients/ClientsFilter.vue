@@ -1,6 +1,6 @@
 <template>
-  <q-form class="row q-mb-lg q-gutter-md">
-    <q-input dense v-model="filters.name" label="Имя" class="col-5" />
+  <q-form class="row q-mb-lg q-col-gutter-md">
+    <q-input dense v-model="filters.name" label="Имя" class="col-4" />
     <q-select
       v-model="filters.division_id"
       :options="divisions"
@@ -10,24 +10,86 @@
       dense
       map-options
       emit-value
-      class="col-6"
+      class="col-4"
+    />
+
+    <q-select
+      v-model="filters.user"
+      :options="store.state.users.usersData"
+      label="Ответствееный"
+      option-value="id"
+      option-label="login"
+      dense
+      map-options
+      emit-value
+      class="col-4"
+      clearable
+      @filter="onFilterUsers"
+      input-debounce="0"
+      use-input
+      options-dense
+    />
+
+    <q-select
+      v-model="filters.potential"
+      :options="store.state.clients.metadata.potentials"
+      label="Потенциал"
+      option-value="id"
+      option-label="title"
+      dense
+      map-options
+      emit-value
+      class="col-4"
+      clearable
+    />
+    <q-select
+      v-model="filters.activity"
+      :options="store.state.clients.metadata.activitys"
+      label="Род деятельности"
+      option-value="id"
+      option-label="title"
+      dense
+      map-options
+      emit-value
+      class="col-4"
+      clearable
+    />
+    <q-select
+      v-model="attributes"
+      multiple
+      :options="['active', 'federal', 'top', 'prioritet']"
+      use-chips
+      clearable
+      label="Аттрибуты"
+      class="col-4"
+      dense
     />
   </q-form>
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, watch } from "vue";
-import { useRouter } from "vue-router";
+import { computed, onMounted, reactive, ref, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useStore } from "vuex";
 import _ from "lodash";
 
 const store = useStore();
 const router = useRouter();
-
+const route = useRoute();
+const attributes = ref(null);
 const filters = reactive({
   name: "",
   division_id: null,
+  user: null,
+  potential: null,
+  activity: null,
 });
+
+const onFilterUsers = async (val, update) => {
+  console.log(val);
+  await store.dispatch("users/fetchAllUsers");
+  update();
+};
 
 const divisions = computed(() => store.state.department?.divisions);
 watch(divisions, () => {
@@ -46,17 +108,33 @@ onMounted(() => {
       filters[key] = value;
     }
   });
-}),
-  watch(
-    filters,
-    () => {
-      router.push({
-        path: router.currentRoute.value.fullPath,
-        query: _.pickBy(filters, _.identity),
-      });
-    },
-    { deep: true }
-  );
+});
+watch(
+  filters,
+  () => {
+    router.replace({
+      path: router.currentRoute.value.fullPath,
+      query: Object.assign({}, route.query, _.pickBy(filters, _.identity)),
+    });
+  },
+  { deep: true }
+);
+
+watch(
+  attributes,
+  () => {
+    router.replace({
+      path: router.currentRoute.value.fullPath,
+      query: Object.assign({}, route.query, {
+        active: +attributes.value.includes("active"),
+        federal: +attributes.value.includes("federal"),
+        top: +attributes.value.includes("top"),
+        prioritet: +attributes.value.includes("prioritet"),
+      }),
+    });
+  },
+  { deep: true }
+);
 </script>
 
 <style></style>

@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div class="row items-start">
-      <div class="col"><ClientFilter></ClientFilter></div>
-      <div class="col">
+      <div class="col-12"><ClientFilter></ClientFilter></div>
+      <div class="col-1">
         <q-btn size="md" @click="fetchAllClients">
           <q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" />
         </q-btn>
@@ -144,7 +144,7 @@
 
           <q-input v-model="userData.comment" label="Комментарий" type="textarea" class="q-mb-md" filled dense />
           <ClientsContacts class="q-mb-md"></ClientsContacts>
-          <DadataSuggestions class="q-mb-md" @select="contactSelected"></DadataSuggestions>
+          <DadataSuggestions class="q-mb-md"></DadataSuggestions>
 
           <q-btn label="Submit" color="primary" @click="submitForm" />
           <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" dense />
@@ -194,10 +194,6 @@ const {
 } = useClients(modalConfig, tableRef);
 
 const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "clients/fetchAllClients"), loading);
-
-function contactSelected(value) {
-  console.log(value);
-}
 
 async function submitForm() {
   loading.value = true;

@@ -15,19 +15,11 @@ export function useClients(modalConfig, tableRef) {
   const $q = useQuasar();
 
   watch(department, async () => {
-    tableRef.value.requestServerInteraction();
+    await tableRef.value.requestServerInteraction();
   });
 
   onMounted(async () => {
-    if (store.state.user.user.departments.length) {
-      //TODO: Надо дожидаться загрузки юзера
-      fetchAllClients();
-    } else {
-      $q.notify({
-        type: "negative",
-        message: "Вам не назначен ни один Департамент",
-      });
-    }
+    if (store.state.user.user.departments?.length) fetchAllClients();
 
     if (!store.state.clients.metadata.jobs.length) {
       store.dispatch("clients/fetchMetadata");
@@ -35,12 +27,10 @@ export function useClients(modalConfig, tableRef) {
   });
 
   function createEventForClient(client) {
-    console.log(client);
     eventsAddHendler(client);
   }
 
   function createSaleForClient(client) {
-    console.log(client);
     salesAddHendler(client);
   }
 

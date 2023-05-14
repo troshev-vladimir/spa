@@ -1,4 +1,4 @@
-import { computed, onMounted, ref, watch } from "vue";
+import { ref } from "vue";
 import { useStore } from "vuex";
 import eventService from "@/api/events";
 import moment from "moment";
@@ -6,30 +6,12 @@ import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import useEventsModal from "./useEventsModal";
 
-export function useEvents(tableRef) {
+export function useEvents() {
   const route = useRoute();
   const store = useStore();
-  const department = computed(() => store.state.department);
   const loadingDepartment = ref(false);
   const $q = useQuasar();
   const { modalConfig, eventData } = useEventsModal();
-
-  watch(department, async () => {
-    tableRef.value.requestServerInteraction();
-  });
-
-  onMounted(async () => {
-    if (store.state.user.user.departments.length) {
-      //TODO: Надо дожидаться загрузки юзера
-      fetchAllEvents();
-      store.dispatch("events/fetchTypes");
-    } else {
-      $q.notify({
-        type: "negative",
-        message: "Вам не назначен ни один Департамент",
-      });
-    }
-  });
 
   async function fetchAllEvents() {
     loadingDepartment.value = true;
@@ -37,20 +19,31 @@ export function useEvents(tableRef) {
       await store.dispatch("events/fetchAllEvents", {
         ...route.query,
       });
+      loadingDepartment.value = false;
     } catch (error) {
       $q.notify({
         type: "negative",
         message: error,
       });
     }
-
-    loadingDepartment.value = false;
   }
 
-  async function accomplishHandler(event) {
+  async function accomplishHandler(event, resultStatus) {
     const accompleshedEvent = event;
-    accompleshedEvent.fulfilled_date = moment().format("YYYY-MM-DD");
-    eventService.update(event.id, accompleshedEvent);
+    const norefEvent = Object.assign({}, event);
+    // norefUser.division_id = user.division.id;
+    eventData.value = norefEvent;
+    await getAttendantData();
+    if (!resultStatus) {
+      accompleshedEvent.fulfilled_date = moment().format("YYYY-MM-DD");
+      accompleshedEvent.result = false;
+      await eventService.update(event.id, accompleshedEvent);
+      await eventService.moveToArchive(event.id);
+    } else {
+      modalConfig.value.status = true;
+      modalConfig.value.action = "closeWithResult";
+      modalConfig.value.name = "Завершить событие";
+    }
   }
 
   function getAttendantData() {
@@ -67,13 +60,25 @@ export function useEvents(tableRef) {
     loadingDepartment.value = false;
   }
 
-  async function editHandler(user) {
+  async function editHandler(event) {
     loadingDepartment.value = true;
     await getAttendantData();
     modalConfig.value.status = true;
     modalConfig.value.action = "edit";
     modalConfig.value.name = "Pедактировать событие";
-    const norefEvent = Object.assign({}, user);
+    const norefEvent = Object.assign({}, event);
+    // norefUser.division_id = user.division.id;
+    eventData.value = norefEvent;
+    loadingDepartment.value = false;
+  }
+
+  async function watchEvent(event) {
+    loadingDepartment.value = true;
+    await getAttendantData();
+    modalConfig.value.status = true;
+    modalConfig.value.action = "watch";
+    modalConfig.value.name = "Просмотр событие";
+    const norefEvent = Object.assign({}, event);
     // norefUser.division_id = user.division.id;
     eventData.value = norefEvent;
     loadingDepartment.value = false;
@@ -88,9 +93,9 @@ export function useEvents(tableRef) {
     addHandler,
     editHandler,
     deleteHandler,
-    department,
     loadingDepartment,
     fetchAllEvents,
     accomplishHandler,
+    watchEvent,
   };
 }

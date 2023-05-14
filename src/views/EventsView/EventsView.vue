@@ -1,9 +1,5 @@
 <template>
   <div class="container">
-    <!-- <div class="col"><ClientFilter></ClientFilter></div> -->
-    <!-- <div class="col">
-        <q-btn size="md" @click="fetchAllClients">Найти</q-btn>
-      </div> -->
     <EventsFilter class="q-mb-md" />
 
     <q-table
@@ -18,7 +14,7 @@
       @request="onRequest"
     >
       <template v-slot:body="row">
-        <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
+        <q-tr @click="watchEvent(row.row)" class="cursor-pointer">
           <template v-for="col in row.cols" :key="col.name">
             <td v-if="col.name === 'actions'">
               <q-btn-dropdown
@@ -33,10 +29,16 @@
                 @click.stop
               >
                 <q-list>
-                  <q-item-section style="min-width: 200px">
+                  <q-item-section style="min-width: 250px">
                     <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
                     <q-btn @click.stop="">В архив (in progress)</q-btn>
-                    <q-btn @click.stop="accomplishHandler(row.row)">Завершить</q-btn>
+                    <q-btn v-if="!row.row.fulfilled_date" @click.stop="accomplishHandler(row.row, true)"
+                      >Завершить с результатом</q-btn
+                    >
+                    <q-btn v-if="!row.row.fulfilled_date" @click.stop="accomplishHandler(row.row, false)"
+                      >Завершить без результата</q-btn
+                    >
+                    <q-btn v-if="!row.row.fulfilled_date" @click.stop="rescheduleHandler(row.row)">Запланировать</q-btn>
                     <q-btn @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
                   </q-item-section>
                 </q-list>
@@ -63,78 +65,15 @@
 import { useStore } from "vuex";
 import EventsFilter from "@/components/Events/EventsFilter";
 import { useEvents } from "./composables/useEvents";
+import useEventsInit from "./composables/useEventsInit";
 import usePagination from "./composables/usePagination";
 import { ref } from "vue";
 import EventsModal from "./EventsModal.vue";
 
 const tableRef = ref(null);
-const loading = ref(false);
 const store = useStore();
 
-const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllEvents, accomplishHandler } = useEvents(tableRef);
-
-const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "events/fetchAllEvents"), loading);
-
-const columns = [
-  {
-    name: "actions",
-    required: true,
-    label: "",
-    align: "left",
-    field: "name",
-    format: (val) => `${val}`,
-  },
-  {
-    name: "id",
-    required: true,
-    label: "№",
-    align: "left",
-    field: "id",
-    format: (val) => `${val}`,
-  },
-  {
-    name: "title",
-    required: true,
-    label: "Событие",
-    align: "left",
-    field: "title",
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  {
-    name: "type",
-    required: true,
-    label: "Тип",
-    align: "left",
-    field: "type",
-    format: (type) => `${type.title}`,
-  },
-  {
-    name: "client",
-    required: true,
-    label: "Клиент",
-    align: "left",
-    field: "client",
-    format: (client) => `${client.name}`,
-    sortable: true,
-  },
-  {
-    name: "appointment_date",
-    required: true,
-    label: "Дата",
-    align: "left",
-    field: "appointment_date",
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-  {
-    name: "fulfilled_date",
-    required: true,
-    label: "fulfilled_date",
-    align: "left",
-    field: "fulfilled_date",
-    format: (val) => `${val}`,
-    sortable: true,
-  },
-];
+const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllEvents, watchEvent, accomplishHandler } = useEvents();
+const { columns } = useEventsInit(tableRef, loadingDepartment);
+const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "events/fetchAllEvents"), loadingDepartment);
 </script>
