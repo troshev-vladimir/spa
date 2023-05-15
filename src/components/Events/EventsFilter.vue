@@ -1,7 +1,35 @@
 <template>
   <div>
     <q-form class="row q-col-gutter-md">
-      <q-input dense v-model="filters.title" label="Имя" class="col-3" />
+      <q-input dense v-model="filters.title" label="Имя" class="col-4" />
+      <q-select
+        v-model="filters.division_id"
+        :options="divisions"
+        label="Выберите отдел"
+        option-value="id"
+        option-label="name"
+        dense
+        map-options
+        emit-value
+        class="col-4"
+      />
+
+      <q-select
+        v-model="filters.user"
+        :options="store.state.users.usersData"
+        label="Ответствееный"
+        option-value="id"
+        option-label="login"
+        dense
+        map-options
+        emit-value
+        class="col-4"
+        clearable
+        @filter="onFilterUsers"
+        input-debounce="0"
+        use-input
+        options-dense
+      />
       <q-select
         v-model="filters.fulfilled"
         :options="fulfilledOptions"
@@ -9,14 +37,10 @@
         dense
         map-options
         emit-value
-        class="col-3"
+        class="col-4"
       />
 
-      <DatePicker v-model="filters.date" range class="col-3" />
-
-      <div class="col-3">
-        <q-btn><q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" /></q-btn>
-      </div>
+      <DatePicker v-model="filters.date" label="Промежуток времени" range class="col-4" />
     </q-form>
   </div>
 </template>
@@ -25,12 +49,15 @@
 import { onMounted, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import _ from "lodash";
+import { useStore } from "vuex";
 import DatePicker from "../UiKit/DatePicker";
 const router = useRouter();
+const store = useStore();
 
 const filters = reactive({
   title: "",
   division_id: null,
+  user: null,
   date: {
     from: null,
     to: null,
@@ -64,17 +91,17 @@ onMounted(() => {
       filters[key] = value;
     }
   });
-}),
-  watch(
-    filters,
-    () => {
-      router.push({
-        path: router.currentRoute.value.fullPath,
-        query: _.pickBy(filters, _.identity),
-      });
-    },
-    { deep: true }
-  );
+});
+watch(
+  filters,
+  () => {
+    router.push({
+      path: router.currentRoute.value.fullPath,
+      query: _.pickBy(filters, _.identity),
+    });
+  },
+  { deep: true }
+);
 </script>
 
 <style></style>

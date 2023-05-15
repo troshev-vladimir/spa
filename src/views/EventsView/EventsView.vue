@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <EventsFilter class="q-mb-md" />
-
+    <div class="col-3">
+      <q-btn @click="fetchAllEvents"><q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" /></q-btn>
+    </div>
     <q-table
       :loading="loadingDepartment"
       title="Cписок Событий"
@@ -73,7 +75,16 @@ import EventsModal from "./EventsModal.vue";
 const tableRef = ref(null);
 const store = useStore();
 
-const { editHandler, addHandler, deleteHandler, loadingDepartment, fetchAllEvents, watchEvent, accomplishHandler } = useEvents();
+const {
+  editHandler,
+  addHandler,
+  deleteHandler,
+  loadingDepartment,
+  fetchAllEvents,
+  watchEvent,
+  accomplishHandler,
+  rescheduleHandler,
+} = useEvents();
 const { columns } = useEventsInit(tableRef, loadingDepartment);
 const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "events/fetchAllEvents"), loadingDepartment);
 </script>

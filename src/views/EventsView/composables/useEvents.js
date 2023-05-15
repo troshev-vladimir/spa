@@ -46,6 +46,14 @@ export function useEvents() {
     }
   }
 
+  async function rescheduleHandler(event) {
+    const norefEvent = Object.assign({}, event);
+    eventData.value = norefEvent;
+    modalConfig.value.status = true;
+    modalConfig.value.action = "reschedule";
+    modalConfig.value.name = "Перезапланировать";
+  }
+
   function getAttendantData() {
     store.dispatch("events/fetchTypes");
   }
@@ -97,5 +105,6 @@ export function useEvents() {
     fetchAllEvents,
     accomplishHandler,
     watchEvent,
+    rescheduleHandler,
   };
 }

@@ -11,6 +11,7 @@ const eventData = ref({
   client_id: null,
   date: "",
   fulfilled_date: null,
+  comment: "",
 });
 
 // Ed: Если не выносить то почему то не работает

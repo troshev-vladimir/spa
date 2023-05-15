@@ -1,9 +1,9 @@
 <template>
-  <q-input filled dense v-model="data" mask="####-##-##" :range="props.range" :readonly="props.readonly" :label="props.label">
+  <q-input filled dense v-model="data" mask="####-##-##" :readonly="props.readonly" :label="props.label">
     <template v-slot:append>
       <q-icon v-if="!props.readonly" name="fa-solid fa-calendar-days" class="cursor-pointer" color="blue-7">
         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-          <q-date v-model="data" today-btn mask="YYYY-MM-DD">
+          <q-date v-model="data" today-btn mask="YYYY-MM-DD" :range="props.range">
             <div class="row items-center justify-end">
               <q-btn v-close-popup label="Close" color="primary" flat />
             </div>
@@ -28,8 +28,8 @@ const props = defineProps({
 
 const data = ref(props.modelValue);
 
-watch(data, () => {
-  emit("update:modelValue", data);
+watch(data, (value) => {
+  emit("update:modelValue", value);
 });
 </script>
 

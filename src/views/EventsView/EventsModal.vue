@@ -105,12 +105,13 @@ async function submitForm() {
     } else if (modalConfig.value.action === "edit") {
       await eventService.update(eventData.value.id, eventData.value);
     } else if (modalConfig.value.action === "closeWithResult") {
-      console.log("eventData", eventData);
       eventData.value.fulfilled_date = moment().format("YYYY-MM-DD");
       eventData.value.result = false;
-
       await eventService.update(eventData.value.id, eventData.value);
       await eventService.moveToArchive(eventData.value.id);
+    } else if (modalConfig.value.action === "reschedule") {
+      eventData.value.comment = eventData.value.comment + "Перенос события:" + eventData.value.appointment_date;
+      await eventService.update(eventData.value.id, eventData.value);
     }
   } catch (error) {
     console.log(error);
