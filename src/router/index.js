@@ -18,6 +18,7 @@ const routes = [
       layout: "DefaultLayout",
     },
   },
+  { path: "/", redirect: "/crm/clients" },
   {
     path: "/crm",
     name: "crm",

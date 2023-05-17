@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <div class="row items-start"></div>
+    <SalesFilter class="q-mb-md"></SalesFilter>
+    <div class="col-3 q-mb-md">
+      <q-btn @click="fetchAllSales"><q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" /></q-btn>
+    </div>
 
     <q-table
       :loading="loadingDepartment"
@@ -40,11 +43,23 @@
 <script setup>
 import { useStore } from "vuex";
 import { useSales } from "./composables/useSales";
-import { ref } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import usePagination from "../EventsView/composables/usePagination";
 import SalesModal from "./SalesModal.vue";
-const tableRef = ref(null);
+import SalesFilter from "@/components/Sales/SalesFilter.vue";
+
 const store = useStore();
+const tableRef = ref(null);
+const department = computed(() => store.state.department);
+onMounted(async () => {
+  if (store.state.department) {
+    fetchAllSales();
+  }
+});
+
+watch(department, async () => {
+  tableRef.value.requestServerInteraction();
+});
 const { editHandler, addHandler, deleteHandler, fetchAllSales, loadingDepartment } = useSales(tableRef);
 const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "sales/fetchAllSales"), loadingDepartment);
 

@@ -1,5 +1,12 @@
 <template>
-  <q-input filled dense v-model="data" mask="####-##-##" :readonly="props.readonly" :label="props.label">
+  <q-input
+    filled
+    dense
+    :model-value="typeof data === 'object' ? `${data.from} - ${data.to}` : ''"
+    mask="####-##-## - ####-##-##"
+    :readonly="props.readonly"
+    :label="props.label"
+  >
     <template v-slot:append>
       <q-icon v-if="!props.readonly" name="fa-solid fa-calendar-days" class="cursor-pointer" color="blue-7">
         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -15,21 +22,24 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { computed } from "vue";
 // eslint-disable-next-line no-undef
 const emit = defineEmits(["update:modelValue"]);
 // eslint-disable-next-line no-undef
 const props = defineProps({
-  modelValue: String,
+  modelValue: [String, Object],
   label: String,
   range: Boolean,
   readonly: Boolean,
 });
 
-const data = ref(props.modelValue);
-
-watch(data, (value) => {
-  emit("update:modelValue", value);
+const data = computed({
+  get: () => {
+    return props.modelValue;
+  },
+  set: (value) => {
+    emit("update:modelValue", value);
+  },
 });
 </script>
 

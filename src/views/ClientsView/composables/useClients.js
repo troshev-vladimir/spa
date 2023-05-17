@@ -90,7 +90,7 @@ const initialState = {
   phone_add: null,
   site: null,
   vk: null,
-  birth_day: null,
+  birth_day: "",
   // 'created_at' =>$this->created_at->format('Y.m.d'),
   department: null,
   division: null,

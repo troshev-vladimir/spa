@@ -46,36 +46,47 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, watch } from "vue";
-import { useRouter } from "vue-router";
+import { computed, onMounted, reactive, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import _ from "lodash";
 import { useStore } from "vuex";
 import DatePicker from "../UiKit/DatePicker";
 const router = useRouter();
+const route = useRoute();
 const store = useStore();
 
 const filters = reactive({
   title: "",
   division_id: null,
   user: null,
+  fulfilled: null,
   date: {
     from: null,
     to: null,
   },
 });
+const divisions = computed(() => store.state.department?.divisions);
+const onFilterUsers = async (val, update) => {
+  console.log(val);
+  await store.dispatch("users/fetchAllUsers");
+  update();
+};
 
 const fulfilledOptions = [
   {
     value: 0,
-    label: "Не выбрано",
+    label: "Все",
   },
   {
-    value: true,
-    label: "Завершонные",
+    value: 1,
+    label: "Завершонные без результата",
   },
-
   {
-    value: false,
+    value: 2,
+    label: "Завершонные c результатом",
+  },
+  {
+    value: 3,
     label: "Не завершонные",
   },
 ];
@@ -95,9 +106,14 @@ onMounted(() => {
 watch(
   filters,
   () => {
+    const { date, ...allFilters } = filters;
+    const preparedFilters = Object.assign({}, allFilters);
+    console.log(allFilters);
+    preparedFilters.dateFrom = date.from;
+    preparedFilters.dateTo = date.to;
     router.push({
       path: router.currentRoute.value.fullPath,
-      query: _.pickBy(filters, _.identity),
+      query: { ...route.query, ..._.pickBy(preparedFilters, _.identity) },
     });
   },
   { deep: true }

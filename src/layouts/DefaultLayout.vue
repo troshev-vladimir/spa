@@ -32,10 +32,10 @@
         <q-badge class="q-pa-sm bg-blue-3 text-grey-10">
           <span class="q-mr-xs text-body1 text-bold">{{ store.state.user.user.login }}</span>
           <q-badge class="q-pa-sm bg-blue-5">
-            <!-- <div class="row">
+            <div class="row">
               <span v-for="role in store.state.user.user.roles" :key="role"> {{ role.name }}, </span>
-            </div> -->
-            {{ store.state.user.user.roles[store.state.user.user.roles.length - 1].name }}
+            </div>
+            <!-- {{ store.state.user.user.roles[store.state.user.user.roles.length - 1].name }} -->
           </q-badge>
         </q-badge>
       </div>
