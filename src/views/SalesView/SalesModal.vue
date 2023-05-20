@@ -10,7 +10,7 @@
       <q-form autofocus style="min-width: 400px">
         <q-input filled v-model="saleData.title" label="Название" dense class="q-mb-md" />
         <q-select
-          v-model="saleData.client"
+          v-model="saleData.client_id"
           :options="clients"
           @filter="onFilter"
           label="Клиент"
@@ -97,19 +97,19 @@ async function submitForm() {
   loading.value = true;
   try {
     if (modalConfig.value.action === "add") {
-      const { client, ...payload } = saleData.value;
+      const { client_id, ...payload } = saleData.value;
       payload.start = adCompany.value.from;
       payload.end = adCompany.value.to;
-      payload.client_id = typeof client === "object" ? client.id : client;
+      payload.client_id = typeof client === "object" ? client_id.id : client_id;
       payload.user_id = store.state.user.user.id;
       payload.id_1c = 1; // TODO откуда взять 1c id
       payload.saleItems = saleItems.value;
       await salesService.create(payload);
     } else if (modalConfig.value.action === "edit") {
-      const { client, id, user, ...payload } = saleData.value;
+      const { id, user, client_id, ...payload } = saleData.value;
       payload.start = adCompany.value.from;
       payload.end = adCompany.value.to;
-      payload.client_id = client.id;
+      payload.client_id = typeof client_id === "object" ? client_id.id : client_id;
       payload.user_id = user.id;
       payload.saleItems = saleItems.value;
       await salesService.update(id, payload);

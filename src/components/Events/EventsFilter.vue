@@ -67,7 +67,6 @@ const filters = reactive({
 });
 const divisions = computed(() => store.state.department?.divisions);
 const onFilterUsers = async (val, update) => {
-  console.log(val);
   await store.dispatch("users/fetchAllUsers");
   update();
 };

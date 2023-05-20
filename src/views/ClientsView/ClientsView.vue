@@ -1,9 +1,12 @@
 <template>
   <div class="container">
-    <div class="row items-start">
-      <div class="col-12"><ClientFilter></ClientFilter></div>
-      <div class="col-1">
+    <div class="row items-start q-mb-md">
+      <div class="col-12">
+        <ClientFilter></ClientFilter>
+      </div>
+      <div class="col-auto">
         <q-btn size="md" @click="fetchAllClients">
+          <span class="q-mr-sm">Найти</span>
           <q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" />
         </q-btn>
       </div>
@@ -39,6 +42,7 @@
                   <q-item-section style="min-width: 200px">
                     <q-btn style="width: 100%" @click.stop="createSaleForClient(row.row)">Создать продажу</q-btn>
                     <q-btn style="width: 100%" @click.stop="createEventForClient(row.row)">Создать событие</q-btn>
+                    <q-btn style="width: 100%" @click.stop="showEvent(row.row)">Показать событие</q-btn>
                     <q-btn style="width: 100%" @click.stop="editHandler(row.row)">Редактировать</q-btn>
                     <q-btn style="width: 100%" class="q-mr-md" @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
                   </q-item-section>
@@ -144,7 +148,7 @@
 
           <q-input v-model="userData.comment" label="Комментарий" type="textarea" class="q-mb-md" filled dense />
           <ClientsContacts class="q-mb-md"></ClientsContacts>
-          <DadataSuggestions class="q-mb-md"></DadataSuggestions>
+          <DadataSuggestions class="q-mb-md" v-model="userData.legals"></DadataSuggestions>
 
           <q-btn label="Submit" color="primary" @click="submitForm" />
           <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" dense />
@@ -172,7 +176,7 @@ import DadataSuggestions from "./DadataSuggestions.vue";
 import ClientsContacts from "./ClientsContacts.vue";
 import EventsModal from "@/views/EventsView/EventsModal.vue";
 import SalesModal from "@/views/SalesView/SalesModal.vue";
-
+import { useQuasar } from "quasar";
 import { ref } from "vue";
 // import _ from "lodash";
 import usePagination from "../EventsView/composables/usePagination";
@@ -181,6 +185,7 @@ const tableRef = ref(null);
 const loading = ref(false);
 const store = useStore();
 const modalConfig = ref({ status: false, action: null, name: "" });
+const $q = useQuasar();
 
 const {
   editHandler,
@@ -191,6 +196,7 @@ const {
   userData,
   createEventForClient,
   createSaleForClient,
+  showEvent,
 } = useClients(modalConfig, tableRef);
 
 const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "clients/fetchAllClients"), loading);
@@ -199,13 +205,18 @@ async function submitForm() {
   loading.value = true;
   try {
     if (modalConfig.value.action === "add") {
-      userData.value.userId = store.state.user.user.id;
+      userData.value.userId = store.state.user.user.id; // ответственный
+      userData.value.creator = store.state.user.user.id; // создатель
       await clientService.create(userData.value);
     } else if (modalConfig.value.action === "edit") {
       await clientService.update(userData.value.id, userData.value);
     }
   } catch (error) {
     console.log(error);
+    $q.notify({
+      type: "negative",
+      message: error.message,
+    });
   } finally {
     modalConfig.value.status = false;
     loading.value = false;

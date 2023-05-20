@@ -20,13 +20,14 @@ export function useSales() {
     store.dispatch("sales/fetchAllSmi");
   }
 
-  function addHandler(client = {}) {
+  function addHandler(client = "") {
     getAttendantData();
     modalConfig.value.status = true;
     modalConfig.value.action = "add";
     modalConfig.value.name = "Создать продажу";
     adCompany.value = { from: null, to: null };
-    saleData.value = { client: client };
+    saleData.value = {};
+    saleData.value.client_id = client.id;
     saleItems.value = [];
   }
 
@@ -36,10 +37,11 @@ export function useSales() {
     modalConfig.value.action = "edit";
     modalConfig.value.name = "Pедактировать продажу";
     const norefSale = Object.assign({}, sale);
-    const { type, smi, ...payloadSale } = norefSale;
+    const { type, smi, client, ...payloadSale } = norefSale;
     saleData.value = payloadSale;
     saleData.value.type_id = type.id;
     saleData.value.smi_id = smi.id;
+    saleData.value.client_id = client;
     adCompany.value = { from: saleData.value.start, to: saleData.value.end };
     saleItems.value = JSON.parse(saleData.value.saleItems);
   }

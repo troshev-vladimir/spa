@@ -1,12 +1,5 @@
 <template>
-  <q-input
-    filled
-    dense
-    :model-value="typeof data === 'object' ? `${data.from} - ${data.to}` : ''"
-    mask="####-##-## - ####-##-##"
-    :readonly="props.readonly"
-    :label="props.label"
-  >
+  <q-input filled dense :model-value="value()" :mask="mask" :readonly="props.readonly" :label="props.label">
     <template v-slot:append>
       <q-icon v-if="!props.readonly" name="fa-solid fa-calendar-days" class="cursor-pointer" color="blue-7">
         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -32,6 +25,14 @@ const props = defineProps({
   range: Boolean,
   readonly: Boolean,
 });
+
+const mask = computed(() => {
+  return props.range ? "####-##-## - ####-##-##" : "####-##-##";
+});
+
+const value = () => {
+  return typeof data.value === "object" ? `${data.value.from} - ${data.value.to}` : data.value;
+};
 
 const data = computed({
   get: () => {

@@ -20,8 +20,35 @@
         <q-tr @click="showUserModal(row.row)" class="cursor-pointer">
           <template v-for="col in row.cols" :key="col.name">
             <td v-if="col.name === 'actions'">
-              <q-btn class="q-mr-md" @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
-              <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
+              <q-btn-dropdown
+                color="primary"
+                dense
+                dropdown-icon="fa-solid fa-ellipsis-vertical"
+                no-icon-animation
+                flat
+                cover
+                menu-self="top left"
+                auto-close
+                @click.stop
+              >
+                <div class="row no-wrap q-pa-md">
+                  <div class="column">
+                    <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
+                    <q-btn @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
+                  </div>
+
+                  <q-separator vertical inset class="q-mx-md" />
+                  <div class="text-subtitle1">
+                    <p class="text-h6 text-bold q-mb-xs">{{ row.row.title }}</p>
+                    <p class="text-body2 text-no-wrap q-mb-xs">
+                      Отредактировано: <span class="text-weight-bold">{{ moment(row.row.updated_at).format("YYYY-MM-DD") }}</span>
+                    </p>
+                    <p class="text-body2 text-no-wrap q-mb-xs">
+                      Создано: <span class="text-weight-bold">{{ moment(row.row.created_at).format("YYYY-MM-DD") }}</span>
+                    </p>
+                  </div>
+                </div>
+              </q-btn-dropdown>
             </td>
             <td v-else-if="col.name === 'roles'">{{ col.value }}</td>
             <td v-else>{{ col.value }}</td>
@@ -47,7 +74,7 @@ import { ref, onMounted, watch, computed } from "vue";
 import usePagination from "../EventsView/composables/usePagination";
 import SalesModal from "./SalesModal.vue";
 import SalesFilter from "@/components/Sales/SalesFilter.vue";
-
+import moment from "moment";
 const store = useStore();
 const tableRef = ref(null);
 const department = computed(() => store.state.department);
@@ -55,6 +82,9 @@ onMounted(async () => {
   if (store.state.department) {
     fetchAllSales();
   }
+
+  store.dispatch("sales/fetchAllTypes");
+  store.dispatch("sales/fetchAllSmi");
 });
 
 watch(department, async () => {
@@ -64,6 +94,14 @@ const { editHandler, addHandler, deleteHandler, fetchAllSales, loadingDepartment
 const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "sales/fetchAllSales"), loadingDepartment);
 
 const columns = [
+  {
+    name: "actions",
+    required: true,
+    label: "",
+    align: "left",
+    field: "name",
+    format: (val) => `${val}`,
+  },
   {
     name: "id",
     required: true,
@@ -125,15 +163,6 @@ const columns = [
     align: "left",
     field: "type",
     format: (type) => `${type.title}`,
-  },
-
-  {
-    name: "actions",
-    required: true,
-    label: "Действия",
-    align: "left",
-    field: "name",
-    format: (val) => `${val}`,
   },
 ];
 </script>

@@ -1,4 +1,5 @@
 import AxiosInstance from "../index";
+
 class EventService {
   constructor() {
     this.axios = AxiosInstance;
@@ -29,6 +30,11 @@ class EventService {
 
   async getOne(id) {
     const response = await this.axios("/v1/events/" + id);
+    return response.data;
+  }
+
+  async getOneByClientId(id) {
+    const response = await this.axios("/v1/events/by-client/" + id);
     return response.data;
   }
 

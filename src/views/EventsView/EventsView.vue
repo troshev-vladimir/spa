@@ -34,12 +34,12 @@
                   <q-item-section style="min-width: 250px">
                     <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
                     <q-btn @click.stop="">В архив (in progress)</q-btn>
-                    <q-btn v-if="!row.row.fulfilled_date" @click.stop="accomplishHandler(row.row, true)"
-                      >Завершить с результатом</q-btn
-                    >
-                    <q-btn v-if="!row.row.fulfilled_date" @click.stop="accomplishHandler(row.row, false)"
-                      >Завершить без результата</q-btn
-                    >
+                    <q-btn v-if="!row.row.fulfilled_date" @click.stop="accomplishHandler(row.row, true)">
+                      Завершить с результатом
+                    </q-btn>
+                    <q-btn v-if="!row.row.fulfilled_date" @click.stop="accomplishHandler(row.row, false)">
+                      Завершить без результата
+                    </q-btn>
                     <q-btn v-if="!row.row.fulfilled_date" @click.stop="rescheduleHandler(row.row)">Запланировать</q-btn>
                     <q-btn @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>
                   </q-item-section>

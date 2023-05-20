@@ -1,19 +1,75 @@
 <template>
   <div>
     <q-form class="row q-col-gutter-md">
-      <q-input dense v-model="filters.title" label="Имя" class="col-4" />
-      <DatePicker v-model="filters.date" label="Промежуток времени" range class="col-4" />
+      <q-input dense v-model="filters.title" label="Имя" class="col-3" />
+      <DatePicker v-model="filters.date" label="Дата создания" range class="col-3" />
+      <DatePicker v-model="filters.date" label="Дата размещения" range class="col-3" />
+      <DatePicker v-model="filters.date" label="Дата оплаты" range class="col-3" />
+      <q-select
+        v-model="filters.division_id"
+        :options="divisions"
+        label="Выберите отдел"
+        option-value="id"
+        option-label="name"
+        dense
+        map-options
+        emit-value
+        class="col-3"
+        options-dense
+      />
+
+      <q-select
+        v-model="filters.user"
+        :options="store.state.users.usersData"
+        label="Ответствееный"
+        option-value="id"
+        option-label="login"
+        dense
+        map-options
+        emit-value
+        class="col-3"
+        clearable
+        @filter="onFilterUsers"
+        input-debounce="0"
+        use-input
+        options-dense
+      />
+      <q-select
+        v-model="filters.smi"
+        :options="store.state.sales.salesSmi"
+        label="СМИ"
+        dense
+        option-value="id"
+        option-label="title"
+        map-options
+        emit-value
+        class="col-3"
+      />
+      <q-select
+        v-model="filters.type"
+        :options="store.state.sales.salesTypes"
+        label="Тип продажи"
+        dense
+        option-value="id"
+        option-label="title"
+        map-options
+        emit-value
+        class="col-3"
+      />
     </q-form>
+    <q-btn @click="resetAllFilters">Сбросить все фильтры</q-btn>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, watch } from "vue";
+import { onMounted, reactive, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import _ from "lodash";
 import DatePicker from "../UiKit/DatePicker";
+import { useStore } from "vuex";
 const router = useRouter();
 const route = useRoute();
+const store = useStore();
 
 const filters = reactive({
   title: "",
@@ -21,8 +77,27 @@ const filters = reactive({
     from: null,
     to: null,
   },
+  type: null,
+  smi: null,
+  division_id: null,
+  user: null,
 });
 
+function resetAllFilters() {
+  const newQuery = _.pickBy(route.query, (el, key) => {
+    filters[key] = null;
+    return !Object.keys(filters).includes(key);
+  });
+  router.push({
+    path: router.currentRoute.value.fullPath,
+    query: newQuery,
+  });
+}
+const divisions = computed(() => store.state.department?.divisions);
+const onFilterUsers = async (val, update) => {
+  await store.dispatch("users/fetchAllUsers");
+  update();
+};
 onMounted(() => {
   const itsFilters = Object.keys(filters);
   const searchParams = new URLSearchParams(router.currentRoute.value.query);
@@ -41,7 +116,6 @@ watch(
   () => {
     const { date, ...allFilters } = filters;
     const preparedFilters = Object.assign({}, allFilters);
-    console.log(allFilters);
     preparedFilters.dateFrom = date.from;
     preparedFilters.dateTo = date.to;
     router.push({

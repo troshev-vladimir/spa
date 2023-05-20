@@ -76,7 +76,7 @@ import _ from "lodash";
 const store = useStore();
 const router = useRouter();
 const route = useRoute();
-const attributes = ref(null);
+const attributes = ref([]);
 const filters = reactive({
   name: "",
   division_id: null,
@@ -101,11 +101,17 @@ onMounted(() => {
   const searchParams = new URLSearchParams(router.currentRoute.value.query);
   searchParams.forEach((value, key) => {
     if (itsFilters.includes(key)) {
-      if (key === "division_id") {
+      if (key === "division_id" || key === "user" || key === "potential" || key === "activity") {
         filters[key] = Number(value);
         return;
       }
+
       filters[key] = value;
+    }
+
+    if ((key === "active" || key === "federal" || key === "top" || key === "prioritet") && +value) {
+      attributes.value.push(key);
+      return;
     }
   });
 });

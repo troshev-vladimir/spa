@@ -1,13 +1,13 @@
 <template>
   <q-dialog v-model="modalConfig.status">
-    <q-card class="q-pa-md">
+    <q-card class="q-pa-md" style="max-width: initial">
       <q-toolbar>
         <q-toolbar-title>{{ modalConfig.name }}</q-toolbar-title>
 
         <q-btn flat round dense v-close-popup>&times;</q-btn>
       </q-toolbar>
       <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
-      <q-form autofocus style="min-width: 400px">
+      <q-form autofocus style="min-width: 600px">
         <q-input
           filled
           v-model="eventData.title"
@@ -70,8 +70,21 @@
           :autofocus="modalConfig.action === 'closeWithResult'"
         />
 
-        <q-btn label="Submit" color="primary" @click="submitForm" />
-        <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" dense />
+        <q-btn label="Подтвердить" color="primary" @click="submitForm" :disabled="!isValidationPassed" />
+        <q-btn
+          label="Завершить с результатом"
+          color="secondary"
+          class="q-ml-sm"
+          v-if="modalConfig.action === 'watch'"
+          @click="accomplishHandler(eventData, true)"
+        />
+        <q-btn
+          label="Завершить без результата"
+          color="secondary"
+          class="q-ml-sm"
+          v-if="modalConfig.action === 'watch'"
+          @click="accomplishHandler(eventData, false)"
+        />
       </q-form>
     </q-card>
   </q-dialog>
@@ -81,10 +94,12 @@
 import { useClients } from "./composables/useClients";
 import eventService from "@/api/events";
 import useEventsModal from "./composables/useEventsModal";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import moment from "moment";
+import { useEvents } from "./composables/useEvents";
 
+const { accomplishHandler } = useEvents();
 const store = useStore();
 
 const { clients, onFilter } = useClients();
@@ -93,7 +108,17 @@ const loading = ref(false);
 const emit = defineEmits(["sumbit"]);
 const { modalConfig, eventData } = useEventsModal();
 
+const isValidationPassed = computed(() => {
+  if (modalConfig.value.action === "closeWithResult") {
+    return !!eventData.value.comment;
+  }
+  return eventData.value.title && eventData.value.type_id && eventData.value.appointment_date;
+});
+
 async function submitForm() {
+  if (!isValidationPassed.value) {
+    return;
+  }
   loading.value = true;
   try {
     if (modalConfig.value.action === "add") {

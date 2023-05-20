@@ -37,12 +37,15 @@ export function useEvents() {
     if (!resultStatus) {
       accompleshedEvent.fulfilled_date = moment().format("YYYY-MM-DD");
       accompleshedEvent.result = false;
-      await eventService.update(event.id, accompleshedEvent);
-      await eventService.moveToArchive(event.id);
+      modalConfig.value.status = true;
+      modalConfig.value.action = "closeWithResult";
+      modalConfig.value.name = "Завершить событие без результата";
+      // await eventService.update(event.id, accompleshedEvent);
+      // await eventService.moveToArchive(event.id);
     } else {
       modalConfig.value.status = true;
       modalConfig.value.action = "closeWithResult";
-      modalConfig.value.name = "Завершить событие";
+      modalConfig.value.name = "Завершить событие с результатом";
     }
   }
 
