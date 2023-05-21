@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="column">
     <q-form class="row q-col-gutter-md">
       <q-input dense v-model="filters.title" label="Имя" class="col-3" />
       <DatePicker v-model="filters.createdDate" label="Дата создания" range class="col-3" />
@@ -33,6 +33,7 @@
         input-debounce="0"
         use-input
         options-dense
+        @clear="clearHandler('user')"
       />
       <q-select
         v-model="filters.smi"
@@ -57,12 +58,15 @@
         class="col-3"
       />
     </q-form>
-    <q-btn @click="resetAllFilters">Сбросить все фильтры</q-btn>
+    <q-btn @click="resetAllFilters" dense class="q-mt-sm q-ml-auto">
+      <q-icon class="text-primary q-mr-sm" size="1.2em" name="fa-solid fa-xmark" />
+      Сбросить фильтры
+    </q-btn>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, watch, computed } from "vue";
+import { onMounted, reactive, watch, computed, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import _ from "lodash";
 import DatePicker from "../UiKit/DatePicker";
@@ -71,7 +75,7 @@ const router = useRouter();
 const route = useRoute();
 const store = useStore();
 
-const filters = reactive({
+let filters = reactive({
   title: "",
   createdDate: {
     from: null,
@@ -91,13 +95,25 @@ const filters = reactive({
   user: null,
 });
 
-function resetAllFilters() {
+async function resetAllFilters() {
+  Object.keys(filters).forEach(
+    (el) =>
+      (filters[el] =
+        typeof filters[el] === "object" && filters[el] !== null
+          ? {
+              from: null,
+              to: null,
+            }
+          : "")
+  );
+
+  await nextTick();
+
   const newQuery = _.pickBy(route.query, (el, key) => {
-    filters[key] = typeof filters[key] === "object" ? {} : null;
     return !Object.keys(filters).includes(key);
   });
-  router.push({
-    path: router.currentRoute.value.fullPath,
+  router.replace({
+    path: route.path,
     query: newQuery,
   });
 }
@@ -106,6 +122,17 @@ const onFilterUsers = async (val, update) => {
   await store.dispatch("users/fetchAllUsers");
   update();
 };
+
+async function clearHandler(e) {
+  const newQuery = _.pickBy(route.query, (el, key) => {
+    return key !== e;
+  });
+  await nextTick();
+  router.replace({
+    path: route.path,
+    query: newQuery,
+  });
+}
 onMounted(() => {
   const itsFilters = Object.keys(filters);
   const searchParams = new URLSearchParams(router.currentRoute.value.query);
