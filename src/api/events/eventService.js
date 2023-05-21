@@ -60,7 +60,7 @@ class EventService {
     try {
       response = await this.axios.post("/v1/events/", body);
     } catch (error) {
-      return response.message;
+      throw error.response.data;
     }
 
     return response.data;

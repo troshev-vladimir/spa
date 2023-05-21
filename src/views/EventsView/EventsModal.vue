@@ -114,7 +114,9 @@ import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import moment from "moment";
 import { useEvents } from "./composables/useEvents";
+import { useQuasar } from "quasar";
 
+const $q = useQuasar();
 const { accomplishHandler } = useEvents();
 const store = useStore();
 
@@ -140,9 +142,20 @@ async function submitForm() {
     if (modalConfig.value.action === "add") {
       eventData.value.userId = store.state.user.user.id;
       const newEvent = eventData.value;
-      newEvent.client_id = eventData.value.client;
+      newEvent.client_id = typeof eventData.value.client === "object" ? eventData.value.client.id : eventData.value.client;
       delete newEvent.client;
-      await eventService.create(eventData.value);
+      try {
+        await eventService.create(eventData.value);
+        $q.notify({
+          type: "positive",
+          message: "Событие создано",
+        });
+      } catch (error) {
+        $q.notify({
+          type: "negative",
+          message: error.message,
+        });
+      }
     } else if (modalConfig.value.action === "edit") {
       await eventService.update(eventData.value.id, eventData.value);
     } else if (modalConfig.value.action === "closeWithResult") {
