@@ -2,8 +2,7 @@
   <div class="container">
     <EventsFilter class="q-mb-md" />
     <div class="col-3 q-mb-md">
-      <q-btn @click="fetchAllEvents"><q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" /></q-btn>
-
+      <q-btn @click="fetchAllEvents(false)"><q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" /></q-btn>
       <q-btn @click="fetchAllEvents(true)">Архив</q-btn>
     </div>
     <q-table
