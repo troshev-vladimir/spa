@@ -19,9 +19,14 @@ class EventService {
     return data;
   }
 
-  async getAllArchive() {
+  async getAllArchive(departmentId = 1, query) {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
+    params["department_id"] = departmentId;
+
+    if (query) {
+      Object.assign(params, query);
+    }
     const { data } = await this.axios("/v1/events/archive", {
       params,
     });

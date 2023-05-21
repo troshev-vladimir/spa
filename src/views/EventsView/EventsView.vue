@@ -3,6 +3,8 @@
     <EventsFilter class="q-mb-md" />
     <div class="col-3 q-mb-md">
       <q-btn @click="fetchAllEvents"><q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" /></q-btn>
+
+      <q-btn @click="fetchAllEvents(true)">Архив</q-btn>
     </div>
     <q-table
       :loading="loadingDepartment"
@@ -33,7 +35,7 @@
                 <q-list>
                   <q-item-section style="min-width: 250px">
                     <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
-                    <q-btn @click.stop="">В архив (in progress)</q-btn>
+                    <q-btn @click.stop="moveToArchive(row.row)">В архив</q-btn>
                     <q-btn v-if="!row.row.fulfilled_date" @click.stop="accomplishHandler(row.row, true)">
                       Завершить с результатом
                     </q-btn>
@@ -84,6 +86,7 @@ const {
   watchEvent,
   accomplishHandler,
   rescheduleHandler,
+  moveToArchive,
 } = useEvents();
 const { columns } = useEventsInit(tableRef, loadingDepartment);
 const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "events/fetchAllEvents"), loadingDepartment);

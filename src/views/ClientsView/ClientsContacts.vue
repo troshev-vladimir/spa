@@ -78,11 +78,3 @@ const store = useStore();
   }
 }
 </style>
-
-<style lang="scss">
-.bordered-box {
-  padding: 6px;
-  border-radius: 8px;
-  border: 1px solid #666;
-}
-</style>

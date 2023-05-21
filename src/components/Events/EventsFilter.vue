@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-form class="row q-col-gutter-md">
-      <q-input dense v-model="filters.title" label="Имя" class="col-4" />
+      <q-input dense v-model="filters.title" label="Событие" class="col-3" />
       <q-select
         v-model="filters.division_id"
         :options="divisions"
@@ -11,7 +11,7 @@
         dense
         map-options
         emit-value
-        class="col-4"
+        class="col-3"
       />
 
       <q-select
@@ -23,7 +23,7 @@
         dense
         map-options
         emit-value
-        class="col-4"
+        class="col-3"
         clearable
         @filter="onFilterUsers"
         input-debounce="0"
@@ -37,10 +37,9 @@
         dense
         map-options
         emit-value
-        class="col-4"
+        class="col-3"
       />
-
-      <DatePicker v-model="filters.date" label="Промежуток времени" range class="col-4" />
+      <DatePicker v-model="filters.date" label="Промежуток времени" range class="col-3" />
     </q-form>
   </div>
 </template>
@@ -51,10 +50,10 @@ import { useRouter, useRoute } from "vue-router";
 import _ from "lodash";
 import { useStore } from "vuex";
 import DatePicker from "../UiKit/DatePicker";
+
 const router = useRouter();
 const route = useRoute();
 const store = useStore();
-
 const filters = reactive({
   title: "",
   division_id: null,
@@ -72,10 +71,6 @@ const onFilterUsers = async (val, update) => {
 };
 
 const fulfilledOptions = [
-  {
-    value: 0,
-    label: "Все",
-  },
   {
     value: 1,
     label: "Завершонные без результата",
@@ -107,7 +102,6 @@ watch(
   () => {
     const { date, ...allFilters } = filters;
     const preparedFilters = Object.assign({}, allFilters);
-    console.log(allFilters);
     preparedFilters.dateFrom = date.from;
     preparedFilters.dateTo = date.to;
     router.push({

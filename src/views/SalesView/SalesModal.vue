@@ -53,7 +53,7 @@
           class="q-mb-md"
         />
         <div class="q-pa-md q-mb-md">
-          <p>Услуги</p>
+          <p class="text-bold">Услуги</p>
           <ItemsRedactor v-model:items="saleItems" :item="{ title: '', summ: null }" />
         </div>
         <DatePicker v-model="saleData.payedDate" filled dense class="q-mb-md" label="Дата оплаты" />

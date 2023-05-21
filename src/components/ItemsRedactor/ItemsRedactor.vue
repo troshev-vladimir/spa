@@ -51,4 +51,10 @@ const deleteItem = (id) => {
 .items-redactor {
   padding: 0;
 }
+
+.bordered-box {
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #666;
+}
 </style>

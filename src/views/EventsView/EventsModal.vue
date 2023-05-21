@@ -14,7 +14,11 @@
           label="Событие"
           class="q-mb-md"
           dense
-          :readonly="modalConfig.action === 'watch' || modalConfig.action === 'closeWithResult'"
+          :readonly="
+            modalConfig.action === 'watch' ||
+            modalConfig.action === 'closeWithResult' ||
+            modalConfig.action === 'closeWithoutResult'
+          "
         />
 
         <q-select
@@ -28,7 +32,11 @@
           dense
           filled
           class="q-mb-md"
-          :readonly="modalConfig.action === 'watch' || modalConfig.action === 'closeWithResult'"
+          :readonly="
+            modalConfig.action === 'watch' ||
+            modalConfig.action === 'closeWithResult' ||
+            modalConfig.action === 'closeWithoutResult'
+          "
         />
 
         <q-select
@@ -48,14 +56,22 @@
           class="q-mb-md"
           clearable
           options-dense
-          :readonly="modalConfig.action === 'watch' || modalConfig.action === 'closeWithResult'"
+          :readonly="
+            modalConfig.action === 'watch' ||
+            modalConfig.action === 'closeWithResult' ||
+            modalConfig.action === 'closeWithoutResult'
+          "
         />
 
         <DatePicker
           label="Дата"
           v-model="eventData.appointment_date"
           class="q-mb-md"
-          :readonly="modalConfig.action === 'watch' || modalConfig.action === 'closeWithResult'"
+          :readonly="
+            modalConfig.action === 'watch' ||
+            modalConfig.action === 'closeWithResult' ||
+            modalConfig.action === 'closeWithoutResult'
+          "
         />
 
         <q-input
@@ -131,11 +147,16 @@ async function submitForm() {
       await eventService.update(eventData.value.id, eventData.value);
     } else if (modalConfig.value.action === "closeWithResult") {
       eventData.value.fulfilled_date = moment().format("YYYY-MM-DD");
+      eventData.value.result = true;
+      await eventService.update(eventData.value.id, eventData.value);
+      // await eventService.moveToArchive(eventData.value.id);
+    } else if (modalConfig.value.action === "closeWithoutResult") {
+      eventData.value.fulfilled_date = moment().format("YYYY-MM-DD");
       eventData.value.result = false;
       await eventService.update(eventData.value.id, eventData.value);
-      await eventService.moveToArchive(eventData.value.id);
+      // await eventService.moveToArchive(eventData.value.id);
     } else if (modalConfig.value.action === "reschedule") {
-      eventData.value.comment = eventData.value.comment + "Перенос события:" + eventData.value.appointment_date;
+      eventData.value.comment = eventData.value.comment + "<br/>Перенос события:" + eventData.value.appointment_date;
       await eventService.update(eventData.value.id, eventData.value);
     }
   } catch (error) {

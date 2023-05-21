@@ -2,9 +2,9 @@
   <div>
     <q-form class="row q-col-gutter-md">
       <q-input dense v-model="filters.title" label="Имя" class="col-3" />
-      <DatePicker v-model="filters.date" label="Дата создания" range class="col-3" />
-      <DatePicker v-model="filters.date" label="Дата размещения" range class="col-3" />
-      <DatePicker v-model="filters.date" label="Дата оплаты" range class="col-3" />
+      <DatePicker v-model="filters.createdDate" label="Дата создания" range class="col-3" />
+      <DatePicker v-model="filters.placementDate" label="Дата размещения" range class="col-3" />
+      <DatePicker v-model="filters.payedDate" label="Дата оплаты" range class="col-3" />
       <q-select
         v-model="filters.division_id"
         :options="divisions"
@@ -73,7 +73,15 @@ const store = useStore();
 
 const filters = reactive({
   title: "",
-  date: {
+  createdDate: {
+    from: null,
+    to: null,
+  },
+  placementDate: {
+    from: null,
+    to: null,
+  },
+  payedDate: {
     from: null,
     to: null,
   },
@@ -85,7 +93,7 @@ const filters = reactive({
 
 function resetAllFilters() {
   const newQuery = _.pickBy(route.query, (el, key) => {
-    filters[key] = null;
+    filters[key] = typeof filters[key] === "object" ? {} : null;
     return !Object.keys(filters).includes(key);
   });
   router.push({
@@ -114,10 +122,14 @@ onMounted(() => {
 watch(
   filters,
   () => {
-    const { date, ...allFilters } = filters;
+    const { createdDate, placementDate, payedDate, ...allFilters } = filters;
     const preparedFilters = Object.assign({}, allFilters);
-    preparedFilters.dateFrom = date.from;
-    preparedFilters.dateTo = date.to;
+    preparedFilters.createdFrom = createdDate.from;
+    preparedFilters.createdTo = createdDate.to;
+    preparedFilters.placementFrom = placementDate.from;
+    preparedFilters.placementTo = placementDate.to;
+    preparedFilters.payedFrom = payedDate.from;
+    preparedFilters.payedTo = payedDate.to;
     router.push({
       path: router.currentRoute.value.fullPath,
       query: { ...route.query, ..._.pickBy(preparedFilters, _.identity) },

@@ -26,6 +26,16 @@ const events = {
         throw error.response.data;
       }
     },
+    async fetchAllArchiveEvents({ commit, rootState }, payload) {
+      try {
+        const result = await eventsService.getAllArchive(rootState.department.id, payload);
+        commit("setEvents", result.data);
+        return result;
+      } catch (error) {
+        throw error.response.data;
+      }
+    },
+
     async fetchTypes({ commit, state }) {
       if (state.eventTypes.length) return;
       try {

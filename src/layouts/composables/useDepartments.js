@@ -32,7 +32,7 @@ export default function () {
     }
     departmentLoading.value = false;
 
-    if (allDepartments.value.length) {
+    if (allDepartments.value?.length) {
       const lastDepartment = localStorage.getItem("lastDepartment");
       selectedDepartment.value = JSON.parse(lastDepartment) || allDepartments.value[0];
     }

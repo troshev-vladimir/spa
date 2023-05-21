@@ -31,7 +31,7 @@
                 auto-close
                 @click.stop
               >
-                <div class="row no-wrap q-pa-md">
+                <div class="row no-wrap q-pa-md bg-blue-1">
                   <div class="column">
                     <q-btn @click.stop="editHandler(row.row)">Редактировать</q-btn>
                     <q-btn @click.stop="deleteHandler(row.row.id)"> Удалить </q-btn>

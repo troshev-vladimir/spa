@@ -13,18 +13,25 @@ export function useEvents() {
   const $q = useQuasar();
   const { modalConfig, eventData } = useEventsModal();
 
-  async function fetchAllEvents() {
+  async function fetchAllEvents(archive = false) {
     loadingDepartment.value = true;
     try {
-      await store.dispatch("events/fetchAllEvents", {
-        ...route.query,
-      });
-      loadingDepartment.value = false;
+      if (archive) {
+        await store.dispatch("events/fetchAllArchiveEvents", {
+          ...route.query,
+        });
+      } else {
+        await store.dispatch("events/fetchAllEvents", {
+          ...route.query,
+        });
+      }
     } catch (error) {
       $q.notify({
         type: "negative",
         message: error,
       });
+    } finally {
+      loadingDepartment.value = false;
     }
   }
 
@@ -38,7 +45,7 @@ export function useEvents() {
       accompleshedEvent.fulfilled_date = moment().format("YYYY-MM-DD");
       accompleshedEvent.result = false;
       modalConfig.value.status = true;
-      modalConfig.value.action = "closeWithResult";
+      modalConfig.value.action = "closeWithoutResult";
       modalConfig.value.name = "Завершить событие без результата";
       // await eventService.update(event.id, accompleshedEvent);
       // await eventService.moveToArchive(event.id);
@@ -83,6 +90,25 @@ export function useEvents() {
     loadingDepartment.value = false;
   }
 
+  async function moveToArchive(event) {
+    loadingDepartment.value = true;
+    try {
+      const data = await eventService.moveToArchive(event.id);
+
+      $q.notify({
+        type: "positive",
+        message: data.message,
+      });
+    } catch (error) {
+      $q.notify({
+        type: "negative",
+        message: error,
+      });
+    }
+    fetchAllEvents();
+    loadingDepartment.value = false;
+  }
+
   async function watchEvent(event) {
     loadingDepartment.value = true;
     await getAttendantData();
@@ -109,5 +135,6 @@ export function useEvents() {
     accomplishHandler,
     watchEvent,
     rescheduleHandler,
+    moveToArchive,
   };
 }
