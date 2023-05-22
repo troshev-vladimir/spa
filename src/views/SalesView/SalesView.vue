@@ -1,9 +1,6 @@
 <template>
   <div class="container">
-    <SalesFilter class="q-mb-md"></SalesFilter>
-    <div class="col-3 q-mb-md">
-      <q-btn @click="fetchAllSales"><q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" /></q-btn>
-    </div>
+    <SalesFilter class="q-mb-md" @search="fetchAllSales"></SalesFilter>
 
     <q-table
       :loading="loadingDepartment"

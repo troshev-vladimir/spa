@@ -64,7 +64,12 @@
         :display-value="filters.type ? filters.type.title : 'Все'"
       />
     </q-form>
-    <q-btn @click="resetAllFilters" dense class="q-mt-sm q-ml-auto">
+  </div>
+  <div class="row q-mb-md q-mt-sm items-start">
+    <div class="col-3">
+      <q-btn @click="emit('search')"><q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" /></q-btn>
+    </div>
+    <q-btn @click="resetAllFilters" dense class="q-ml-auto">
       <q-icon class="text-primary q-mr-sm" size="1.2em" name="fa-solid fa-xmark" />
       Сбросить фильтры
     </q-btn>
@@ -82,6 +87,8 @@ const router = useRouter();
 const route = useRoute();
 const store = useStore();
 
+// eslint-disable-next-line no-undef
+const emit = defineEmits(["search"]);
 let filters = reactive({
   title: "",
   createdDate: {
