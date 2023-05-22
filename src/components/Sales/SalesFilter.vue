@@ -16,6 +16,7 @@
         emit-value
         class="col-3"
         options-dense
+        :display-value="filters.division_id ? filters.division_id.title : 'Все'"
       />
 
       <q-select
@@ -34,6 +35,7 @@
         use-input
         options-dense
         @clear="clearHandler('user')"
+        :display-value="filters.user ? filters.user.name : 'Все'"
       />
       <q-select
         v-model="filters.smi"
@@ -45,6 +47,9 @@
         map-options
         emit-value
         class="col-3"
+        clearable
+        @clear="clearHandler('smi')"
+        :display-value="filters.smi ? filters.smi.title : 'Все'"
       />
       <q-select
         v-model="filters.type"
@@ -56,6 +61,7 @@
         map-options
         emit-value
         class="col-3"
+        :display-value="filters.type ? filters.type.title : 'Все'"
       />
     </q-form>
     <q-btn @click="resetAllFilters" dense class="q-mt-sm q-ml-auto">
@@ -66,11 +72,12 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, watch, computed, nextTick } from "vue";
+import { reactive, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import _ from "lodash";
 import DatePicker from "../UiKit/DatePicker";
 import { useStore } from "vuex";
+import useFilters from "@/components/useFilter";
 const router = useRouter();
 const route = useRoute();
 const store = useStore();
@@ -94,58 +101,14 @@ let filters = reactive({
   division_id: null,
   user: null,
 });
+const { resetAllFilters, clearHandler } = useFilters(filters);
 
-async function resetAllFilters() {
-  Object.keys(filters).forEach(
-    (el) =>
-      (filters[el] =
-        typeof filters[el] === "object" && filters[el] !== null
-          ? {
-              from: null,
-              to: null,
-            }
-          : "")
-  );
-
-  await nextTick();
-
-  const newQuery = _.pickBy(route.query, (el, key) => {
-    return !Object.keys(filters).includes(key);
-  });
-  router.replace({
-    path: route.path,
-    query: newQuery,
-  });
-}
 const divisions = computed(() => store.state.department?.divisions);
 const onFilterUsers = async (val, update) => {
   await store.dispatch("users/fetchAllUsers");
   update();
 };
 
-async function clearHandler(e) {
-  const newQuery = _.pickBy(route.query, (el, key) => {
-    return key !== e;
-  });
-  await nextTick();
-  router.replace({
-    path: route.path,
-    query: newQuery,
-  });
-}
-onMounted(() => {
-  const itsFilters = Object.keys(filters);
-  const searchParams = new URLSearchParams(router.currentRoute.value.query);
-  searchParams.forEach((value, key) => {
-    if (itsFilters.includes(key)) {
-      if (key === "division_id") {
-        filters[key] = Number(value);
-        return;
-      }
-      filters[key] = value;
-    }
-  });
-});
 watch(
   filters,
   () => {
