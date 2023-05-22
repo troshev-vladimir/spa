@@ -63,7 +63,7 @@
           <q-btn flat round dense v-close-popup><q-icon class="text-primary" size="1.5em" name="fas fa-xmark" /></q-btn>
         </q-toolbar>
         <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
-        <q-form autofocus style="min-width: 400px">
+        <q-form autofocus style="min-width: 400px" @submit="submitForm">
           <q-input filled v-model="userData.name" label="Имя" class="q-mb-md" dense />
           <div class="q-mb-md">
             <q-checkbox v-model="userData.active" label="active" />
@@ -97,7 +97,7 @@
             v-model="userData.phone_add"
             unmasked-value
             lazy-rules
-            :rules="[(val) => val.length === 10 || 'Введите корректный телефон']"
+            :rules="[(val) => (val ? val.length === 10 : true || 'Введите корректный телефон')]"
             label="Дополнительный телефон"
             mask="+7 (###) ### ##-##"
             dense
@@ -115,7 +115,8 @@
             option-label="title"
             dense
             filled
-            class="q-mb-md"
+            lazy-rules
+            :rules="[(val) => val || 'Поле обязательно']"
           />
 
           <q-select
@@ -128,7 +129,7 @@
             option-label="title"
             dense
             filled
-            class="q-mb-md"
+            :rules="[(val) => val || 'Поле обязательно']"
           />
 
           <q-select
@@ -141,7 +142,7 @@
             option-label="name"
             dense
             filled
-            class="q-mb-md"
+            :rules="[(val) => val || 'Поле обязательно']"
           />
 
           <DatePicker label="Дата рождения" v-model="userData.birth_day" class="q-mb-md" />
@@ -149,8 +150,7 @@
           <q-input v-model="userData.comment" label="Комментарий" type="textarea" class="q-mb-md" filled dense />
           <ClientsContacts class="q-mb-md"></ClientsContacts>
           <DadataSuggestions class="q-mb-md" v-model="userData.legals"></DadataSuggestions>
-
-          <q-btn label="Submit" color="primary" @click="submitForm" />
+          <q-btn label="Submit" color="primary" type="submit" />
           <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" dense />
         </q-form>
       </q-card>

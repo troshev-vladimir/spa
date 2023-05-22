@@ -111,20 +111,20 @@ export function useClients(modalConfig, tableRef) {
 
 const initialState = {
   id: null,
-  email: null,
-  name: null,
-  phone: null,
-  phone_add: null,
-  site: null,
-  vk: null,
+  email: "",
+  name: "",
+  phone: "",
+  phone_add: "",
+  site: "",
+  vk: "",
   birth_day: "",
   // 'created_at' =>$this->created_at->format('Y.m.d'),
   department: null,
   division: null,
   creator: null,
-  comment: null,
-  address: null,
-  address_add: null,
+  comment: "",
+  address: "",
+  address_add: "",
   user_id: null,
   // activity_id: null,
   //Это статусы Клиента
@@ -135,8 +135,9 @@ const initialState = {
 
   activity: null,
   potencial: null,
+  potencial_id: null,
   contacts: [],
-  legals: {},
+  legals: [],
 };
 
 const userData = ref(initialState);

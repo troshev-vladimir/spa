@@ -63,7 +63,7 @@ const { removeContact, addContact } = useContacts();
 const store = useStore();
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .contacts {
   padding: 6px;
   border-radius: 8px;
