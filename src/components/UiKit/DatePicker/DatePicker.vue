@@ -1,5 +1,5 @@
 <template>
-  <q-input filled dense :model-value="value()" :mask="mask" :readonly="props.readonly" :label="props.label">
+  <q-input dense :model-value="value()" :mask="mask" :readonly="props.readonly" :label="props.label">
     <template v-slot:append>
       <q-icon v-if="!props.readonly" name="fa-solid fa-calendar-days" class="cursor-pointer" color="blue-7">
         <q-popup-proxy cover transition-show="scale" transition-hide="scale">

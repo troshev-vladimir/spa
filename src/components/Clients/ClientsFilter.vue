@@ -1,5 +1,5 @@
 <template>
-  <q-form class="row q-mb-lg q-col-gutter-md">
+  <FiltersContainer v-slot="{ clearHandler }" :filters="filters" @search="fetchAllClients()">
     <q-input dense v-model="filters.name" label="Имя" class="col-4" />
     <q-select
       v-model="filters.division_id"
@@ -11,6 +11,9 @@
       map-options
       emit-value
       class="col-4"
+      clearable
+      @clear="clearHandler('division_id')"
+      :display-value="filters.division_id ? filters.division_id.title : 'Все'"
     />
 
     <q-select
@@ -28,6 +31,8 @@
       input-debounce="0"
       use-input
       options-dense
+      @clear="clearHandler('user')"
+      :display-value="filters.user ? filters.user.title : 'Все'"
     />
 
     <q-select
@@ -41,6 +46,8 @@
       emit-value
       class="col-4"
       clearable
+      @clear="clearHandler('potential')"
+      :display-value="filters.potential ? filters.potential.title : 'Все'"
     />
     <q-select
       v-model="filters.activity"
@@ -53,25 +60,28 @@
       emit-value
       class="col-4"
       clearable
+      @clear="clearHandler('activity')"
+      :display-value="filters.activity ? filters.activity.title : 'Все'"
     />
     <q-select
       v-model="attributes"
       multiple
       :options="['active', 'federal', 'top', 'prioritet']"
       use-chips
-      clearable
       label="Аттрибуты"
       class="col-4"
       dense
     />
-  </q-form>
+  </FiltersContainer>
 </template>
 
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useStore } from "vuex";
+import FiltersContainer from "@/components/Filters/FiltersContainer.vue";
 import _ from "lodash";
+import { useClients } from "@/views/ClientsView/composables/useClients";
 
 const store = useStore();
 const router = useRouter();
@@ -84,9 +94,8 @@ const filters = reactive({
   potential: null,
   activity: null,
 });
-
+const { fetchAllClients } = useClients();
 const onFilterUsers = async (val, update) => {
-  console.log(val);
   await store.dispatch("users/fetchAllUsers");
   update();
 };

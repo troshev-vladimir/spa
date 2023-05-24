@@ -4,12 +4,6 @@
       <div class="col-12">
         <ClientFilter></ClientFilter>
       </div>
-      <div class="col-auto">
-        <q-btn size="md" @click="fetchAllClients">
-          <span class="q-mr-sm">Найти</span>
-          <q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" />
-        </q-btn>
-      </div>
     </div>
 
     <q-table

@@ -15,6 +15,7 @@
           class="q-mb-md"
           dense
           :readonly="
+            modalConfig.action === 'reschedule' ||
             modalConfig.action === 'watch' ||
             modalConfig.action === 'closeWithResult' ||
             modalConfig.action === 'closeWithoutResult'
@@ -33,6 +34,7 @@
           filled
           class="q-mb-md"
           :readonly="
+            modalConfig.action === 'reschedule' ||
             modalConfig.action === 'watch' ||
             modalConfig.action === 'closeWithResult' ||
             modalConfig.action === 'closeWithoutResult'
@@ -57,6 +59,7 @@
           clearable
           options-dense
           :readonly="
+            modalConfig.action === 'reschedule' ||
             modalConfig.action === 'watch' ||
             modalConfig.action === 'closeWithResult' ||
             modalConfig.action === 'closeWithoutResult'
@@ -86,7 +89,13 @@
           :autofocus="modalConfig.action === 'closeWithResult'"
         />
 
-        <q-btn label="Подтвердить" color="primary" @click="submitForm" :disabled="!isValidationPassed" />
+        <q-btn
+          label="Подтвердить"
+          v-if="modalConfig.action !== 'watch'"
+          color="primary"
+          @click="submitForm"
+          :disabled="!isValidationPassed"
+        />
         <q-btn
           label="Завершить с результатом"
           color="secondary"
@@ -100,6 +109,13 @@
           class="q-ml-sm"
           v-if="modalConfig.action === 'watch'"
           @click="accomplishHandler(eventData, false)"
+        />
+        <q-btn
+          label="Запланировать"
+          color="secondary"
+          class="q-ml-sm"
+          v-if="modalConfig.action === 'watch'"
+          @click="rescheduleHandler(eventData)"
         />
       </q-form>
     </q-card>
@@ -117,7 +133,7 @@ import { useEvents } from "./composables/useEvents";
 import { useQuasar } from "quasar";
 
 const $q = useQuasar();
-const { accomplishHandler } = useEvents();
+const { accomplishHandler, rescheduleHandler } = useEvents();
 const store = useStore();
 
 const { clients, onFilter } = useClients();
@@ -159,24 +175,40 @@ async function submitForm() {
     } else if (modalConfig.value.action === "edit") {
       await eventService.update(eventData.value.id, eventData.value);
     } else if (modalConfig.value.action === "closeWithResult") {
-      eventData.value.fulfilled_date = moment().format("YYYY-MM-DD");
-      eventData.value.result = true;
-      await eventService.update(eventData.value.id, eventData.value);
-      // await eventService.moveToArchive(eventData.value.id);
+      await eventService.accomplish(eventData.value.id, {
+        result: true,
+        fulfilled_date: moment().format("YYYY-MM-DD"),
+        comment: eventData.value.comment,
+      });
     } else if (modalConfig.value.action === "closeWithoutResult") {
-      eventData.value.fulfilled_date = moment().format("YYYY-MM-DD");
-      eventData.value.result = false;
-      await eventService.update(eventData.value.id, eventData.value);
-      // await eventService.moveToArchive(eventData.value.id);
+      await eventService.accomplish(eventData.value.id, {
+        result: true,
+        fulfilled_date: moment().format("YYYY-MM-DD"),
+        comment: eventData.value.comment,
+      });
     } else if (modalConfig.value.action === "reschedule") {
-      eventData.value.comment = eventData.value.comment + "<br/>Перенос события:" + eventData.value.appointment_date;
-      await eventService.update(eventData.value.id, eventData.value);
+      try {
+        const { message } = await eventService.reschedule(eventData.value.id, {
+          new_appointment_date: eventData.value.appointment_date,
+          comment: eventData.value.comment,
+        });
+        $q.notify({
+          type: "positive",
+          message: message,
+        });
+      } catch (error) {
+        $q.notify({
+          type: "negative",
+          message: error.message,
+        });
+      }
     }
   } catch (error) {
     console.log(error);
   } finally {
     modalConfig.value.status = false;
     loading.value = false;
+
     emit("sumbit");
   }
 }

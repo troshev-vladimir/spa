@@ -1,94 +1,85 @@
 <template>
-  <div class="column">
-    <q-form class="row q-col-gutter-md">
-      <q-input dense v-model="filters.title" label="Имя" class="col-3" />
-      <DatePicker v-model="filters.createdDate" label="Дата создания" range class="col-3" />
-      <DatePicker v-model="filters.placementDate" label="Дата размещения" range class="col-3" />
-      <DatePicker v-model="filters.payedDate" label="Дата оплаты" range class="col-3" />
-      <q-select
-        v-model="filters.division_id"
-        :options="divisions"
-        label="Выберите отдел"
-        option-value="id"
-        option-label="name"
-        dense
-        map-options
-        emit-value
-        class="col-3"
-        options-dense
-        :display-value="filters.division_id ? filters.division_id.title : 'Все'"
-      />
+  <FiltersContainer v-slot="{ clearHandler }" :filters="filters" @search="fetchAllSales()">
+    <q-input dense v-model="filters.title" label="Имя" class="col-3" />
+    <DatePicker v-model="filters.createdDate" label="Дата создания" range class="col-3" />
+    <DatePicker v-model="filters.placementDate" label="Дата размещения" range class="col-3" />
+    <DatePicker v-model="filters.payedDate" label="Дата оплаты" range class="col-3" />
+    <q-select
+      v-model="filters.division_id"
+      :options="divisions"
+      label="Выберите отдел"
+      option-value="id"
+      option-label="name"
+      dense
+      map-options
+      emit-value
+      class="col-3"
+      options-dense
+      :display-value="filters.division_id ? filters.division_id.title : 'Все'"
+    />
 
-      <q-select
-        v-model="filters.user"
-        :options="store.state.users.usersData"
-        label="Ответствееный"
-        option-value="id"
-        option-label="login"
-        dense
-        map-options
-        emit-value
-        class="col-3"
-        clearable
-        @filter="onFilterUsers"
-        input-debounce="0"
-        use-input
-        options-dense
-        @clear="clearHandler('user')"
-        :display-value="filters.user ? filters.user.name : 'Все'"
-      />
-      <q-select
-        v-model="filters.smi"
-        :options="store.state.sales.salesSmi"
-        label="СМИ"
-        dense
-        option-value="id"
-        option-label="title"
-        map-options
-        emit-value
-        class="col-3"
-        clearable
-        @clear="clearHandler('smi')"
-        :display-value="filters.smi ? filters.smi.title : 'Все'"
-      />
-      <q-select
-        v-model="filters.type"
-        :options="store.state.sales.salesTypes"
-        label="Тип продажи"
-        dense
-        option-value="id"
-        option-label="title"
-        map-options
-        emit-value
-        class="col-3"
-        :display-value="filters.type ? filters.type.title : 'Все'"
-      />
-    </q-form>
-  </div>
-  <div class="row q-mb-md q-mt-sm items-start">
-    <div class="col-3">
-      <q-btn @click="emit('search')"><q-icon class="text-primary" size="1.3em" name="fas fa-magnifying-glass" /></q-btn>
-    </div>
-    <q-btn @click="resetAllFilters" dense class="q-ml-auto">
-      <q-icon class="text-primary q-mr-sm" size="1.2em" name="fa-solid fa-xmark" />
-      Сбросить фильтры
-    </q-btn>
-  </div>
+    <q-select
+      v-model="filters.user"
+      :options="store.state.users.usersData"
+      label="Ответствееный"
+      option-value="id"
+      option-label="login"
+      dense
+      map-options
+      emit-value
+      class="col-3"
+      clearable
+      @filter="onFilterUsers"
+      input-debounce="0"
+      use-input
+      options-dense
+      @clear="clearHandler('user')"
+      :display-value="filters.user ? filters.user.name : 'Все'"
+    />
+    <q-select
+      v-model="filters.smi"
+      :options="store.state.sales.salesSmi"
+      label="СМИ"
+      dense
+      option-value="id"
+      option-label="title"
+      map-options
+      emit-value
+      class="col-3"
+      clearable
+      @clear="clearHandler('smi')"
+      :display-value="filters.smi ? filters.smi.title : 'Все'"
+    />
+    <q-select
+      v-model="filters.type"
+      :options="store.state.sales.salesTypes"
+      label="Тип продажи"
+      dense
+      option-value="id"
+      option-label="title"
+      map-options
+      emit-value
+      class="col-3"
+      :display-value="filters.type ? filters.type.title : 'Все'"
+    />
+  </FiltersContainer>
 </template>
 
 <script setup>
+import FiltersContainer from "@/components/Filters/FiltersContainer.vue";
 import { reactive, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import _ from "lodash";
 import DatePicker from "../UiKit/DatePicker";
 import { useStore } from "vuex";
-import useFilters from "@/components/useFilter";
+import { useSales } from "@/views/SalesView/composables/useSales";
+
+const { fetchAllSales } = useSales();
+
 const router = useRouter();
 const route = useRoute();
 const store = useStore();
 
-// eslint-disable-next-line no-undef
-const emit = defineEmits(["search"]);
 let filters = reactive({
   title: "",
   createdDate: {
@@ -108,7 +99,6 @@ let filters = reactive({
   division_id: null,
   user: null,
 });
-const { resetAllFilters, clearHandler } = useFilters(filters);
 
 const divisions = computed(() => store.state.department?.divisions);
 const onFilterUsers = async (val, update) => {

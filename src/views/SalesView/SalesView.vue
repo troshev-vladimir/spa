@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <SalesFilter class="q-mb-md" @search="fetchAllSales"></SalesFilter>
+    <SalesFilter class="q-mb-md"></SalesFilter>
 
     <q-table
       :loading="loadingDepartment"

@@ -1,47 +1,55 @@
 <template>
-  <div>
-    <q-form class="row q-col-gutter-md">
-      <q-input dense v-model="filters.title" label="Событие" class="col-3" />
-      <q-select
-        v-model="filters.division_id"
-        :options="divisions"
-        label="Выберите отдел"
-        option-value="id"
-        option-label="name"
-        dense
-        map-options
-        emit-value
-        class="col-3"
-      />
+  <FiltersContainer v-slot="{ clearHandler }" :filters="filters" @search="fetchAllEvents()">
+    <q-input dense v-model="filters.title" label="Событие" class="col-3" />
+    <q-select
+      v-model="filters.division_id"
+      :options="divisions"
+      label="Выберите отдел"
+      option-value="id"
+      option-label="name"
+      dense
+      map-options
+      emit-value
+      class="col-3"
+      clearable
+      @clear="clearHandler('division_id')"
+      :display-value="filters.division_id ? filters.division_id.title : 'Все'"
+    />
 
-      <q-select
-        v-model="filters.user"
-        :options="store.state.users.usersData"
-        label="Ответствееный"
-        option-value="id"
-        option-label="login"
-        dense
-        map-options
-        emit-value
-        class="col-3"
-        clearable
-        @filter="onFilterUsers"
-        input-debounce="0"
-        use-input
-        options-dense
-      />
-      <q-select
-        v-model="filters.fulfilled"
-        :options="fulfilledOptions"
-        label="Статус"
-        dense
-        map-options
-        emit-value
-        class="col-3"
-      />
-      <DatePicker v-model="filters.date" label="Промежуток времени" range class="col-3" />
-    </q-form>
-  </div>
+    <q-select
+      v-model="filters.user"
+      :options="store.state.users.usersData"
+      label="Ответствееный"
+      option-value="id"
+      option-label="login"
+      dense
+      map-options
+      emit-value
+      class="col-3"
+      clearable
+      @filter="onFilterUsers"
+      input-debounce="0"
+      use-input
+      options-dense
+      @clear="clearHandler('user')"
+      :display-value="filters.user ? filters.user.title : 'Все'"
+    />
+    <q-select
+      v-model="filters.fulfilled"
+      :options="fulfilledOptions"
+      label="Статус"
+      dense
+      map-options
+      emit-value
+      class="col-3"
+      clearable
+      @clear="clearHandler('fulfilled')"
+      :display-value="filters.fulfilled ? filters.fulfilled.title : 'Все'"
+    />
+
+    <DatePicker v-model="filters.date" label="Промежуток времени" range class="col-3" />
+  </FiltersContainer>
+  <q-btn @click="fetchAllEvents(true)">Архив</q-btn>
 </template>
 
 <script setup>
@@ -50,6 +58,8 @@ import { useRouter, useRoute } from "vue-router";
 import _ from "lodash";
 import { useStore } from "vuex";
 import DatePicker from "../UiKit/DatePicker";
+import FiltersContainer from "@/components/Filters/FiltersContainer.vue";
+import { useEvents } from "@/views/EventsView/composables/useEvents";
 
 const router = useRouter();
 const route = useRoute();
@@ -64,6 +74,7 @@ const filters = reactive({
     to: null,
   },
 });
+const { fetchAllEvents } = useEvents();
 const divisions = computed(() => store.state.department?.divisions);
 const onFilterUsers = async (val, update) => {
   await store.dispatch("users/fetchAllUsers");

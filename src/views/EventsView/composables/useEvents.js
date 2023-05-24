@@ -1,7 +1,6 @@
 import { ref } from "vue";
 import { useStore } from "vuex";
 import eventService from "@/api/events";
-import moment from "moment";
 import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import useEventsModal from "./useEventsModal";
@@ -36,19 +35,13 @@ export function useEvents() {
   }
 
   async function accomplishHandler(event, resultStatus) {
-    const accompleshedEvent = event;
     const norefEvent = Object.assign({}, event);
-    // norefUser.division_id = user.division.id;
     eventData.value = norefEvent;
     await getAttendantData();
     if (!resultStatus) {
-      accompleshedEvent.fulfilled_date = moment().format("YYYY-MM-DD");
-      accompleshedEvent.result = false;
       modalConfig.value.status = true;
       modalConfig.value.action = "closeWithoutResult";
       modalConfig.value.name = "Завершить событие без результата";
-      // await eventService.update(event.id, accompleshedEvent);
-      // await eventService.moveToArchive(event.id);
     } else {
       modalConfig.value.status = true;
       modalConfig.value.action = "closeWithResult";

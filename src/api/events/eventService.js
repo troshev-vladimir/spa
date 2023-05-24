@@ -55,6 +55,18 @@ class EventService {
     return response.data;
   }
 
+  async accomplish(id, body) {
+    const response = await this.axios.post("/v1/events/" + id + "/accomplish", body);
+
+    return response.data;
+  }
+
+  async reschedule(id, body) {
+    const response = await this.axios.post("/v1/events/" + id + "/reschedule", body);
+
+    return response.data;
+  }
+
   async create(body) {
     let response;
     try {
