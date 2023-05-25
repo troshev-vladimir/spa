@@ -1,55 +1,60 @@
 <template>
-  <FiltersContainer v-slot="{ clearHandler }" :filters="filters" @search="fetchAllEvents()">
-    <q-input dense v-model="filters.title" label="Событие" class="col-3" />
-    <q-select
-      v-model="filters.division_id"
-      :options="divisions"
-      label="Выберите отдел"
-      option-value="id"
-      option-label="name"
-      dense
-      map-options
-      emit-value
-      class="col-3"
-      clearable
-      @clear="clearHandler('division_id')"
-      :display-value="filters.division_id ? filters.division_id.title : 'Все'"
-    />
+  <FiltersContainer :filters="filters" @search="fetchAllEvents()">
+    <template v-slot="{ clearHandler }">
+      <q-input dense v-model="filters.title" label="Событие" class="col-3" />
+      <q-select
+        v-model="filters.division_id"
+        :options="divisions"
+        label="Выберите отдел"
+        option-value="id"
+        option-label="name"
+        dense
+        map-options
+        emit-value
+        class="col-3"
+        clearable
+        @clear="clearHandler('division_id')"
+        :display-value="filters.division_id ? filters.division_id.title : 'Все'"
+      />
 
-    <q-select
-      v-model="filters.user"
-      :options="store.state.users.usersData"
-      label="Ответствееный"
-      option-value="id"
-      option-label="login"
-      dense
-      map-options
-      emit-value
-      class="col-3"
-      clearable
-      @filter="onFilterUsers"
-      input-debounce="0"
-      use-input
-      options-dense
-      @clear="clearHandler('user')"
-      :display-value="filters.user ? filters.user.title : 'Все'"
-    />
-    <q-select
-      v-model="filters.fulfilled"
-      :options="fulfilledOptions"
-      label="Статус"
-      dense
-      map-options
-      emit-value
-      class="col-3"
-      clearable
-      @clear="clearHandler('fulfilled')"
-      :display-value="filters.fulfilled ? filters.fulfilled.title : 'Все'"
-    />
+      <q-select
+        v-model="filters.user"
+        :options="store.state.users.usersData"
+        label="Ответствееный"
+        option-value="id"
+        option-label="login"
+        dense
+        map-options
+        emit-value
+        class="col-3"
+        clearable
+        @filter="onFilterUsers"
+        input-debounce="0"
+        use-input
+        options-dense
+        @clear="clearHandler('user')"
+        :display-value="filters.user ? filters.user.title : 'Все'"
+      />
+      <q-select
+        v-model="filters.fulfilled"
+        :options="fulfilledOptions"
+        label="Статус"
+        dense
+        map-options
+        emit-value
+        class="col-3"
+        clearable
+        @clear="clearHandler('fulfilled')"
+        :display-value="filters.fulfilled ? filters.fulfilled.title : 'Все'"
+      />
 
-    <DatePicker v-model="filters.date" label="Промежуток времени" range class="col-3" />
+      <DatePicker v-model="filters.date" label="Промежуток времени" range class="col-3" />
+    </template>
+    <template #buttons
+      ><q-btn @click="fetchAllEvents(true)"
+        >Завершонные <q-icon class="text-primary q-ml-sm" size="1.3em" name="fas fa-magnifying-glass" /></q-btn
+    ></template>
   </FiltersContainer>
-  <q-btn @click="fetchAllEvents(true)">Архив</q-btn>
 </template>
 
 <script setup>
