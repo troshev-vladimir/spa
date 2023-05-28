@@ -159,7 +159,7 @@ const columns = [
     label: "type ",
     align: "left",
     field: "type",
-    format: (type) => `${type.title}`,
+    format: (type) => `${type?.title || "Не назначен"}`,
   },
 ];
 </script>

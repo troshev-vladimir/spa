@@ -8,7 +8,7 @@ export default function usePagination(fetchFunc, loadingDepartment) {
   const $q = useQuasar();
 
   const pagination = ref({
-    sortBy: "desc",
+    sortBy: null,
     descending: false,
     page: 1,
     rowsPerPage: 10,
@@ -28,16 +28,16 @@ export default function usePagination(fetchFunc, loadingDepartment) {
   });
 
   async function onRequest(props) {
-    const { page, rowsPerPage } = props.pagination;
-    //sortBy, descending
-    // const filter = props.filter;
+    const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
     const query = Object.assign({}, route.query, {
       page,
       per_page: rowsPerPage,
+      sortBy,
+      desc: descending,
     });
 
-    router.push({
+    await router.push({
       path: router.currentRoute.value.fullPath,
       query,
     });
@@ -46,6 +46,7 @@ export default function usePagination(fetchFunc, loadingDepartment) {
 
     try {
       const returnedData = await fetchFunc();
+      console.log(returnedData.meta);
       pagination.value.rowsPerPage = returnedData.meta.per_page;
       pagination.value.page = returnedData.meta.current_page;
       pagination.value.rowsNumber = returnedData.meta.total;

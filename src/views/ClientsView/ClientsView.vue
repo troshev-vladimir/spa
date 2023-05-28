@@ -226,7 +226,7 @@ watch(department, async () => {
 
 const { addLegalHandler, removeLegalHandler } = useDadata(userData);
 
-const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "clients/fetchAllClients"), loading);
+const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "clients/fetchAllClients"), loadingDepartment);
 
 async function submitForm() {
   loading.value = true;

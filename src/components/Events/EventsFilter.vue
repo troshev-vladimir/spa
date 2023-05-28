@@ -65,7 +65,7 @@ const filters = reactive({
   title: "",
   division_id: null,
   user: null,
-  fulfilled: null,
+  fulfilled: 3,
   date: {
     from: null,
     to: null,
@@ -129,8 +129,6 @@ watch(
   },
   { deep: true }
 );
-
-filters.fulfilled = 3;
 </script>
 
 <style></style>
