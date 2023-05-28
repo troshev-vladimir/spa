@@ -3,8 +3,7 @@
     <q-card class="q-pa-md" style="width: 1200px">
       <q-toolbar>
         <q-toolbar-title>{{ modalConfig.name }}</q-toolbar-title>
-
-        <q-btn flat round dense v-close-popup>&times;</q-btn>
+        <q-btn flat round dense v-close-popup><q-icon class="text-primary" size="1.5em" name="fas fa-xmark" /></q-btn>
       </q-toolbar>
       <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
       <q-form autofocus style="min-width: 400px">
@@ -72,7 +71,7 @@
           </q-date>
         </div>
 
-        <q-btn label="Submit" color="primary" @click="submitForm" />
+        <q-btn label="Подтвердить" size="lg" color="primary" @click="submitForm" />
       </q-form>
     </q-card>
   </q-dialog>

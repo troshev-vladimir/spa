@@ -2,18 +2,22 @@ import { computed, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import { useEvents } from "./useEvents";
 
-export default function useEventsInit(tableRef) {
+export default function useEventsInit(tableRef, loadingDepartment) {
   const store = useStore();
   const department = computed(() => store.state.department);
   const { fetchAllEvents } = useEvents();
 
   watch(department, async () => {
+    loadingDepartment.value = true;
     tableRef.value.requestServerInteraction();
+    loadingDepartment.value = false;
   });
 
   onMounted(async () => {
+    loadingDepartment.value = true;
     if (store.state.user.user.departments?.length) await fetchAllEvents();
     store.dispatch("events/fetchTypes");
+    loadingDepartment.value = false;
   });
 
   return {

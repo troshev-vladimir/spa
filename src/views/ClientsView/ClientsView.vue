@@ -53,12 +53,19 @@
       <q-card class="q-pa-md" style="min-width: 600px">
         <q-toolbar>
           <q-toolbar-title>{{ modalConfig.name }}</q-toolbar-title>
-
           <q-btn flat round dense v-close-popup><q-icon class="text-primary" size="1.5em" name="fas fa-xmark" /></q-btn>
         </q-toolbar>
         <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
         <q-form autofocus style="min-width: 400px" @submit="submitForm">
-          <q-input filled v-model="userData.name" label="Имя" class="q-mb-md" dense />
+          <q-input
+            filled
+            v-model="userData.name"
+            label="Имя"
+            class="q-mb-md"
+            dense
+            lazy-rules
+            :rules="[(val) => !!val || 'Поле обязательное']"
+          />
           <div class="q-mb-md">
             <q-checkbox v-model="userData.active" label="active" />
             <q-checkbox v-model="userData.federal" label="federal" />
@@ -72,7 +79,7 @@
             v-model="userData.email"
             label="Email"
             lazy-rules
-            :rules="[(val) => !!val || 'Поле обязательно', (val, rules) => rules.email(val) || 'Введите корректный Email']"
+            :rules="[(val, rules) => (val ? rules.email(val) : true) || 'Введите корректный Email']"
             dense
           />
 
@@ -82,7 +89,7 @@
             label="Телефон"
             unmasked-value
             lazy-rules
-            :rules="[(val) => val.length === 10 || 'Введите корректный телефон']"
+            :rules="[(val) => (val ? val.length === 10 : true || 'Введите корректный телефон')]"
             mask="+7 (###) ### ##-##"
             dense
           />
@@ -110,7 +117,7 @@
             dense
             filled
             lazy-rules
-            :rules="[(val) => val || 'Поле обязательно']"
+            class="q-mb-md"
           />
 
           <q-select
@@ -123,7 +130,7 @@
             option-label="title"
             dense
             filled
-            :rules="[(val) => val || 'Поле обязательно']"
+            class="q-mb-md"
           />
 
           <q-select
@@ -143,9 +150,23 @@
 
           <q-input v-model="userData.comment" label="Комментарий" type="textarea" class="q-mb-md" filled dense />
           <ClientsContacts class="q-mb-md"></ClientsContacts>
-          <DadataSuggestions class="q-mb-md" v-model="userData.legals"></DadataSuggestions>
-          <q-btn label="Submit" color="primary" type="submit" />
-          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" dense />
+
+          <div class="q-mb-md">
+            <template v-for="(legal, idx) in userData.legals" :key="idx">
+              <DadataSuggestions v-model="userData.legals[idx]" @remove="removeLegalHandler(i - 1)"></DadataSuggestions>
+            </template>
+
+            <q-btn class="q-mt-md" @click="addLegalHandler()" color="primary">
+              <q-icon class="q-mr-md" size="1.3em" name="fas fa-plus" /> Добавить юр. лицо
+            </q-btn>
+          </div>
+
+          <q-btn
+            :label="modalConfig.action === 'add' ? 'Добавить клиента' : 'Изменить клиента'"
+            size="lg"
+            color="secondary"
+            type="submit"
+          />
         </q-form>
       </q-card>
     </q-dialog>
@@ -154,7 +175,8 @@
     <div class="row">
       <div class="col-12">
         <q-btn class="q-mt-md" @click.stop="addHandler()">
-          <q-icon class="text-primary q-mr-md" size="1.3em" name="fas fa-plus" /> Добавить клиента
+          <q-icon class="text-primary q-mr-md" size="1.3em" name="fas fa-plus" />
+          Добавить клиента
         </q-btn>
       </div>
     </div>
@@ -164,6 +186,8 @@
 <script setup>
 import { useStore } from "vuex";
 import { useClients } from "./composables/useClients";
+import useDadata from "./composables/useDadata";
+
 import clientService from "@/api/clients";
 import ClientFilter from "@/components/Clients/ClientsFilter.vue";
 import DadataSuggestions from "./DadataSuggestions.vue";
@@ -171,7 +195,7 @@ import ClientsContacts from "./ClientsContacts.vue";
 import EventsModal from "@/views/EventsView/EventsModal.vue";
 import SalesModal from "@/views/SalesView/SalesModal.vue";
 import { useQuasar } from "quasar";
-import { ref } from "vue";
+import { ref, watch, computed } from "vue";
 // import _ from "lodash";
 import usePagination from "../EventsView/composables/usePagination";
 
@@ -191,7 +215,16 @@ const {
   createEventForClient,
   createSaleForClient,
   showEvent,
-} = useClients(modalConfig, tableRef);
+} = useClients(modalConfig);
+
+const department = computed(() => store.state.department);
+watch(department, async () => {
+  loadingDepartment.value = true;
+  await tableRef.value.requestServerInteraction();
+  loadingDepartment.value = false;
+});
+
+const { addLegalHandler, removeLegalHandler } = useDadata(userData);
 
 const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "clients/fetchAllClients"), loading);
 

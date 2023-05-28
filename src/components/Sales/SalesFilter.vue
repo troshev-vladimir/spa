@@ -1,6 +1,6 @@
 <template>
   <FiltersContainer v-slot="{ clearHandler }" :filters="filters" @search="fetchAllSales()">
-    <q-input dense v-model="filters.title" label="Имя" class="col-3" />
+    <q-input dense v-model="filters.title" label="Имя" class="col-3" clearable @clear="clearHandler('title')" />
     <DatePicker v-model="filters.createdDate" label="Дата создания" range class="col-3" />
     <DatePicker v-model="filters.placementDate" label="Дата размещения" range class="col-3" />
     <DatePicker v-model="filters.payedDate" label="Дата оплаты" range class="col-3" />
@@ -73,7 +73,6 @@ import _ from "lodash";
 import DatePicker from "../UiKit/DatePicker";
 import { useStore } from "vuex";
 import { useSales } from "@/views/SalesView/composables/useSales";
-
 const { fetchAllSales } = useSales();
 
 const router = useRouter();
@@ -99,7 +98,6 @@ let filters = reactive({
   division_id: null,
   user: null,
 });
-
 const divisions = computed(() => store.state.department?.divisions);
 const onFilterUsers = async (val, update) => {
   await store.dispatch("users/fetchAllUsers");
@@ -117,9 +115,14 @@ watch(
     preparedFilters.placementTo = placementDate.to;
     preparedFilters.payedFrom = payedDate.from;
     preparedFilters.payedTo = payedDate.to;
-    router.push({
+    const query = {
+      ...route.query,
+      ..._.pickBy(preparedFilters, _.identity),
+      ..._.pickBy(preparedFilters, (value) => value === ""),
+    };
+    router.replace({
       path: router.currentRoute.value.fullPath,
-      query: { ...route.query, ..._.pickBy(preparedFilters, _.identity) },
+      query: _.pickBy(query, _.identity),
     });
   },
   { deep: true }

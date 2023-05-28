@@ -12,18 +12,12 @@ export function useEvents() {
   const $q = useQuasar();
   const { modalConfig, eventData } = useEventsModal();
 
-  async function fetchAllEvents(archive = false) {
+  async function fetchAllEvents() {
     loadingDepartment.value = true;
     try {
-      if (archive) {
-        await store.dispatch("events/fetchAllArchiveEvents", {
-          ...route.query,
-        });
-      } else {
-        await store.dispatch("events/fetchAllEvents", {
-          ...route.query,
-        });
-      }
+      await store.dispatch("events/fetchAllEvents", {
+        ...route.query,
+      });
     } catch (error) {
       $q.notify({
         type: "negative",

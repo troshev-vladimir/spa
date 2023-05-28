@@ -1,4 +1,4 @@
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import clientService from "@/api/clients";
 import eventService from "@/api/events";
@@ -7,18 +7,14 @@ import { useQuasar } from "quasar";
 import { useEvents } from "@/views/EventsView/composables/useEvents";
 import { useSales } from "@/views/SalesView/composables/useSales";
 
-export function useClients(modalConfig, tableRef) {
+export function useClients(modalConfig) {
   const { addHandler: eventsAddHendler, watchEvent } = useEvents();
   const { addHandler: salesAddHendler } = useSales();
   const store = useStore();
-  const department = computed(() => store.state.department);
+
   const loadingDepartment = ref(false);
   const $q = useQuasar();
-
-  watch(department, async () => {
-    await tableRef.value.requestServerInteraction();
-  });
-
+  const department = computed(() => store.state.department);
   onMounted(async () => {
     if (store.state.user.user.departments?.length) fetchAllClients();
 
@@ -83,7 +79,7 @@ export function useClients(modalConfig, tableRef) {
   function editHandler(user) {
     modalConfig.value.status = true;
     modalConfig.value.action = "edit";
-    modalConfig.value.name = "Pедактировать пользователя";
+    modalConfig.value.name = "Pедактировать клиента";
     const norefUser = Object.assign({}, user);
     norefUser.division_id = user.division.id;
     norefUser.legals = norefUser.legals ? norefUser.legals : {};

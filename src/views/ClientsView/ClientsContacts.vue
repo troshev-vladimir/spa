@@ -11,7 +11,7 @@
           dense
           :rules="[
             // (val) => !!val || 'Поле обязательно',
-            (val, rules) => rules.email(val) || 'Введён не корректный адрес электронной почты',
+            (val, rules) => (val ? rules.email(val) : true || 'Введён не корректный адрес электронной почты'),
           ]"
         />
         <q-input
@@ -20,7 +20,7 @@
           dense
           unmasked-value
           lazy-rules
-          :rules="[(val) => val.length === 10 || 'Введите корректный телефон']"
+          :rules="[(val) => (val ? val.length === 10 : true || 'Введите корректный телефон')]"
           label="Рабочий Телефон"
           mask="+7 (###) ### ##-##"
         />
@@ -30,7 +30,7 @@
           dense
           unmasked-value
           lazy-rules
-          :rules="[(val) => val.length === 10 || 'Введите корректный телефон']"
+          :rules="[(val) => (val ? val.length === 10 : true || 'Введите корректный телефон')]"
           label="Дополнительный телефон"
           mask="+7 (###) ### ##-##"
         />
@@ -46,11 +46,19 @@
           dense
           filled
           class="q-mb-md"
+          :display-value="contact.job ? contact.job.title : 'Не выбрано'"
         />
-        <q-btn label="Удалить контактное лицо" color="primary" @click="removeContact(idx)" />
+
+        <q-btn color="negative" @click="removeContact(idx)">
+          <q-icon class="q-mr-md" size="1.3em" name="fas fa-minus" />
+          Удалить
+        </q-btn>
       </li>
     </ul>
-    <q-btn label="Добавить контактное лицо" color="primary" @click="addContact" />
+    <q-btn color="primary" @click="addContact" class="items-center row">
+      <q-icon class="q-mr-md" size="1.3em" name="fas fa-plus" />
+      Добавить контактное лицо
+    </q-btn>
   </div>
 </template>
 

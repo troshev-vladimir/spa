@@ -62,7 +62,7 @@
         <div class="color"><span style="background-color: #add8e6"></span> Ждёт выполнения в течение недели</div>
       </div>
     </div>
-    <EventsModal @sumbit="fetchAllEvents" />
+    <EventsModal @sumbit="fetchAllEvents()" />
   </div>
 </template>
 
@@ -99,8 +99,6 @@ function getRowColor(row) {
   const inAWeek = moment().startOf("day").add(7, "d");
 
   let color = "#fff";
-
-  console.log(eventDate.unix() < today.unix());
 
   if (row.fulfilled_date) {
     color = "#90ee90";

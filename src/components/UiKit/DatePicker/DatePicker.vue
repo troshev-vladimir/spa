@@ -31,6 +31,7 @@ const mask = computed(() => {
 });
 
 const value = () => {
+  if (!data.value) return null;
   return typeof data.value === "object" ? `${data.value.from} - ${data.value.to}` : data.value;
 };
 

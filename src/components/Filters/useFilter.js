@@ -21,6 +21,12 @@ export default function useFilter(filters) {
     await nextTick();
 
     const newQuery = _.pickBy(route.query, (el, key) => {
+      if (key.includes("From") || key.includes("To")) {
+        let filter = key.replace("From", "").replace("To", "");
+        console.log(filter);
+        return !Object.keys(filters).includes(filter && filter + "Date");
+      }
+
       return !Object.keys(filters).includes(key);
     });
     router.replace({
@@ -47,7 +53,7 @@ export default function useFilter(filters) {
           filters[key] = Number(value);
           return;
         }
-        filters[key] = Number(value);
+        filters[key] = Number(value) ? Number(value) : value;
       }
     });
   });

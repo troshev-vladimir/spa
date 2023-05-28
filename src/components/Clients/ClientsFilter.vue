@@ -1,6 +1,6 @@
 <template>
   <FiltersContainer v-slot="{ clearHandler }" :filters="filters" @search="fetchAllClients()">
-    <q-input dense v-model="filters.name" label="Имя" class="col-4" />
+    <q-input dense v-model="filters.name" label="Имя" class="col-4" clearable @clear="clearHandler('name')" />
     <q-select
       v-model="filters.division_id"
       :options="divisions"
@@ -127,9 +127,14 @@ onMounted(() => {
 watch(
   filters,
   () => {
+    const query = {
+      ...route.query,
+      ..._.pickBy(filters, _.identity),
+      ..._.pickBy(filters, (value) => value === ""),
+    };
     router.replace({
       path: router.currentRoute.value.fullPath,
-      query: Object.assign({}, route.query, _.pickBy(filters, _.identity)),
+      query: _.pickBy(query, _.identity),
     });
   },
   { deep: true }

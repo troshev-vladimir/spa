@@ -3,8 +3,7 @@
     <q-card class="q-pa-md" style="max-width: initial">
       <q-toolbar>
         <q-toolbar-title>{{ modalConfig.name }}</q-toolbar-title>
-
-        <q-btn flat round dense v-close-popup>&times;</q-btn>
+        <q-btn flat round dense v-close-popup><q-icon class="text-primary" size="1.5em" name="fas fa-xmark" /></q-btn>
       </q-toolbar>
       <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
       <q-form autofocus style="min-width: 600px">

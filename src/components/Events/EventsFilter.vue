@@ -1,7 +1,7 @@
 <template>
-  <FiltersContainer :filters="filters" @search="fetchAllEvents()">
+  <FiltersContainer :filters="filters" @search="searchHandler()">
     <template v-slot="{ clearHandler }">
-      <q-input dense v-model="filters.title" label="Событие" class="col-3" />
+      <q-input dense v-model="filters.title" label="Событие" class="col-3" clearable @clear="clearHandler('title')" />
       <q-select
         v-model="filters.division_id"
         :options="divisions"
@@ -43,29 +43,21 @@
         map-options
         emit-value
         class="col-3"
-        clearable
-        @clear="clearHandler('fulfilled')"
-        :display-value="filters.fulfilled ? filters.fulfilled.title : 'Все'"
       />
 
       <DatePicker v-model="filters.date" label="Промежуток времени" range class="col-3" />
     </template>
-    <template #buttons
-      ><q-btn @click="fetchAllEvents(true)"
-        >Завершонные <q-icon class="text-primary q-ml-sm" size="1.3em" name="fas fa-magnifying-glass" /></q-btn
-    ></template>
   </FiltersContainer>
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, watch } from "vue";
+import { computed, reactive, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import _ from "lodash";
 import { useStore } from "vuex";
 import DatePicker from "../UiKit/DatePicker";
 import FiltersContainer from "@/components/Filters/FiltersContainer.vue";
 import { useEvents } from "@/views/EventsView/composables/useEvents";
-
 const router = useRouter();
 const route = useRoute();
 const store = useStore();
@@ -100,19 +92,23 @@ const fulfilledOptions = [
     label: "Не завершонные",
   },
 ];
-onMounted(() => {
-  const itsFilters = Object.keys(filters);
-  const searchParams = new URLSearchParams(router.currentRoute.value.query);
-  searchParams.forEach((value, key) => {
-    if (itsFilters.includes(key)) {
-      if (key === "division_id") {
-        filters[key] = Number(value);
-        return;
-      }
-      filters[key] = value;
+
+async function searchHandler() {
+  await fetchAllEvents();
+}
+
+const itsFilters = Object.keys(filters);
+const searchParams = new URLSearchParams(router.currentRoute.value.query);
+searchParams.forEach((value, key) => {
+  if (itsFilters.includes(key)) {
+    if (key === "division_id") {
+      filters[key] = Number(value);
+      return;
     }
-  });
+    filters[key] = value;
+  }
 });
+
 watch(
   filters,
   () => {
@@ -120,13 +116,21 @@ watch(
     const preparedFilters = Object.assign({}, allFilters);
     preparedFilters.dateFrom = date.from;
     preparedFilters.dateTo = date.to;
-    router.push({
+
+    const query = {
+      ...route.query,
+      ..._.pickBy(preparedFilters, _.identity),
+      ..._.pickBy(preparedFilters, (value) => value === ""),
+    };
+    router.replace({
       path: router.currentRoute.value.fullPath,
-      query: { ...route.query, ..._.pickBy(preparedFilters, _.identity) },
+      query: _.pickBy(query, _.identity),
     });
   },
   { deep: true }
 );
+
+filters.fulfilled = 3;
 </script>
 
 <style></style>
