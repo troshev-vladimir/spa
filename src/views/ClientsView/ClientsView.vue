@@ -56,7 +56,7 @@
           <q-btn flat round dense v-close-popup><q-icon class="text-primary" size="1.5em" name="fas fa-xmark" /></q-btn>
         </q-toolbar>
         <q-spinner color="primary" size="3em" :thickness="2" v-if="loading" />
-        <q-form autofocus style="min-width: 400px" @submit="submitForm">
+        <q-form autofocus style="min-width: 400px" @submit="submitForm" :key="updateFormKey">
           <q-input
             filled
             v-model="userData.name"
@@ -153,7 +153,7 @@
 
           <div class="q-mb-md">
             <template v-for="(legal, idx) in userData.legals" :key="idx">
-              <DadataSuggestions v-model="userData.legals[idx]" @remove="removeLegalHandler(i - 1)"></DadataSuggestions>
+              <DadataSuggestions v-model="userData.legals[idx]" @remove="onRemove(legal)"></DadataSuggestions>
             </template>
 
             <q-btn class="q-mt-md" @click="addLegalHandler()" color="primary">
@@ -204,6 +204,12 @@ const loading = ref(false);
 const store = useStore();
 const modalConfig = ref({ status: false, action: null, name: "" });
 const $q = useQuasar();
+const updateFormKey = ref(0);
+
+function onRemove(legal) {
+  removeLegalHandler(legal);
+  updateFormKey.value += 1;
+}
 
 const {
   editHandler,
@@ -230,16 +236,20 @@ const { onRequest, pagination } = usePagination(store.dispatch.bind(this, "clien
 
 async function submitForm() {
   loading.value = true;
+  let data = null;
   try {
     if (modalConfig.value.action === "add") {
       userData.value.userId = store.state.user.user.id; // ответственный
       userData.value.creator = store.state.user.user.id; // создатель
-      await clientService.create(userData.value);
+      data = await clientService.create(userData.value);
     } else if (modalConfig.value.action === "edit") {
-      await clientService.update(userData.value.id, userData.value);
+      data = await clientService.update(userData.value.id, userData.value);
     }
+    $q.notify({
+      type: "positive",
+      message: data.message || "",
+    });
   } catch (error) {
-    console.log(error);
     $q.notify({
       type: "negative",
       message: error.message,

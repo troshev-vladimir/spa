@@ -23,7 +23,6 @@ export default function useFilter(filters) {
     const newQuery = _.pickBy(route.query, (el, key) => {
       if (key.includes("From") || key.includes("To")) {
         let filter = key.replace("From", "").replace("To", "");
-        console.log(filter);
         return !Object.keys(filters).includes(filter && filter + "Date");
       }
 

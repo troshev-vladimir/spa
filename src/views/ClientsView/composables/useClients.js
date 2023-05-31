@@ -86,9 +86,20 @@ export function useClients(modalConfig) {
     userData.value = norefUser;
   }
 
-  function deleteHandler(userId) {
-    clientService.delete(userId);
-    fetchAllClients();
+  async function deleteHandler(userId) {
+    try {
+      const data = await clientService.delete(userId);
+      $q.notify({
+        type: "positive",
+        message: data.message || "",
+      });
+      fetchAllClients();
+    } catch (error) {
+      $q.notify({
+        type: "positive",
+        message: error.message || "",
+      });
+    }
   }
 
   return {

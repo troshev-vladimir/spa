@@ -36,7 +36,6 @@ class SalesService {
   }
 
   async update(id, body) {
-    console.log(body);
     const response = await this.axios.put("/v1/sales/" + id, body);
 
     return response.data;

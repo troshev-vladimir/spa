@@ -162,9 +162,13 @@ function onFilterBank(val, update) {
     .catch((error) => console.log("error", error));
 }
 
-watch([selected, payAccount, comment, selectedBank, actualAddress, accouterName], () => {
-  transformDataBack();
-});
+watch(
+  [selected, payAccount, comment, selectedBank, actualAddress, accouterName],
+  () => {
+    transformDataBack();
+  },
+  { deep: true }
+);
 
 const transformDataBack = () => {
   const vlaue = {};
@@ -184,7 +188,7 @@ const transformDataBack = () => {
   vlaue.inn_bank = selectedBank.value.data.inn;
   vlaue.kpp = selectedBank.value.data.kpp;
   vlaue.comment = comment.value;
-
+  vlaue.id = props.modelValue.id;
   emit("update:modelValue", vlaue);
 };
 </script>

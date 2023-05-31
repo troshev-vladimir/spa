@@ -46,13 +46,12 @@ export default function usePagination(fetchFunc, loadingDepartment) {
 
     try {
       const returnedData = await fetchFunc();
-      console.log(returnedData.meta);
       pagination.value.rowsPerPage = returnedData.meta.per_page;
       pagination.value.page = returnedData.meta.current_page;
       pagination.value.rowsNumber = returnedData.meta.total;
     } catch (error) {
       $q.notify({
-        type: "positive",
+        type: "negative",
         message: error,
       });
     }

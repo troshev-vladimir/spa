@@ -1,6 +1,3 @@
-import { getCurrentInstance } from "vue";
-const instance = getCurrentInstance();
-
 export default function useDadata(userData) {
   function addLegalHandler() {
     userData.value.legals.push({
@@ -22,9 +19,10 @@ export default function useDadata(userData) {
     });
   }
 
-  function removeLegalHandler(id) {
-    userData.value.legals.splice(id, 1);
-    instance?.proxy?.$forceUpdate();
+  function removeLegalHandler(legal) {
+    userData.value.legals = userData.value.legals.filter((el) => {
+      return legal !== el;
+    });
   }
 
   return { addLegalHandler, removeLegalHandler };

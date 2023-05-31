@@ -36,19 +36,18 @@
   </q-table>
 
   <q-dialog v-model="editModalStatus">
-    <q-card class="q-pa-md">
+    <q-card class="q-pa-md" style="max-width: initial">
       <q-toolbar>
         <q-toolbar-title>Редактирование пользователя</q-toolbar-title>
 
-        <q-btn flat round dense v-close-popup>&times;</q-btn>
+        <q-btn flat round dense v-close-popup><q-icon class="text-primary" size="1.5em" name="fas fa-xmark" /></q-btn>
       </q-toolbar>
 
-      <q-form autofocus>
+      <q-form autofocus style="min-width: 600px">
         <q-input filled v-model="editUserLogin" label="Login" class="q-mb-md" />
 
         <div>
           <q-btn label="Submit" color="primary" @click="submitForm" />
-          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
         </div>
       </q-form>
 
@@ -60,7 +59,7 @@
           </span>
           <span v-if="!editUserRoles.length"> Нет ролей </span>
         </div>
-        <div class="row">
+        <div class="row q-gutter-md">
           <q-select
             v-model="roleModal"
             :options="allRoles"
@@ -83,7 +82,7 @@
           </span>
           <span v-if="!editUserDepartments.length"> Нет назначеных департаментов </span>
         </div>
-        <div class="row">
+        <div class="row q-gutter-md">
           <q-select
             v-model="departmentsModal"
             :options="allDepartments"

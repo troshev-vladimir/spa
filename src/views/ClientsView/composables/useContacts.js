@@ -14,7 +14,7 @@ export default function useContacts() {
       phone_add: "",
       email: "",
       comment: "",
-      job: 0,
+      job: null,
     });
   }
 

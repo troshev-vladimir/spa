@@ -42,6 +42,16 @@
 
       <div class="col-auto items-center flex">
         <q-btn
+          v-if="isAdmin && route.name !== 'users'"
+          class="q-px-xl q-py-xs bg-indigo-13 q-mr-md"
+          push
+          label="Админка"
+          @click="router.push({ name: 'users' })"
+        />
+
+        <q-btn v-else class="q-px-xl q-py-xs bg-indigo-13 q-mr-md" push label="crm" @click="router.push({ name: 'crm' })" />
+
+        <q-btn
           v-if="store.state.user.user.id"
           class="q-px-xl q-py-xs bg-indigo-13 q-mr-md"
           push
@@ -63,11 +73,13 @@
 <script setup>
 import useDepartments from "./composables/useDepartments.js";
 import authService from "@/api/auth";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useStore } from "vuex";
 import { useNow, useDateFormat } from "@vueuse/core";
+import { computed } from "vue";
 
 const router = useRouter();
+const route = useRoute();
 const store = useStore();
 const now = useDateFormat(useNow(), "YYYY.MM.DD HH:mm:ss");
 const day = useDateFormat(useNow(), "dddd");
@@ -76,6 +88,14 @@ async function exitHandler() {
   await authService.logout();
   router.push({ name: "auth" });
 }
+
+const isAdmin = computed(() => {
+  return (
+    store.state.user.user?.roles?.findIndex((el) => {
+      return el.name === "Admin";
+    }) + 1
+  );
+});
 
 async function enterHandler() {
   router.push({ name: "auth" });
